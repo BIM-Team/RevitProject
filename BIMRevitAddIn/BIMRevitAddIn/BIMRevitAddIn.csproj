@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BIMRevitAddIn</RootNamespace>
     <AssemblyName>BIMRevitAddIn</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +34,21 @@
     <Reference Include="BIMCoder.OfficeHelper">
       <HintPath>D:\WDCode\ThirdParty\BIMCore\BIMCoder.OfficeHelper.dll</HintPath>
     </Reference>
+    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\WDCode\ThirdParty\MySql\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML">
+      <HintPath>D:\WDCode\ThirdParty\NPOI\dotnet4\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPI">
+      <HintPath>D:\Revit_Tool\Autodesk\Revit 2014\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>D:\Revit_Tool\Autodesk\Revit 2014\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -45,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="D:\project\FileImportDialog.cs">
       <SubType>Form</SubType>
@@ -54,6 +71,17 @@
       <DependentUpon>FileImportDialog.cs</DependentUpon>
       <Link>UI\FileImportDialog.Designer.cs</Link>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ImageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ImageForm.Designer.cs">
+      <DependentUpon>ImageForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\InfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -62,12 +90,21 @@
     </Compile>
     <Compile Include="Util\ExcelReader.cs" />
     <Compile Include="Util\IExcelReader.cs" />
+    <Compile Include="Util\Logger.cs" />
+    <Compile Include="Util\MysqlUtil.cs" />
     <Compile Include="Util\SheetInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="D:\project\FileImportDialog.resx">
       <DependentUpon>FileImportDialog.cs</DependentUpon>
       <Link>UI\FileImportDialog.resx</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ImageForm.resx">
+      <DependentUpon>ImageForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\InfoForm.resx">
       <DependentUpon>InfoForm.cs</DependentUpon>

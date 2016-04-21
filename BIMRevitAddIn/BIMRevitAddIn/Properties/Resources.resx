@@ -117,10 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="PropertyName.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="PropertyValue.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
+  <data name="Alert_Sum" xml:space="preserve">
+    <value>50</value>
+    <comment>报警阈值,累计值</comment>
+  </data>
+  <data name="Alert_Value" xml:space="preserve">
+    <value>30</value>
+    <comment>报警阈值,相邻差值</comment>
+  </data>
+  <data name="String_ServerPath" xml:space="preserve">
+    <value />
+    <comment>服务器路径</comment>
+  </data>
+  <data name="String_TabName" xml:space="preserve">
+    <value>慧之建插件</value>
+    <comment>tab名称</comment>
+  </data>
 </root>
