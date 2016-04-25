@@ -61,7 +61,7 @@ namespace BIMRevitAddIn.Properties {
         }
         
         /// <summary>
-        ///   查找类似 50 的本地化字符串。
+        ///   查找类似 10 的本地化字符串。
         /// </summary>
         internal static string Alert_Sum {
             get {
@@ -70,7 +70,7 @@ namespace BIMRevitAddIn.Properties {
         }
         
         /// <summary>
-        ///   查找类似 30 的本地化字符串。
+        ///   查找类似 1 的本地化字符串。
         /// </summary>
         internal static string Alert_Value {
             get {
@@ -79,7 +79,52 @@ namespace BIMRevitAddIn.Properties {
         }
         
         /// <summary>
-        ///   查找类似  的本地化字符串。
+        ///   查找类似 root 的本地化字符串。
+        /// </summary>
+        internal static string Df_Pass {
+            get {
+                return ResourceManager.GetString("Df_Pass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 root 的本地化字符串。
+        /// </summary>
+        internal static string Df_User {
+            get {
+                return ResourceManager.GetString("Df_User", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 utf8 的本地化字符串。
+        /// </summary>
+        internal static string Server_CharSet {
+            get {
+                return ResourceManager.GetString("Server_CharSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 3306 的本地化字符串。
+        /// </summary>
+        internal static string Server_Port {
+            get {
+                return ResourceManager.GetString("Server_Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 hzj 的本地化字符串。
+        /// </summary>
+        internal static string String_ServerName {
+            get {
+                return ResourceManager.GetString("String_ServerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 127.0.0.1 的本地化字符串。
         /// </summary>
         internal static string String_ServerPath {
             get {

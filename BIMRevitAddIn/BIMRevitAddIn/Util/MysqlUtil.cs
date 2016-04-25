@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using Res = BIMRevitAddIn.Properties.Resources;
+using BIMRevitAddIn.UI;
 
 namespace BIMRevitAddIn.Util
 {
@@ -13,17 +15,17 @@ namespace BIMRevitAddIn.Util
         //单例模式
         private static MysqlUtil mysqlUtil;
         //server地址
-        private String server;
+       // private String server;
         //数据库
-        private String database;
+       // private String database;
         //用户名
-        private String user;
+        private static String user;
         //密码
-        private String password;
+        private static String password;
         //端口
-        private int port = 3306;
+       // private int port = 3306;
         //MySql编码
-        private String charset = "utf8";
+       // private String charset = "utf8";
         //连接
         private MySqlConnection conn;
         //是否连接的标志符
@@ -32,29 +34,42 @@ namespace BIMRevitAddIn.Util
         private MySqlTransaction myTran;
         //
         //连接信息，用于属性面板绑定数据源
-        private string serverPath;
-        public string ServerPath
+        private static string serverPath;
+        public static  string ServerPath
         {
             get
             {
-                return this.serverPath;
+                return serverPath;
             }
         }
         //单例模式
-        public static MysqlUtil CreateInstance(String server, String user, String database, String password) {
+        public static MysqlUtil CreateInstance() {
             if (null == mysqlUtil) {
-                mysqlUtil = new MysqlUtil(server, user, database, password);
+                LoginForm login = new LoginForm();
+                
+                if (login.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                    user = login.User;
+                    password = login.Password;
+                }
+                if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
+                {
+
+                    mysqlUtil = new MysqlUtil(user, password);
+                }
+                else {
+                    mysqlUtil = new MysqlUtil(Res.Df_User, Res.Df_Pass);
+                }
             }
             return mysqlUtil;
         }
         //初始化
-        private MysqlUtil(String server, String user, String database, String password) {
-            this.server = server;
-            this.user = user;
-            this.database = database;
-            this.password = password;
-            this. //指明要连接的数据库地址，用户名，数据库名，端口，密码
-            serverPath = "server=" + this.server + ";user=" + this.user + ";database=" + this.database + ";port=" + this.port + ";password=" + this.password + ";charset=" + this.charset;
+        private MysqlUtil( String user, String password) {
+
+            MysqlUtil.user = user;
+
+            MysqlUtil.password = password;
+            //指明要连接的数据库地址，用户名，数据库名，端口，密码
+            serverPath = "server=" + Res.String_ServerPath + ";user=" + user + ";database=" + Res.String_ServerName + ";port=" + Res.Server_Port + ";password=" + password + ";charset=" + Res.Server_CharSet;
 
         }
        
@@ -509,33 +524,9 @@ namespace BIMRevitAddIn.Util
             catch { throw; }
             return id;
         }
-
-/*        
-                //查询数据，返回查询结果
-                public void select(String cx, String type)
-                {
-                    //查询单个CX测斜
-                    String sql_singlecx = "select ENTITY, DATE, MAX(VALUE), ENTITYREMARK from InclinationTable it,EntityTable et"+
-                                          "where it.ID_ENTITY=et.ID and et.ENTITY=" + cx +
-                                          "group by DATE" +
-                                          "order by DATE ASC";
-
-                   
-
-                    //查询“基础构件”表中所有数据
-                    String sql_bct = "select ENTITY,  from BaseComponentTable bct,FrameTable ft,EntityTable et";
-
-                }
-
-                //数据转存功能***************
-                public void saveas()
-                {
-
-                }
-         */
         
         //*****注意，sql语句多行写的话，开始要注意留空格*******
-        //查询基础数据
+  /*      //查询基础数据
         public Dictionary<string, Dictionary<string, string>> SelectBaseData(String Entity)
         {
             Dictionary<string, Dictionary<string, string>> Data_Base = new Dictionary<string, Dictionary<string, string>>();
@@ -604,11 +595,10 @@ namespace BIMRevitAddIn.Util
             }
 
         }
-
-        //查询单个CX某日期的测斜数据，返回键值对<日期，<属性，数据>>
-        public Dictionary<DateTime, Dictionary<string, float>> SelectOneDateData(string Entity, DateTime date)
-        {
-            Dictionary<DateTime, Dictionary<string, float>> Data_CX = new Dictionary<DateTime, Dictionary<string, float>>();
+*/
+        //查询单个CX某日期的测斜数据，返回键值对<属性，数据>
+        public Dictionary<string, float> SelectOneDateData(string Entity, DateTime date)
+        {            
             Dictionary<string, float> data = new Dictionary<string, float>();
 
             String sql = String.Format("select it.DATE,cast(ft.COLUMNNAME as DECIMAL(4,2)),cast(it.VALUE as DECIMAL(5,2)) from InclinationTable it,FrameTable ft,EntityTable et "
@@ -625,8 +615,7 @@ namespace BIMRevitAddIn.Util
                         data.Add(reader.GetString(1), reader.GetFloat(2));       
                     }
                 }
-                Data_CX.Add(date, data);
-                return Data_CX;
+                return data;
             }
             catch (Exception e)
             {
@@ -639,12 +628,10 @@ namespace BIMRevitAddIn.Util
 
         }
 
-        //查询所有CX测斜汇总，返回键值对<实体名，<日期，数据>>
-        public Dictionary<string, Dictionary<DateTime, float>> SelectOneCXData(string entity)
-        {
-
-            Dictionary<string, Dictionary<DateTime, float>> Data_CX = new Dictionary<string, Dictionary<DateTime, float>>();
-            Dictionary<DateTime, float> data = new Dictionary<DateTime, float>();
+        //查询所有CX测斜汇总，返回键值对<日期，数据>
+        public Dictionary<string, float> SelectOneCXData(string entity)
+        {           
+            Dictionary<string, float> data = new Dictionary<string, float>();
 
             //用cast()函数将string类型转换为浮点数，在用MAX()函数
             String sql = String.Format("select et.ENTITY, it.DATE, MAX(cast(it.VALUE as DECIMAL(5,2))) from InclinationTable it,EntityTable et,TypeTable tt " 
@@ -659,13 +646,18 @@ namespace BIMRevitAddIn.Util
                 while (reader.Read())
                 {
                     if (reader.HasRows)
-                    {                                                                   
-                         data.Add(reader.GetDateTime(1), reader.GetFloat(2));   
+                    {
+                        DateTime dateTime = reader.GetDateTime(1);
+                        string str = dateTime.ToShortDateString();
+                        if (dateTime.Hour >= 12)
+                        {
+                            str += "pm";
+                        }
+                         data.Add(str, reader.GetFloat(2));   
                           
                      }
                 }
-                Data_CX.Add(entity, data);
-                return Data_CX;
+                return data;
             }
             catch (Exception e)
             {

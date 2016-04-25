@@ -117,40 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Alert_Sum" xml:space="preserve">
-    <value>10</value>
-    <comment>报警阈值,累计值</comment>
-  </data>
-  <data name="Alert_Value" xml:space="preserve">
-    <value>1</value>
-    <comment>报警阈值,相邻差值</comment>
-  </data>
-  <data name="Df_Pass" xml:space="preserve">
-    <value>root</value>
-    <comment>数据库默认密码</comment>
-  </data>
-  <data name="Df_User" xml:space="preserve">
-    <value>root</value>
-    <comment>数据库默认用户名</comment>
-  </data>
-  <data name="Server_CharSet" xml:space="preserve">
-    <value>utf8</value>
-    <comment>服务器字符编码</comment>
-  </data>
-  <data name="Server_Port" xml:space="preserve">
-    <value>3306</value>
-    <comment>连接端口</comment>
-  </data>
-  <data name="String_ServerName" xml:space="preserve">
-    <value>hzj</value>
-    <comment>数据库名称</comment>
-  </data>
-  <data name="String_ServerPath" xml:space="preserve">
-    <value>127.0.0.1</value>
-    <comment>服务器路径</comment>
-  </data>
-  <data name="String_TabName" xml:space="preserve">
-    <value>慧之建插件</value>
-    <comment>tab名称</comment>
-  </data>
 </root>
