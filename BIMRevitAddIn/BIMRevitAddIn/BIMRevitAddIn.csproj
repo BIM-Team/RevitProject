@@ -61,13 +61,11 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="D:\project\FileImportDialog.cs">
+    <Compile Include="UI\FileImportDialog.cs">
       <SubType>Form</SubType>
-      <Link>UI\FileImportDialog.cs</Link>
     </Compile>
-    <Compile Include="D:\project\FileImportDialog.Designer.cs">
+    <Compile Include="UI\FileImportDialog.Designer.cs">
       <DependentUpon>FileImportDialog.cs</DependentUpon>
-      <Link>UI\FileImportDialog.Designer.cs</Link>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -99,9 +97,8 @@
     <Compile Include="Util\SheetInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="D:\project\FileImportDialog.resx">
+    <EmbeddedResource Include="UI\FileImportDialog.resx">
       <DependentUpon>FileImportDialog.cs</DependentUpon>
-      <Link>UI\FileImportDialog.resx</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
