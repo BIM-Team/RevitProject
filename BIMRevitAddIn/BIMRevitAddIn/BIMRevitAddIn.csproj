@@ -42,12 +42,10 @@
       <HintPath>D:\WDCode\ThirdParty\NPOI\dotnet4\NPOI.OOXML.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPI">
-      <HintPath>D:\Revit_Tool\Autodesk\Revit 2014\RevitAPI.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>D:\revit_root\Revit 2014\RevitAPI.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>D:\Revit_Tool\Autodesk\Revit 2014\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>D:\revit_root\Revit 2014\RevitAPIUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
