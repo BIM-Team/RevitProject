@@ -1,4 +1,4 @@
-﻿namespace Revit.Addin.RevitTooltip.UI.test
+﻿namespace Revit.Addin.RevitTooltip.UI
 {
     partial class ImageForm
     {

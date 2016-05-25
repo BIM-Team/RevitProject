@@ -6,7 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Revit.Addin.RevitTooltip.UI.test
+namespace Revit.Addin.RevitTooltip.UI
 {
     public partial class ImageForm : Form
     {
