@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using MySql.Data.MySqlClient;
-using static Revit.Addin.RevitTooltip.App;
 
 namespace Revit.Addin.RevitTooltip.Util
 {
@@ -11,9 +10,9 @@ namespace Revit.Addin.RevitTooltip.Util
         //单例模式
         private static MysqlUtil mysqlUtil;
         //用户名
-       // private static String user;
+        // private static String user;
         //密码
-       // private static String password;
+        // private static String password;
         //settings
         private static RevitTooltip settings;
         //连接
@@ -33,7 +32,7 @@ namespace Revit.Addin.RevitTooltip.Util
         //    }
         //}
 
-       
+
         //单例模式
         public static MysqlUtil CreateInstance(RevitTooltip settings)
         {
@@ -41,13 +40,23 @@ namespace Revit.Addin.RevitTooltip.Util
             {
                 mysqlUtil = new MysqlUtil(settings);
             }
-            else if (MysqlUtil.settings != settings) {
+            else if (MysqlUtil.settings != settings)
+            {
                 mysqlUtil.Dispose();
                 MysqlUtil.settings = settings;
                 mysqlUtil = new MysqlUtil(settings);
             }
             return mysqlUtil;
         }
+        ////测试
+        //public static MysqlUtil CreateInstance()
+        //{
+
+        //    mysqlUtil = new MysqlUtil(settings);
+
+        //    return mysqlUtil;
+        //}
+
         //初始化
         private MysqlUtil(RevitTooltip settings)
         {
@@ -60,13 +69,13 @@ namespace Revit.Addin.RevitTooltip.Util
 
         }
 
-
         //建立mysql数据库连接
         public void OpenConnect()
         {
             if (null == conn)
             {
                 conn = new MySqlConnection("server=" + settings.DfServer + ";user=" + settings.DfUser + ";database=" + settings.DfDB + ";port=" + settings.DfPort + ";password=" + settings.DfPassword + ";charset=" + settings.DfCharset);  //实例化连接
+                //conn = new MySqlConnection("server= 127.0.0.1 ;user= hzjuser; database= hzj ;port= 3306;password= hzj20160330;charset= utf8");  //实例化连接          
             }
             conn.Open();
             this.isOpen = true;
@@ -215,43 +224,57 @@ namespace Revit.Addin.RevitTooltip.Util
         //插入属性，FrameTable表，并返回当前表的属性及对应ID，<属性，ID>
         private Dictionary<string, int> InsertIntoFrameType(List<string> Names, int IdType)
         {
-            Dictionary<string, int> CurrentTableColumns = new Dictionary<string, int>();
-            Dictionary<string, int> PeriousColumns = SelectPeriousColumnNames(IdType);
-
+            Dictionary<string, int> PeriousColumns = SelectColumnNames(IdType);
+            String sql = "";
+            int n = 0;
             foreach (string name in Names)
             {
-
-                if (PeriousColumns.Keys.Contains(name))
+                //如果没有在原表中匹配到，则添加到插入语句当中
+                if (!PeriousColumns.Keys.Contains(name))
                 {
-                    CurrentTableColumns.Add(name, PeriousColumns[name]);
-                }
-                else
-                {
-                    //如果没有在原表中匹配到，则插入当中
-                    String sql = GetInsertIntoFrameTableSql(IdType, name);
-                    InsertOne(sql);
-                    int id = getIdFrame(IdType, name);
-                    CurrentTableColumns.Add(name, id);
+                    if (n == 0)
+                        sql = GetInsertIntoFrameTableSql(IdType, name);
+                    else
+                        sql = sql + ",('" + IdType + "','" + name + "')";
+                    n++;
                 }
             }
+            InsertOne(sql);
+            //获取更新后的<属性，ID>
+            Dictionary<string, int> CurrentTableColumns = SelectColumnNames(IdType);
             return CurrentTableColumns;
         }
         //插入实体，EntityTable表
         private Dictionary<string, int> InsertIntoEntityTable(List<string> EntityName, int IdType)
         {
             Dictionary<string, int> UpdateEntities = new Dictionary<string, int>();
-            Dictionary<string, int> PeriousEntities = SelectPeriousEntities(IdType);
+            List<string> UpdateEntityNames = new List<string>();
+            Dictionary<string, int> PeriousEntities = SelectEntities(IdType);
+            String sql = "";
+            int n = 0;
             foreach (string e in EntityName)
             {
+                //如果没有在原表中匹配到，则添加到插入语句当中
                 if (!PeriousEntities.Keys.Contains(e))
                 {
-                    //如果没有在原表中匹配到，则插入当中
-                    String sql = GetInsertIntoEntityTableSql(IdType, e);
-                    InsertOne(sql);
-                    int id = getIdEntity(IdType, e);
-                    UpdateEntities.Add(e, id);
+                    if (n == 0)
+                        sql = GetInsertIntoEntityTableSql(IdType, e);
+                    else
+                        sql = sql + ",('" + IdType + "','" + e + "','" + "')";
+
+                    //UpdateEntityNames.Add(e);                   
+                    n++;
                 }
             }
+            InsertOne(sql);
+
+            //获取当前表所有的Entities
+            foreach (string e in EntityName)
+            {
+                int id = getIdEntity(IdType, e);
+                UpdateEntities.Add(e, id);
+            }
+
             return UpdateEntities;
         }
         //插入数据项，三个数据表BaseComponentTable、wylWallTable、InclinationTable
@@ -259,9 +282,10 @@ namespace Revit.Addin.RevitTooltip.Util
         {
             int IdFrame;
             int IdEntity;
-            String InsertIntoBaseCTableSql;
             int count = sheetInfo.Names.Count;
-
+            List<string> SqlStringList = new List<string>();  // 用来存放多条SQL语句
+            String sql = "";
+            int n = 0;
             foreach (String key in sheetInfo.Data.Keys)
             {
                 if (UpdateEntities.Keys.Contains(key))
@@ -272,20 +296,33 @@ namespace Revit.Addin.RevitTooltip.Util
                         for (int i = 0; i < count; i++)
                         {
                             IdFrame = CurrentTableColumns[sheetInfo.Names.ElementAt(i)];
-                            InsertIntoBaseCTableSql = GetInsertIntoBaseCTableSql(IdFrame, IdEntity, sts[i + 1]);
-                            InsertOne(InsertIntoBaseCTableSql);
+                            if (n % 500 == 0)
+                            {
+                                if (n > 0)
+                                    SqlStringList.Add(sql);
+                                sql = GetInsertIntoBaseCTableSql(IdFrame, IdEntity, sts[i + 1]);
+                            }
+                            else
+                                sql = sql + ",('" + IdFrame + "','" + IdEntity + "','" + sts[i + 1] + "')";
+
+                            n++;
                         }
                     }
                 }
             }
+            if (n % 500 != 0)
+                SqlStringList.Add(sql);  //不够500values的SQL语言也要添加进去
+            InsertSqlStringList(SqlStringList);
         }
         private void InsertIntoWallTable(SheetInfo sheetInfo, Dictionary<string, int> CurrentTableColumns, Dictionary<string, int> UpdateEntities)
         {
             int IdFrame;
             int IdEntity;
-            String InsertIntoWallTableSql;
+            //String InsertIntoWallTableSql;
             int count = sheetInfo.Names.Count;
-
+            List<string> SqlStringList = new List<string>();  // 用来存放多条SQL语句
+            String sql = "";
+            int n = 0;
             foreach (String key in sheetInfo.Data.Keys)
             {
                 if (UpdateEntities.Keys.Contains(key))
@@ -296,20 +333,34 @@ namespace Revit.Addin.RevitTooltip.Util
                         for (int i = 0; i < count; i++)
                         {
                             IdFrame = CurrentTableColumns[sheetInfo.Names.ElementAt(i)];
-                            InsertIntoWallTableSql = GetInsertIntoWallTableSql(IdFrame, IdEntity, sts[i + 1]);
-                            InsertOne(InsertIntoWallTableSql);
+                            if (n % 500 == 0)
+                            {
+                                if (n > 0)
+                                    SqlStringList.Add(sql);
+                                sql = GetInsertIntoWallTableSql(IdFrame, IdEntity, sts[i + 1]);
+                            }
+                            else
+                                sql = sql + ",('" + IdFrame + "','" + IdEntity + "','" + sts[i + 1] + "')";
+
+                            n++;
+                            //InsertIntoWallTableSql = GetInsertIntoWallTableSql(IdFrame, IdEntity, sts[i + 1]);
+                            //InsertOne(InsertIntoWallTableSql);
                         }
                     }
                 }
             }
+            if (n % 500 != 0)
+                SqlStringList.Add(sql);  //不够100values的SQL语言也要添加进去
+            InsertSqlStringList(SqlStringList);
         }
         private void InsertIntoInclinationTable(SheetInfo sheetInfo, Dictionary<string, int> CurrentTableColumns, Dictionary<string, int> UpdateEntities, int IdType)
         {
             int IdFrame;
             int IdEntity;
-            String InsertIntoInclinationTableSql;
             int count = sheetInfo.Names.Count;
-
+            List<string> SqlStringList = new List<string>();  // 用来存放多条SQL语句
+            String sql = "";
+            int n = 0;
             foreach (String key in sheetInfo.Data.Keys)
             {
                 //对于测斜数据，一个实体数据是一个表，实体表如果有更新，则在InsertIntoInclinationTable插入该实体对应的一个表的数据
@@ -321,10 +372,20 @@ namespace Revit.Addin.RevitTooltip.Util
                         for (int i = 0; i < count; i++)
                         {
                             IdFrame = CurrentTableColumns[sheetInfo.Names.ElementAt(i)];
-                            InsertIntoInclinationTableSql = GetInsertIntoInclinationTableSql(IdFrame, IdEntity, DateTime.Parse(sts[0]), sts[i + 1]);
-                            InsertOne(InsertIntoInclinationTableSql);
+                            if (n % 500 == 0)
+                            {
+                                if (n > 0)
+                                    SqlStringList.Add(sql);
+                                sql = GetInsertIntoInclinationTableSql(IdFrame, IdEntity, DateTime.Parse(sts[0]),sts[i + 1]);
+                            }
+                            else
+                                sql = sql + ",('" + IdFrame + "','" + IdEntity + "','" + DateTime.Parse(sts[0]) + "','" + sts[i + 1]+ "')";
+
+                            n++;
+
                         }
                     }
+
                 }
                 else  //实体表如果没有更新，要检查每个实体表中，时间是否增加
                 {
@@ -338,19 +399,32 @@ namespace Revit.Addin.RevitTooltip.Util
                             for (int i = 0; i < count; i++)
                             {
                                 IdFrame = CurrentTableColumns[sheetInfo.Names.ElementAt(i)];
-                                InsertIntoInclinationTableSql = GetInsertIntoInclinationTableSql(IdFrame, IdEntity, DateTime.Parse(sts[0]), sts[i + 1]);
-                                InsertOne(InsertIntoInclinationTableSql);
+                                if (n % 500 == 0)
+                                {
+                                    if (n > 0)
+                                        SqlStringList.Add(sql);
+                                    sql = GetInsertIntoInclinationTableSql(IdFrame, IdEntity, DateTime.Parse(sts[0]),sts[i + 1]);
+                                }
+                                else
+                                    sql = sql + ",('" + IdFrame + "','" + IdEntity + "','" + DateTime.Parse(sts[0]) + "','" + sts[i + 1]+ "')";
+
+                                n++;
+
                             }
                         }
                     }
                 }
             }
+
+            if (n % 500 != 0)
+                SqlStringList.Add(sql);  //不够500values的SQL语言也要添加进去            
+            InsertSqlStringList(SqlStringList);
         }
 
         //获取FrameTable表的COLUMN和ID
-        private Dictionary<string, int> SelectPeriousColumnNames(int IdType)
+        private Dictionary<string, int> SelectColumnNames(int IdType)
         {
-            Dictionary<string, int> PeriousColumnNames = new Dictionary<string, int>();
+            Dictionary<string, int> ColumnNames = new Dictionary<string, int>();
             String sql = "select COLUMNNAME, ID from FrameTable where ID_TYPE = " + IdType;
 
             MySqlCommand mycom = new MySqlCommand(sql, this.conn, myTran);  //建立执行命令语句对象
@@ -361,10 +435,10 @@ namespace Revit.Addin.RevitTooltip.Util
                 {
                     if (reader.HasRows)
                     {
-                        PeriousColumnNames.Add(reader.GetString(0), reader.GetInt32(1));
+                        ColumnNames.Add(reader.GetString(0), reader.GetInt32(1));
                     }
                 }
-                return PeriousColumnNames;
+                return ColumnNames;
             }
             catch (Exception e)
             {
@@ -376,10 +450,10 @@ namespace Revit.Addin.RevitTooltip.Util
             }
         }
         //获取EntityTable表的ENTITY和ID
-        private Dictionary<string, int> SelectPeriousEntities(int IdType)
+        private Dictionary<string, int> SelectEntities(int IdType)
         {
-            Dictionary<string, int> PeriousEntities = new Dictionary<string, int>();
-            String sql = "select ENTITY, ID from EntityTable where ID_TYPE = " + IdType;
+            Dictionary<string, int> Entities = new Dictionary<string, int>();
+            String sql = "select distinct ENTITY, ID from EntityTable where ID_TYPE = " + IdType;
 
             MySqlCommand mycom = new MySqlCommand(sql, this.conn, myTran);  //建立执行命令语句对象
             MySqlDataReader reader = mycom.ExecuteReader();    //需要关闭
@@ -389,10 +463,11 @@ namespace Revit.Addin.RevitTooltip.Util
                 {
                     if (reader.HasRows)
                     {
-                        PeriousEntities.Add(reader.GetString(0), reader.GetInt32(1));
+                        //这里如果添加了相同的项会出错，所以entity一定要唯一
+                        Entities.Add(reader.GetString(0), reader.GetInt32(1));
                     }
                 }
-                return PeriousEntities;
+                return Entities;
             }
             catch (Exception e)
             {
@@ -431,10 +506,35 @@ namespace Revit.Addin.RevitTooltip.Util
                 reader.Close();
             }
         }
+        //执行批量插入
+        private void InsertSqlStringList(List<string> SqlStringList)
+        {
+            MySqlCommand command = new MySqlCommand();
+            command.Connection = this.conn;
+            command.Transaction = myTran;
+            //int affectedRows = 0;
+            try
+            {
+                for (int i = 0; i < SqlStringList.Count; i++)
+                {
+                    string sql = SqlStringList[i].ToString();
+                    if (sql.Equals(""))
+                        return;
+                    command.CommandText = sql;
+                    command.ExecuteNonQuery();
 
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
         //执行单个插入语句，返回插入结果
         private void InsertOne(String sql)
         {
+            if (sql.Equals(""))
+                return;
             MySqlCommand mycom = new MySqlCommand(sql, this.conn, myTran);  //建立执行命令语句对象，其中myTran为事务
 
             try
@@ -446,6 +546,22 @@ namespace Revit.Addin.RevitTooltip.Util
                 throw e;
             }
         }
+        ////根据参数，执行单个插入语句，返回影响的行数
+        //private int Insert(String sql, MySqlParameter[] parameters)
+        //{
+        //    int affectedRows = 0;
+        //    //建立执行命令语句对象，其中myTran为事务
+        //    using (MySqlCommand command = new MySqlCommand(sql, this.conn, myTran))
+        //    {
+        //        command.CommandText = sql;
+        //        if (parameters != null)
+        //        {
+        //            command.Parameters.AddRange(parameters);
+        //        }
+        //        affectedRows = command.ExecuteNonQuery();
+        //    }
+        //    return affectedRows;
+        //}
 
         //获取向表TypeTable中插入数据的sql查询语句
         private String GetInsertIntoTypeTableSql(String tableType, String tableRemark = "")
@@ -462,7 +578,7 @@ namespace Revit.Addin.RevitTooltip.Util
         //获取向表EntityTable中插入数据的sql查询语句
         private String GetInsertIntoEntityTableSql(int idType, String Entity, String EntityColumn = "测点编号", String EntityRemark = "")
         {
-            String sql = String.Format("insert into EntityTable ( ID_TYPE, ENTITY, ENTITYCOLUMN, ENTITYREMARK ) values ('{0}','{1}','{2}','{3}')", idType, Entity, EntityColumn, EntityRemark);
+            String sql = String.Format("insert into EntityTable ( ID_TYPE, ENTITY, ENTITYREMARK ) values ('{0}','{1}','{2}')", idType, Entity, EntityRemark);
             return sql;
         }
         //获取向表BaseComponentTable中插入数据的sql查询语句
@@ -518,7 +634,7 @@ namespace Revit.Addin.RevitTooltip.Util
         }
 
         //*****注意，sql语句多行写的话，开始要注意留空格*******
-       
+
         //查询单个CX某日期的测斜数据，返回键值对<属性，数据>
         public Dictionary<string, float> SelectOneDateData(string Entity, DateTime date)
         {
@@ -551,7 +667,7 @@ namespace Revit.Addin.RevitTooltip.Util
 
         }
 
-        //查询所有CX测斜汇总，返回键值对<日期，数据>
+        //查询单个CX连续的测量结果（每个测量日期最大值），返回键值对<日期，数据>
         public Dictionary<string, float> SelectOneCXData(string entity)
         {
             Dictionary<string, float> data = new Dictionary<string, float>();
@@ -561,7 +677,8 @@ namespace Revit.Addin.RevitTooltip.Util
                           + " where it.ID_ENTITY=et.ID and et.ID_TYPE=tt.ID and tt.TYPENAME= '测斜汇总' and et.ENTITY='{0}' "
                           + " group by ENTITY,DATE "
                           + " order by ENTITY,DATE ", entity);
-            if (!mysqlUtil.isOpen) {
+            if (!mysqlUtil.isOpen)
+            {
                 mysqlUtil.OpenConnect();
             }
             MySqlCommand mycom = new MySqlCommand(sql, this.conn);  //建立执行命令语句对象
@@ -596,10 +713,10 @@ namespace Revit.Addin.RevitTooltip.Util
 
 
         //根据Entity名，查询基础数据和地墙数据，
-        public List<ParameterData> SelectEntityData(string entity)
+        public List<App.ParameterData> SelectEntityData(string entity)
         {
-            List<ParameterData> list = new List<ParameterData>();
-            list.Add(new ParameterData("测点编号", entity));
+            List<App.ParameterData> list = new List<App.ParameterData>();
+            list.Add(new App.ParameterData("测点编号", entity));
             string sql = String.Format("select BaseWallView.ColumnName, BaseWallView.Value,BaseWallView.FrameID from BaseWallView where BaseWallView.Entity = '{0}' order by BaseWallView.FrameID ", entity);
             string sql2 = String.Format("select ENTITYREMARK from EntityTable where ENTITY = '{0}'", entity);
             //判断数据库是否打开
@@ -616,11 +733,11 @@ namespace Revit.Addin.RevitTooltip.Util
                 {
                     if (reader.HasRows)
                     {
-                        list.Add(new ParameterData(reader.GetString(0), reader.GetString(1)));
+                        list.Add(new App.ParameterData(reader.GetString(0), reader.GetString(1)));
                     }
                 }
                 reader.Close();
-                list.Add(new ParameterData("备注", Convert.ToString(mycom2.ExecuteScalar())));
+                list.Add(new App.ParameterData("备注", Convert.ToString(mycom2.ExecuteScalar())));
                 return list;
             }
             catch (Exception e)
@@ -634,9 +751,6 @@ namespace Revit.Addin.RevitTooltip.Util
                 Close();
             }
         }
-
-
-
 
 
         //根据entity,修改备注
@@ -664,8 +778,21 @@ namespace Revit.Addin.RevitTooltip.Util
             {
                 Close();
             }
-        
+        }
 
+        //读取各表数据来更新给SQLite数据库*******************************************
+        public MySqlDataReader SelectTable(string tablename)
+        {
+            string sql = "select * from " + tablename;
+            //判断数据库是否打开
+            if (!this.isOpen)
+            {
+                OpenConnect();
+            }
+            MySqlCommand mycom = new MySqlCommand(sql, this.conn);  //建立执行命令语句对象
+            MySqlDataReader reader = mycom.ExecuteReader();    //需要关闭
+
+            return reader;
         }
     }
 }

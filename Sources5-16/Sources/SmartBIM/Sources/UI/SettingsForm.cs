@@ -58,6 +58,7 @@ namespace Revit.Addin.RevitTooltip
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
+            buttonOK.Enabled = false;
             try
             {
                 RevitTooltip settings = ExtensibleStorage.GetTooltipInfo(m_doc.ProjectInformation);
