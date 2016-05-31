@@ -11,6 +11,7 @@ using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 using System.Windows.Media.Imaging;
 using System.Diagnostics;
 using Revit.Addin.RevitTooltip.Util;
+using Revit.Addin.RevitTooltip.UI;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -44,6 +45,10 @@ namespace Revit.Addin.RevitTooltip
         /// 点击显示属性面板
         /// </summary>
         internal PushButton ElementInfoButton { get; set; }
+        /// <summary>
+        /// 点击弹出折线图面板
+        /// </summary>
+        internal PushButton SurveyImageInfoButton { get; set; }
    
         /// <summary>
         /// 点击重新加载
@@ -97,6 +102,16 @@ namespace Revit.Addin.RevitTooltip
                 ElementInfoButton.ToolTip = Res.CommandDescription_TooltipOn;
                 ElementInfoButton.SetContextualHelp(cHelp);
                 // Tooltip off 
+                ribbonPanel.AddSeparator();
+                SurveyImageInfoButton= (PushButton)ribbonPanel.AddItem(
+                    new PushButtonData("SurveyImageInfo", Res.Command_SurveyImageInfo,
+                        addinAssembly, "Revit.Addin.RevitTooltip.CmdSurveyImageInfo"));
+                  image = Utils.ConvertFromBitmap(Res.tooltip_on.ToBitmap());
+                SurveyImageInfoButton.Image = SurveyImageInfoButton.LargeImage = image;
+                SurveyImageInfoButton.ToolTip = Res.CommandDescription_SurveyImage;
+                SurveyImageInfoButton.SetContextualHelp(cHelp);
+
+            //
                 ribbonPanel.AddSeparator();
 
                 ReloadExcelDataButton = (PushButton)ribbonPanel.AddItem(
@@ -239,34 +254,44 @@ namespace Revit.Addin.RevitTooltip
                 if (selectElement != null)
                 {
                     entity = Utils.GetParameterValueAsString(selectElement, Res.String_ParameterName);
+                    if (!string.IsNullOrEmpty(entity)) {
                     isSurvey= ElementInfoUtils.IsSurvey(selectElement);
                     mysql = MysqlUtil.CreateInstance(ExtensibleStorage.GetTooltipInfo(this.currentDoc.ProjectInformation));
                     if (m_selectedElementId != selectElement.Id.IntegerValue)
                     {
                         m_selectedElementId = selectElement.Id.IntegerValue;
+                       // isSurvey = true;
                         if (!isSurvey)
                         {//不是测量数据
-                            List<ParameterData> parameterDataList= mysql.SelectEntityData("A1");
+                            List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
+                            //List<ParameterData> parameterDataList= mysql.SelectEntityData("A1");
                             List<ParameterData> parameterDataList1 = parameterDataList;
                             ElementInfoPanel.GetInstance().Update(parameterDataList);
                         }
                         else
                         {//测量数据绘制折线图
-                          ///
-                          ///
-                          ///
-                          ///
-                           
+                         ///
+                         ///
+                         ///
+                         ///
+                            if (ImageForm.GetInstance().Visible == false) {
+                                ImageForm.GetInstance().Show();
+                            }
+                            ImageForm.GetInstance().EntityName = entity;
+                           // ImageForm.GetInstance().EntityName = "CX1";
 
 
 
 
 
+
+                        
                         }
 
 
                     }
                     
+                    }
                 }
                 else
                 {

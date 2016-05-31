@@ -13,6 +13,7 @@ using Autodesk.Revit.UI.Selection;
 
 using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 using System.Windows.Forms;
+using Revit.Addin.RevitTooltip.UI;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -194,6 +195,17 @@ namespace Revit.Addin.RevitTooltip
         {
             DockablePane panel = commandData.Application.GetDockablePane(new DockablePaneId(ElementInfoPanel.GetInstance().Id));
             panel.Show();
+            commandData.Application.Idling += App.Instance.IdlingHandler;
+            return Result.Succeeded;
+        }
+    }
+
+    [Transaction(TransactionMode.Manual)]
+    public class CmdSurveyImageInfo : TooltipCommandBase
+    {
+        public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            ImageForm.GetInstance().Show();
             commandData.Application.Idling += App.Instance.IdlingHandler;
             return Result.Succeeded;
         }

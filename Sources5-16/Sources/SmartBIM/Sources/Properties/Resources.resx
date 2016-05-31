@@ -222,4 +222,10 @@
     <value>测点</value>
     <comment>Jim: Never change this string!</comment>
   </data>
+  <data name="CommandDescription_SurveyImage" xml:space="preserve">
+    <value>点击，弹出绘制折线图的对话框</value>
+  </data>
+  <data name="Command_SurveyImageInfo" xml:space="preserve">
+    <value>绘制折线图</value>
+  </data>
 </root>

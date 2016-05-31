@@ -89,6 +89,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 绘制折线图 的本地化字符串。
+        /// </summary>
+        internal static string Command_SurveyImageInfo {
+            get {
+                return ResourceManager.GetString("Command_SurveyImageInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 About this application: copyrights, author, vendor and support contact. 的本地化字符串。
         /// </summary>
         internal static string CommandDescription_About {
@@ -139,6 +148,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         internal static string CommandDescription_Settings {
             get {
                 return ResourceManager.GetString("CommandDescription_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击，弹出绘制折线图的对话框 的本地化字符串。
+        /// </summary>
+        internal static string CommandDescription_SurveyImage {
+            get {
+                return ResourceManager.GetString("CommandDescription_SurveyImage", resourceCulture);
             }
         }
         

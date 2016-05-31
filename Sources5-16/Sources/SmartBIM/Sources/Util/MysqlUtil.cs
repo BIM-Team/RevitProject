@@ -32,6 +32,8 @@ namespace Revit.Addin.RevitTooltip.Util
         //        return serverPath;
         //    }
         //}
+
+       
         //单例模式
         public static MysqlUtil CreateInstance(RevitTooltip settings)
         {
@@ -559,7 +561,9 @@ namespace Revit.Addin.RevitTooltip.Util
                           + " where it.ID_ENTITY=et.ID and et.ID_TYPE=tt.ID and tt.TYPENAME= '测斜汇总' and et.ENTITY='{0}' "
                           + " group by ENTITY,DATE "
                           + " order by ENTITY,DATE ", entity);
-
+            if (!mysqlUtil.isOpen) {
+                mysqlUtil.OpenConnect();
+            }
             MySqlCommand mycom = new MySqlCommand(sql, this.conn);  //建立执行命令语句对象
             MySqlDataReader reader = mycom.ExecuteReader();    //需要关闭
             try

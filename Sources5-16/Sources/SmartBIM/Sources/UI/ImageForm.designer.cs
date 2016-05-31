@@ -1,6 +1,6 @@
-﻿namespace Revit.Addin.RevitTooltip.UI.test
+﻿namespace Revit.Addin.RevitTooltip.UI
 {
-    partial class ImageForm
+    partial class ImageForm 
     {
         /// <summary>
         /// Required designer variable.
@@ -13,11 +13,13 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
+            //if (disposing && (components != null))
+            //{
+            //    components.Dispose();
+            //}
+            //base.Dispose(disposing);
+            this.Visible = false;
+            base.Visible = false;
         }
 
         #region Windows Form Designer generated code
@@ -41,7 +43,7 @@
             this.Name = "ImageForm";
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Load += new System.EventHandler(this.ImageForm_Load);
+            this.TopMost = true;
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.ImageForm_Paint);
             this.ResumeLayout(false);
 

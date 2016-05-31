@@ -37,7 +37,7 @@ namespace Revit.Addin.RevitTooltip {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public double AlertNumber {
             get {
                 return ((double)(this["AlertNumber"]));
@@ -49,7 +49,7 @@ namespace Revit.Addin.RevitTooltip {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public double AlertNumberAdd {
             get {
                 return ((double)(this["AlertNumberAdd"]));
@@ -97,7 +97,7 @@ namespace Revit.Addin.RevitTooltip {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("hzjtest")]
+        [global::System.Configuration.DefaultSettingValueAttribute("hzj")]
         public string DfDB {
             get {
                 return ((string)(this["DfDB"]));

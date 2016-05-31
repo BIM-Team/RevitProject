@@ -6,10 +6,11 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Revit.Addin.RevitTooltip.UI.test
+namespace Revit.Addin.RevitTooltip.UI
 {
     public partial class ImageForm : Form
     {
+        private static ImageForm _form=null;
         private MysqlUtil mysql;
         private RevitTooltip settings;
         //实体名称
@@ -21,20 +22,15 @@ namespace Revit.Addin.RevitTooltip.UI.test
                     try
                     {
                         mysql = MysqlUtil.CreateInstance(ExtensibleStorage.GetTooltipInfo(App._app.currentDoc.ProjectInformation));
-                        mysql.OpenConnect();
                         data = mysql.SelectOneCXData(value);
+                        this.Text = value + "的测试数据";
+                        this.entityName = value;
+                        this.Invalidate(this.ClientRectangle);
                     }
                     catch (Exception e)
                     {
                         throw e;
                     }
-                    finally {
-                        mysql.Close();
-                        //mysql.Dispose();
-                            }
-                this.Text = value + "的测试数据";
-                this.entityName = value;
-                    this.Invalidate(this.ClientRectangle);
                 }
               
             }
@@ -47,17 +43,24 @@ namespace Revit.Addin.RevitTooltip.UI.test
         //        this.Invalidate(this.ClientRectangle);
         //    }
         //}
+        public  static ImageForm GetInstance (){
+            if (_form == null)
+            {
+                _form = new ImageForm();
+            }
+            return _form;
+        }
 
-        public ImageForm()
+        private ImageForm()
         {
             settings= ExtensibleStorage.GetTooltipInfo(App._app.currentDoc.ProjectInformation);
             InitializeComponent();
         }
 
-        private void ImageForm_Load(object sender, EventArgs e)
-        {
-           // this.Invalidate(this.ClientRectangle);
-        }
+        //private void ImageForm_Load(object sender, EventArgs e)
+        //{
+        //   // this.Invalidate(this.ClientRectangle);
+        //}
        
 
         private void ImageForm_Paint(object sender, PaintEventArgs e)
@@ -69,7 +72,7 @@ namespace Revit.Addin.RevitTooltip.UI.test
             float width = this.ClientRectangle.Width;
             float startX = 35, endX = width - 10;
             float startY = height - 30, endY =10 ;
-                Font font = new Font("Arial", 9, FontStyle.Regular);
+                Font font = new Font("Arial", 9, System.Drawing.FontStyle.Regular);
             if (null == data || data.Count == 0) {
                 g.DrawString("没有数据", font, Brushes.Black,(startX+endX-g.MeasureString("没有数据",font).Width)/2,(startY+endY)/2);
                 return;
@@ -188,6 +191,6 @@ namespace Revit.Addin.RevitTooltip.UI.test
             }
         }
 
-        
+       
     }
 }
