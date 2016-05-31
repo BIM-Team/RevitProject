@@ -121,7 +121,6 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="ElementInfoUtils.cs" />
     <Compile Include="ExtensibleStorage.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -133,7 +132,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>RevitTooltip.settings</DependentUpon>
     </Compile>
-    <Compile Include="SettingInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\AboutForm.cs">
       <SubType>Form</SubType>

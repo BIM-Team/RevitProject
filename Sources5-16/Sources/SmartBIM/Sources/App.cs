@@ -110,8 +110,7 @@ namespace Revit.Addin.RevitTooltip
                 SurveyImageInfoButton.Image = SurveyImageInfoButton.LargeImage = image;
                 SurveyImageInfoButton.ToolTip = Res.CommandDescription_SurveyImage;
                 SurveyImageInfoButton.SetContextualHelp(cHelp);
-
-            //
+                //
                 ribbonPanel.AddSeparator();
 
                 ReloadExcelDataButton = (PushButton)ribbonPanel.AddItem(
@@ -136,7 +135,6 @@ namespace Revit.Addin.RevitTooltip
                 helpButtonData.ToolTip = Properties.Resources.CommandDescription_Help;
                 helpButtonData.SetContextualHelp(cHelp);
                 ribbonPanel.AddStackedItems(aboutButtonData, helpButtonData);
-
                 return Result.Succeeded;
             
             
@@ -197,21 +195,6 @@ namespace Revit.Addin.RevitTooltip
      
             return Result.Succeeded;
         }
-
-        /// <summary>
-        /// Return a string describing the given element:
-        /// .NET type name,
-        /// category name,
-        /// family and symbol name for a family instance,
-        /// element id and element name.
-        /// </summary>
-        //static SurveyData ElementDescription(
-        //  Element e)
-        //{
-        //    SurveyData pd = new SurveyData();
-        //    return pd;
-        //}
-
         /// <summary>
         /// Idling event handler.
         /// </summary>
@@ -239,11 +222,6 @@ namespace Revit.Addin.RevitTooltip
                 bool isSurvey = false;
                 MysqlUtil mysql = null;
 
-                //SurveyData pd = new SurveyData();
-                //bool underWall = false;
-                //BIMDataRow foundRow = null;
-                //BIMDataRow uwRow = null;
-
                 // ElementInfoPanel
 #if(Since2016)
                 Element selectElement = uidoc.Document.GetElement(uidoc.Selection.GetElementIds().FirstOrDefault());
@@ -255,42 +233,28 @@ namespace Revit.Addin.RevitTooltip
                 {
                     entity = Utils.GetParameterValueAsString(selectElement, Res.String_ParameterName);
                     if (!string.IsNullOrEmpty(entity)) {
-                    isSurvey= ElementInfoUtils.IsSurvey(selectElement);
+                        isSurvey = Res.String_ParameterSurveyType.Equals(selectElement.Name);
                     mysql = MysqlUtil.CreateInstance(ExtensibleStorage.GetTooltipInfo(this.currentDoc.ProjectInformation));
                     if (m_selectedElementId != selectElement.Id.IntegerValue)
                     {
                         m_selectedElementId = selectElement.Id.IntegerValue;
-                       // isSurvey = true;
-                        if (!isSurvey)
+                           // isSurvey = true;
+                            if (!isSurvey)
                         {//不是测量数据
-                            List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
-                            //List<ParameterData> parameterDataList= mysql.SelectEntityData("A1");
-                            List<ParameterData> parameterDataList1 = parameterDataList;
+                           List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
+                               // List<ParameterData> parameterDataList = mysql.SelectEntityData("A1");
+                                List<ParameterData> parameterDataList1 = parameterDataList;
                             ElementInfoPanel.GetInstance().Update(parameterDataList);
                         }
                         else
                         {//测量数据绘制折线图
-                         ///
-                         ///
-                         ///
-                         ///
-                            if (ImageForm.GetInstance().Visible == false) {
-                                ImageForm.GetInstance().Show();
-                            }
+                            //if (ImageForm.GetInstance().Visible == false) {
+                            //    ImageForm.GetInstance().Show();
+                            //}
                             ImageForm.GetInstance().EntityName = entity;
                            // ImageForm.GetInstance().EntityName = "CX1";
-
-
-
-
-
-
-                        
                         }
-
-
                     }
-                    
                     }
                 }
                 else
@@ -329,7 +293,7 @@ namespace Revit.Addin.RevitTooltip
 
         public string GetProductName()
         {
-            return "IsBIMRevitTooltip2014-2016";
+            return "BIMRevit2014-2016";
         }
     }
 }
