@@ -9,6 +9,8 @@ namespace Revit.Addin.RevitTooltip.Util
         //局部变量，临时存放一张sheet
         private SheetInfo sheetInfo;
 
+        //
+       // private string currentPath;
 
         //基础表的路径
         private string _filePath_base;
@@ -45,6 +47,7 @@ namespace Revit.Addin.RevitTooltip.Util
         public ExcelType UseExcelType {
             set {
                 this.excelType = value;
+
             }
         }
 
@@ -262,7 +265,7 @@ namespace Revit.Addin.RevitTooltip.Util
             if (!isOpen) {
                 OpenExcel(path);
             }
-            return excel.GetSheetCount();
+            return excel.GetSheetCount() + (excel.Xlsx?1:0);
         }
         private void OpenExcel(string path) {//文件是否已经打开
             try

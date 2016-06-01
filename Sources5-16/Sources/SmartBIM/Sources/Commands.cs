@@ -100,10 +100,10 @@ namespace Revit.Addin.RevitTooltip
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = Res.String_SelectExcelFile;
-            ofd.DefaultExt = ".xlsx";
+            ofd.DefaultExt = ".xls";
             ofd.FilterIndex = 0;
             ofd.RestoreDirectory = true;
-            ofd.Filter = "Excel Workbook(*.xlsx)|*.xlsx|Excel 97-2003 Workbook(*.xls)|*.xls";
+            ofd.Filter = "Excel 97-2003 Workbook(*.xls)|*.xls";
             ofd.Multiselect = false;
             if (ofd.ShowDialog() == DialogResult.OK)
             {

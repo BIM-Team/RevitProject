@@ -80,6 +80,8 @@ namespace Revit.Addin.RevitTooltip
                 groupBox5.Visible = true;
                 progressBar.Visible = true;
                 ExcelReader excel =new  ExcelReader();
+                ExcelReader excel1 = new ExcelReader();
+                ExcelReader excel2 = new ExcelReader();
                 if (!string.IsNullOrEmpty(settings.SurveyFile)) {
                     groupBox5.Text = "现在正在导入测量数据";
                     excel.FilePath_Data = settings.SurveyFile;
@@ -97,9 +99,10 @@ namespace Revit.Addin.RevitTooltip
                 {
                     groupBox5.Text = "现在正在导入基础数据";
                     progressBar.Value = 34;
-                    excel.FilePath_base = settings.FoundationFile;
-                    excel.UseExcelType = ExcelType.BaseExcel;
-                    List<SheetInfo> sheets = excel.getSheetInfo_Range(0, excel.getSheetCount());
+                    excel1.FilePath_base = settings.FoundationFile;
+                    excel1.UseExcelType = ExcelType.BaseExcel;
+
+                    List<SheetInfo> sheets = excel1.getSheetInfo_Range(0, excel1.getSheetCount());
                     foreach (SheetInfo sheet in sheets)
                     {
                         MysqlUtil.CreateInstance(settings).InsertSheetInfo(sheet);
@@ -114,9 +117,9 @@ namespace Revit.Addin.RevitTooltip
                 {
                     groupBox5.Text = "现在正在导入城墙数据";
                     progressBar.Value = 67;
-                    excel.FilePath_Wall = settings.UnderWallFile;
-                    excel.UseExcelType = ExcelType.WallExcel;
-                    List<SheetInfo> sheets = excel.getSheetInfo_Range(0, excel.getSheetCount());
+                    excel2.FilePath_Wall = settings.UnderWallFile;
+                    excel2.UseExcelType = ExcelType.WallExcel;
+                    List<SheetInfo> sheets = excel2.getSheetInfo_Range(0, excel2.getSheetCount());
                     foreach (SheetInfo sheet in sheets)
                     {
                         MysqlUtil.CreateInstance(settings).InsertSheetInfo(sheet);
