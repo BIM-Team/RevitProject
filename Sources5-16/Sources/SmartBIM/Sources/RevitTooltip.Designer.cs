@@ -22,7 +22,18 @@ namespace Revit.Addin.RevitTooltip {
                 return defaultInstance;
             }
         }
-        
+        public override bool Equals(object obj)
+        {
+            RevitTooltip o = (RevitTooltip)obj;
+
+            return this.DfDB.Equals(o.DfDB)&&this.DfPassword.Equals(o.DfPassword)
+                &&this.DfServer.Equals(o.DfServer)&&this.DfUser.Equals(o.DfUser)&&
+                this.DfPort.Equals(o.DfPort);
+        }
+        public override int GetHashCode()
+        {
+            return (this.DfDB+this.DfPassword+this.DfServer+this.DfUser+this.DfPort).GetHashCode();
+        }
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("施工BIM数据-检测.xlsx")]

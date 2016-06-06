@@ -102,6 +102,9 @@
       <HintPath>..\ThirdParty\Revit\2014\RevitAPIUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\ThirdParty\Sqlite\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http">
       <HintPath>..\Bin\2014\System.Net.Http.dll</HintPath>
     </Reference>
@@ -166,6 +169,7 @@
     <Compile Include="Util\IMysqlUtil.cs" />
     <Compile Include="Util\MysqlUtil.cs" />
     <Compile Include="Util\SheetInfo.cs" />
+    <Compile Include="Util\SQLiteHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

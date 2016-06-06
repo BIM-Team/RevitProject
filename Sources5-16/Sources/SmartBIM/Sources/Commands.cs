@@ -14,6 +14,8 @@ using Autodesk.Revit.UI.Selection;
 using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 using System.Windows.Forms;
 using Revit.Addin.RevitTooltip.UI;
+using Revit.Addin.RevitTooltip;
+using Revit.Addin.RevitTooltip.Util;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -128,10 +130,8 @@ namespace Revit.Addin.RevitTooltip
         {
             try
             {
-                //if (!SettingInfo.Instance.Refresh(commandData.Application.ActiveUIDocument.Document))
-                //{
-                //    MessageBox.Show("刷新数据失败" + SettingInfo.Instance.ErrorMessage);
-                //}
+                SQLiteHelper.CreateInstance().UpdateDB();
+                MessageBox.Show("数据更新成功");
                 return Result.Succeeded;
             }
             catch (Exception ex)
@@ -205,7 +205,7 @@ namespace Revit.Addin.RevitTooltip
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            ImageForm.GetInstance().Show();
+            ImageForm.GetInstance(App.settings).Show();
             commandData.Application.Idling += App.Instance.IdlingHandler;
             return Result.Succeeded;
         }

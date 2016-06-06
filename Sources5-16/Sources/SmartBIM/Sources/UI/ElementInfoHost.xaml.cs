@@ -33,7 +33,7 @@ namespace Revit.Addin.RevitTooltip
                 var comment = parameters.FirstOrDefault(p => p.Name == "备注").Value;
                 if (comment != null)
                 {
-                    if (!MysqlUtil.CreateInstance(ExtensibleStorage.GetTooltipInfo(App._app.currentDoc.ProjectInformation)).ModifyEntityRemark(entity,comment))
+                    if (!MysqlUtil.CreateInstance().ModifyEntityRemark(entity,comment))
                     {
                         MessageBox.Show("更新注释失败：");
                             //+ SettingInfo.Instance.ErrorMessage);

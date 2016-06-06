@@ -29,7 +29,8 @@ namespace Revit.Addin.RevitTooltip
         /// </summary>
         internal static App _app = null;
         private string m_previousDocPathName = null;
-        internal Document currentDoc=null;
+        // internal Document currentDoc=null;
+        internal static RevitTooltip settings = null;
         ElementInfoPanel m_elementInfoPanel = null;
         private int m_selectedElementId = -1;
         UIControlledApplication m_uiApp = null;
@@ -53,7 +54,7 @@ namespace Revit.Addin.RevitTooltip
         /// <summary>
         /// 点击重新加载
         /// </summary>
-        internal PushButton ReloadExcelDataButton { get; set; }
+        internal PushButton ReloadDataButton { get; set; }
         //internal PushButton TooltipOnButton { get; set; }
         //internal PushButton TooltipOffButton { get; set; }
 
@@ -112,14 +113,14 @@ namespace Revit.Addin.RevitTooltip
                 SurveyImageInfoButton.SetContextualHelp(cHelp);
                 //
                 ribbonPanel.AddSeparator();
-
-                ReloadExcelDataButton = (PushButton)ribbonPanel.AddItem(
+               //reload
+                ReloadDataButton = (PushButton)ribbonPanel.AddItem(
                     new PushButtonData("CommandReloadExcelData", Res.Command_ReloadExcelData,
                         addinAssembly, "Revit.Addin.RevitTooltip.CommandReloadExcelData"));
                 image = Utils.ConvertFromBitmap(Res.refresh);
-                ReloadExcelDataButton.Image = ReloadExcelDataButton.LargeImage = image;
-                ReloadExcelDataButton.ToolTip = Res.CommandDescription_ReloadExcelData;
-                ReloadExcelDataButton.SetContextualHelp(cHelp);
+                ReloadDataButton.Image = ReloadDataButton.LargeImage = image;
+                ReloadDataButton.ToolTip = Res.CommandDescription_ReloadExcelData;
+                ReloadDataButton.SetContextualHelp(cHelp);
                 // Tooltip off 
                 ribbonPanel.AddSeparator();
 
@@ -164,8 +165,10 @@ namespace Revit.Addin.RevitTooltip
 
         private void OnViewActivated(object sender, ViewActivatedEventArgs e)
         {
-            currentDoc = e.Document;
-            ProjectInfo info = currentDoc.ProjectInformation;
+            settings = ExtensibleStorage.GetTooltipInfo(e.Document.ProjectInformation);
+
+            //currentDoc = e.Document;
+            //ProjectInfo info = currentDoc.ProjectInformation;
             //load project settings when document changed
             try
             {
@@ -234,16 +237,19 @@ namespace Revit.Addin.RevitTooltip
                     entity = Utils.GetParameterValueAsString(selectElement, Res.String_ParameterName);
                     if (!string.IsNullOrEmpty(entity)) {
                         isSurvey = Res.String_ParameterSurveyType.Equals(selectElement.Name);
-                    mysql = MysqlUtil.CreateInstance(ExtensibleStorage.GetTooltipInfo(this.currentDoc.ProjectInformation));
+                    mysql = MysqlUtil.CreateInstance();
                     if (m_selectedElementId != selectElement.Id.IntegerValue)
                     {
                         m_selectedElementId = selectElement.Id.IntegerValue;
                            // isSurvey = true;
                             if (!isSurvey)
                         {//不是测量数据
-                           List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
-                               // List<ParameterData> parameterDataList = mysql.SelectEntityData("A1");
-                                List<ParameterData> parameterDataList1 = parameterDataList;
+                         //mysql 
+                         //List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
+                         // List<ParameterData> parameterDataList = mysql.SelectEntityData("A1");
+                         //sqlite
+                                List<ParameterData> parameterDataList = SQLiteHelper.CreateInstance().SelectEntityData(entity);
+                          //List<ParameterData> parameterDataList1 = parameterDataList;
                             ElementInfoPanel.GetInstance().Update(parameterDataList);
                         }
                         else
@@ -251,7 +257,7 @@ namespace Revit.Addin.RevitTooltip
                             //if (ImageForm.GetInstance().Visible == false) {
                             //    ImageForm.GetInstance().Show();
                             //}
-                            ImageForm.GetInstance().EntityName = entity;
+                            ImageForm.GetInstance(settings).EntityName = entity;
                            // ImageForm.GetInstance().EntityName = "CX1";
                         }
                     }

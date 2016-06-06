@@ -21,8 +21,9 @@ namespace Revit.Addin.RevitTooltip.UI
                 if (null != value && !value.Equals(entityName)) {
                     try
                     {
-                        mysql = MysqlUtil.CreateInstance(ExtensibleStorage.GetTooltipInfo(App._app.currentDoc.ProjectInformation));
-                        data = mysql.SelectOneCXData(value);
+                        //mysql = MysqlUtil.CreateInstance();
+                        //data = mysql.SelectOneCXData(value);
+                        data = SQLiteHelper.CreateInstance().SelectOneCXData(value);
                         this.Text = value + "的测试数据";
                         this.entityName = value;
                         this.Invalidate(this.ClientRectangle);
@@ -43,17 +44,18 @@ namespace Revit.Addin.RevitTooltip.UI
         //        this.Invalidate(this.ClientRectangle);
         //    }
         //}
-        public  static ImageForm GetInstance (){
+        public  static ImageForm GetInstance (RevitTooltip settings)
+        {
             if (_form == null)
             {
-                _form = new ImageForm();
+                _form = new ImageForm(settings);
             }
             return _form;
         }
 
-        private ImageForm()
+        private ImageForm(RevitTooltip settings)
         {
-            settings= ExtensibleStorage.GetTooltipInfo(App._app.currentDoc.ProjectInformation);
+            this.settings= settings;
             InitializeComponent();
         }
 
