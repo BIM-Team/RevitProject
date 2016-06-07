@@ -245,19 +245,14 @@ namespace Revit.Addin.RevitTooltip
                             if (!isSurvey)
                         {//不是测量数据
                          //mysql 
-                         //List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
-                         // List<ParameterData> parameterDataList = mysql.SelectEntityData("A1");
+                        // List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
                          //sqlite
-                                List<ParameterData> parameterDataList = SQLiteHelper.CreateInstance().SelectEntityData(entity);
-                          //List<ParameterData> parameterDataList1 = parameterDataList;
+                           List<ParameterData> parameterDataList = SQLiteHelper.CreateInstance().SelectEntityData(entity);
                             ElementInfoPanel.GetInstance().Update(parameterDataList);
                         }
                         else
                         {//测量数据绘制折线图
-                            //if (ImageForm.GetInstance().Visible == false) {
-                            //    ImageForm.GetInstance().Show();
-                            //}
-                            ImageForm.GetInstance(settings).EntityName = entity;
+                            ImageForm.GetInstance().EntityName = entity;
                            // ImageForm.GetInstance().EntityName = "CX1";
                         }
                     }

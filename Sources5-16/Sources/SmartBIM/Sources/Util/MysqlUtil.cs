@@ -25,6 +25,9 @@ namespace Revit.Addin.RevitTooltip.Util
         //是否打开事务
         private bool isBegin = false;
 
+        //是否有备注
+        private int hasEntityRemark = 0;
+
         //单例模式
         public static MysqlUtil CreateInstance()
         {
@@ -112,12 +115,16 @@ namespace Revit.Addin.RevitTooltip.Util
 
                 myTran.Commit();    //事务提交
                 isBegin = false;
+                //备注归零
+                hasEntityRemark = 0;
                 return 1;
             }
             catch (Exception e)
             {
                 myTran.Rollback();    // 事务回滚
                 isBegin = false;
+                //备注归零
+                hasEntityRemark = 0;
                 //删除entitytable表中当前sheet的entity
                 DeleteCurrentEntity(sheetInfo.EntityName, InsertIntoTypeTable(sheetInfo));
 
@@ -265,8 +272,11 @@ namespace Revit.Addin.RevitTooltip.Util
             int n = 0;
             foreach (string name in Names)
             {
-                if (name.Equals("备注"))
+                if (name.Equals("备注")) {
+                    //备注
+                    hasEntityRemark = 1;
                     continue;
+                }
                 //如果没有在原表中匹配到，则添加到插入语句当中
                 if (!PeriousColumns.Keys.Contains(name))
                 {
@@ -331,7 +341,7 @@ namespace Revit.Addin.RevitTooltip.Util
                     IdEntity = UpdateEntities[key];
                     foreach (String[] sts in sheetInfo.Data[key])
                     {
-                        for (int i = 0; i < count - 1; i++)
+                        for (int i = 0; i < count - hasEntityRemark; i++)
                         {
                             IdFrame = CurrentTableColumns[sheetInfo.Names.ElementAt(i)];
                             if (n % 500 == 0)
@@ -345,7 +355,7 @@ namespace Revit.Addin.RevitTooltip.Util
 
                             n++;
                         }
-                        if (!string.IsNullOrEmpty(sts[count]))
+                        if (!string.IsNullOrEmpty(sts[count]) &&hasEntityRemark ==1)
                             ModifyEntityRemark(key, sts[count]);
                     }
                 }
@@ -369,7 +379,7 @@ namespace Revit.Addin.RevitTooltip.Util
                     IdEntity = UpdateEntities[key];
                     foreach (String[] sts in sheetInfo.Data[key])
                     {
-                        for (int i = 0; i < count - 1; i++)
+                        for (int i = 0; i < count - hasEntityRemark; i++)
                         {
                             IdFrame = CurrentTableColumns[sheetInfo.Names.ElementAt(i)];
                             if (n % 500 == 0)
@@ -383,8 +393,9 @@ namespace Revit.Addin.RevitTooltip.Util
 
                             n++;
                         }
-                        if (!string.IsNullOrEmpty(sts[count]))
+                        if (!string.IsNullOrEmpty(sts[count]) && hasEntityRemark == 1) {
                             ModifyEntityRemark(key, sts[count]);
+                        }
                     }
                 }
             }

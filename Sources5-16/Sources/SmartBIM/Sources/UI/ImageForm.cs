@@ -11,8 +11,7 @@ namespace Revit.Addin.RevitTooltip.UI
     public partial class ImageForm : Form
     {
         private static ImageForm _form=null;
-        private MysqlUtil mysql;
-        private RevitTooltip settings;
+       // private MysqlUtil mysql;
         //实体名称
         private string entityName;
         public string EntityName {//初始化使用
@@ -44,18 +43,18 @@ namespace Revit.Addin.RevitTooltip.UI
         //        this.Invalidate(this.ClientRectangle);
         //    }
         //}
-        public  static ImageForm GetInstance (RevitTooltip settings)
+        public  static ImageForm GetInstance ()
         {
             if (_form == null)
             {
-                _form = new ImageForm(settings);
+                _form = new ImageForm();
             }
             return _form;
         }
 
-        private ImageForm(RevitTooltip settings)
+        private ImageForm()
         {
-            this.settings= settings;
+           
             InitializeComponent();
         }
 
@@ -72,7 +71,7 @@ namespace Revit.Addin.RevitTooltip.UI
 
             float height = this.ClientRectangle.Height;
             float width = this.ClientRectangle.Width;
-            float startX = 35, endX = width - 10;
+            float startX = 40, endX = width - 10;
             float startY = height - 30, endY =10 ;
                 Font font = new Font("Arial", 9, System.Drawing.FontStyle.Regular);
             if (null == data || data.Count == 0) {
@@ -143,7 +142,7 @@ namespace Revit.Addin.RevitTooltip.UI
 
                     if (value_b != 0 )
                     {
-                        if (value > settings.AlertNumber)
+                        if (value > App.settings.AlertNumber)
                         {
                             if (Math.Abs(x - x_b) < 1 || Math.Abs(y - y_b) < 1)
                             {
@@ -153,7 +152,7 @@ namespace Revit.Addin.RevitTooltip.UI
                                 g.DrawLine(pen_error, x_b, y_b, x, y);
                             }
 
-                        }else  if (Math.Abs(value - value_b) > settings.AlertNumberAdd) {
+                        }else  if (Math.Abs(value - value_b) > App.settings.AlertNumberAdd) {
 
                         if (Math.Abs(x - x_b) < 1 || Math.Abs(y - y_b) < 1)
                         {
@@ -174,9 +173,9 @@ namespace Revit.Addin.RevitTooltip.UI
                     value_b = value;
 
                 }
-                float alert = (float)(startY - settings.AlertNumber * divY);
-                g.DrawString(settings.AlertNumber.ToString(), font, Brushes.Red, startX - 
-                    g.MeasureString(settings.AlertNumber.ToString(), font).Width, alert - g.MeasureString(settings.AlertNumber.ToString(), font).Height / 2);
+                float alert = (float)(startY - App.settings.AlertNumber * divY);
+                g.DrawString(App.settings.AlertNumber.ToString(), font, Brushes.Red, startX - 
+                    g.MeasureString(App.settings.AlertNumber.ToString(), font).Width, alert - g.MeasureString(App.settings.AlertNumber.ToString(), font).Height / 2);
                 g.DrawLine(dotPen1, startX, alert, endX, alert);
                 mypen.Dispose();
                 mypen1.Dispose();

@@ -16,6 +16,7 @@ namespace Revit.Addin.RevitTooltip.Util
 
         //连接
         private SQLiteConnection conn;
+
         
         private string connectionString = string.Empty;
         private static string dbPath = "SQLiteDB.db3";
@@ -68,6 +69,9 @@ namespace Revit.Addin.RevitTooltip.Util
         //如果本地有SQLiteDB.db3数据库，先删除，再创建，并从Mysql数据中导入数据 
         public void UpdateDB()
         {
+            if (conn.State == ConnectionState.Open) {
+                Close();
+            }
             if (System.IO.File.Exists(dbPath))
             {
                 System.IO.File.Delete(dbPath);
@@ -325,7 +329,7 @@ namespace Revit.Addin.RevitTooltip.Util
                     if (reader.HasRows)
                     {
                         DateTime dateTime = reader.GetDateTime(3);
-                        string datestr = dateTime.ToShortDateString();
+                        string datestr = dateTime.ToString("yyyy-MM-dd");
                         if (dateTime.Hour >= 12)
                         {
                             datestr += "pm";

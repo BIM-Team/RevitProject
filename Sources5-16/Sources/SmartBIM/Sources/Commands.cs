@@ -205,7 +205,7 @@ namespace Revit.Addin.RevitTooltip
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            ImageForm.GetInstance(App.settings).Show();
+            ImageForm.GetInstance().Show();
             commandData.Application.Idling += App.Instance.IdlingHandler;
             return Result.Succeeded;
         }
