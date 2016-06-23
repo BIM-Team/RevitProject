@@ -129,10 +129,7 @@
     <value>True</value>
   </metadata>
   <data name="Column1.HeaderText" xml:space="preserve">
-    <value>所有异常点</value>
-  </data>
-  <data name="Column1.ToolTipText" xml:space="preserve">
-    <value>测斜汇总的所有异常点</value>
+    <value>异常点</value>
   </data>
   <data name="dataGridView1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>

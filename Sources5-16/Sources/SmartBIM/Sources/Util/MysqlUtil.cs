@@ -39,19 +39,15 @@ namespace Revit.Addin.RevitTooltip.Util
             {
                 mysqlUtil.Dispose();
                 MysqlUtil.settings = App.settings;
-                mysqlUtil = new MysqlUtil(App.settings);
+                mysqlUtil = new MysqlUtil(settings);
             }
             return mysqlUtil;
         }
+
         //初始化
         private MysqlUtil(RevitTooltip settings)
         {
             MysqlUtil.settings = settings;
-            //MysqlUtil.user = user;
-
-            //MysqlUtil.password = password;
-            //指明要连接的数据库地址，用户名，数据库名，端口，密码
-            //serverPath = "server=" + Res.String_ServerPath + ";user=" + user + ";database=" + Res.String_ServerName + ";port=" + Res.Server_Port + ";password=" + password + ";charset=" + Res.Server_CharSet;
 
         }
 
@@ -115,7 +111,6 @@ namespace Revit.Addin.RevitTooltip.Util
 
                 myTran.Commit();    //事务提交
                 isBegin = false;
-                //备注归零
                 hasEntityRemark = 0;
                 return 1;
             }
@@ -123,7 +118,6 @@ namespace Revit.Addin.RevitTooltip.Util
             {
                 myTran.Rollback();    // 事务回滚
                 isBegin = false;
-                //备注归零
                 hasEntityRemark = 0;
                 //删除entitytable表中当前sheet的entity
                 DeleteCurrentEntity(sheetInfo.EntityName, InsertIntoTypeTable(sheetInfo));
@@ -272,11 +266,12 @@ namespace Revit.Addin.RevitTooltip.Util
             int n = 0;
             foreach (string name in Names)
             {
-                if (name.Equals("备注")) {
-                    //备注
+                if (name.Equals("备注"))
+                {
                     hasEntityRemark = 1;
                     continue;
                 }
+
                 //如果没有在原表中匹配到，则添加到插入语句当中
                 if (!PeriousColumns.Keys.Contains(name))
                 {
@@ -355,7 +350,8 @@ namespace Revit.Addin.RevitTooltip.Util
 
                             n++;
                         }
-                        if (!string.IsNullOrEmpty(sts[count]) &&hasEntityRemark ==1)
+                        //如果有“备注”，则修改Entity表的EntityRemark
+                        if (hasEntityRemark == 1 && !string.IsNullOrEmpty(sts[count]))
                             ModifyEntityRemark(key, sts[count]);
                     }
                 }
@@ -379,6 +375,7 @@ namespace Revit.Addin.RevitTooltip.Util
                     IdEntity = UpdateEntities[key];
                     foreach (String[] sts in sheetInfo.Data[key])
                     {
+
                         for (int i = 0; i < count - hasEntityRemark; i++)
                         {
                             IdFrame = CurrentTableColumns[sheetInfo.Names.ElementAt(i)];
@@ -393,9 +390,9 @@ namespace Revit.Addin.RevitTooltip.Util
 
                             n++;
                         }
-                        if (!string.IsNullOrEmpty(sts[count]) && hasEntityRemark == 1) {
+                        //如果有“备注”，则修改Entity表的EntityRemark
+                        if (hasEntityRemark == 1 && !string.IsNullOrEmpty(sts[count]))
                             ModifyEntityRemark(key, sts[count]);
-                        }
                     }
                 }
             }
@@ -711,11 +708,9 @@ namespace Revit.Addin.RevitTooltip.Util
         {
             Dictionary<string, float> data = new Dictionary<string, float>();
 
-            //用cast()函数将string类型转换为浮点数，在用MAX()函数
-            String sql = String.Format("select et.ENTITY, it.DATE, MAX(cast(it.VALUE as DECIMAL(5,2))) from InclinationTable it,EntityTable et,TypeTable tt "
-                          + " where it.ID_ENTITY=et.ID and et.ID_TYPE=tt.ID and tt.TYPENAME= '测斜汇总' and et.ENTITY='{0}' "
-                          + " group by ENTITY,DATE "
-                          + " order by ENTITY,DATE ", entity);
+            String sql = String.Format("Select e.Entity, c.Date,c.Value from CXView c, EntityTable e where c.ID_Entity = e.ID and e.ENTITY = '{0}' "
+                            + " group by c.ID_Entity,c.Date order by c.ID_Entity,c.Date ", entity);
+
             //判断数据库是否打开
             if (!isOpen)
             {
@@ -750,6 +745,8 @@ namespace Revit.Addin.RevitTooltip.Util
                 reader.Close();
             }
         }
+
+        
 
         //根据Entity名，查询基础数据和地墙数据，
         public List<Revit.Addin.RevitTooltip.App.ParameterData> SelectEntityData(string entity)
@@ -822,6 +819,22 @@ namespace Revit.Addin.RevitTooltip.Util
         public MySqlDataReader SelectTable(string tablename)
         {
             string sql = "select * from " + tablename;
+            //判断数据库是否打开
+            if (!this.isOpen)
+            {
+                OpenConnect();
+            }
+            MySqlCommand mycom = new MySqlCommand(sql, this.conn);  //建立执行命令语句对象
+            MySqlDataReader reader = mycom.ExecuteReader();    //需要关闭
+
+            return reader;
+        }
+
+        public MySqlDataReader GetCXTable()
+        {
+            String sql = "Select e.Entity,c.Date,c.Value from CXView c, EntityTable e where c.ID_Entity = e.ID "
+                       + " group by c.ID_Entity,c.Date order by c.ID_Entity,c.Date ";
+
             //判断数据库是否打开
             if (!this.isOpen)
             {

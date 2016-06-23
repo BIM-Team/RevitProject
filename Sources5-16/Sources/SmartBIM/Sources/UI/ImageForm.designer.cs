@@ -1,4 +1,7 @@
-﻿namespace Revit.Addin.RevitTooltip.UI
+﻿using System.Collections.Generic;
+using static Revit.Addin.RevitTooltip.App;
+
+namespace Revit.Addin.RevitTooltip.UI
 {
     partial class ImageForm 
     {
@@ -61,13 +64,16 @@
             resources.ApplyResources(this.dataGridView1, "dataGridView1");
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
+            this.dataGridView1.CurrentCellChanged += new System.EventHandler(this.dataGridView1_CurrentCellChanged);
             // 
             // Column1
             // 
-            this.Column1.DataPropertyName = "EntityName";
+            this.Column1.DataPropertyName = "value";
             resources.ApplyResources(this.Column1, "Column1");
             this.Column1.Name = "Column1";
             this.Column1.ReadOnly = true;
+            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // ImageForm
             // 
@@ -81,6 +87,7 @@
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.TopMost = true;
+            this.Load += new System.EventHandler(this.ImageForm_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);

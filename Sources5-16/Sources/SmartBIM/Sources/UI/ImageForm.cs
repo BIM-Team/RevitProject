@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+using static Revit.Addin.RevitTooltip.App;
 
 namespace Revit.Addin.RevitTooltip.UI
 {
@@ -329,6 +330,17 @@ namespace Revit.Addin.RevitTooltip.UI
             {
                 throw exception;
             }
+        }
+
+        private void ImageForm_Load(object sender, EventArgs e)
+        {
+           List<ParameterData> errorCXs= SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
+            this.dataGridView1.DataSource = errorCXs;
+        }
+
+        private void dataGridView1_CurrentCellChanged(object sender, EventArgs e)
+        {
+            this.EntityName=dataGridView1.CurrentCell.Value.ToString();
         }
     }
 }
