@@ -125,6 +125,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 导入数据到Mysql数据库 的本地化字符串。
+        /// </summary>
+        internal static string CommandDescription_Import {
+            get {
+                return ResourceManager.GetString("CommandDescription_Import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 To view the license information of the application. 的本地化字符串。
         /// </summary>
         internal static string CommandDescription_LicenseInfo {
@@ -170,7 +179,7 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
-        ///   查找类似 打开提示框显示，当鼠标移动到元素上时自动显示元素对应的检测数据。 的本地化字符串。
+        ///   查找类似 打开属性面板，点击选取元素时自动显示元素相关属性 的本地化字符串。
         /// </summary>
         internal static string CommandDescription_TooltipOn {
             get {
@@ -193,6 +202,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         internal static string CommandName_Help {
             get {
                 return ResourceManager.GetString("CommandName_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 导入Excel数据 的本地化字符串。
+        /// </summary>
+        internal static string CommandName_Import {
+            get {
+                return ResourceManager.GetString("CommandName_Import", resourceCulture);
             }
         }
         

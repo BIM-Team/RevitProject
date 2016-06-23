@@ -50,9 +50,13 @@ namespace Revit.Addin.RevitTooltip
         /// 点击弹出折线图面板
         /// </summary>
         internal PushButton SurveyImageInfoButton { get; set; }
-   
         /// <summary>
-        /// 点击重新加载
+        /// 点击加载excel
+        /// </summary>
+        internal PushButton LoadExcelButton { get; set; }
+
+        /// <summary>
+        /// 点击重新加载::加载到SQLite
         /// </summary>
         internal PushButton ReloadDataButton { get; set; }
         //internal PushButton TooltipOnButton { get; set; }
@@ -60,85 +64,94 @@ namespace Revit.Addin.RevitTooltip
 
         public Result OnStartup(UIControlledApplication app)
         {
-            
-                m_uiApp = app;
-                _app = this;
-                app.ViewActivated += OnViewActivated;
-                app.Idling += IdlingHandler;
-                string file = Path.Combine(Path.GetDirectoryName(typeof(App).Assembly.Location), "MahApps.Metro.dll");
-                if (File.Exists(file))
-                    System.Reflection.Assembly.LoadFrom(file);
 
-                m_elementInfoPanel = ElementInfoPanel.GetInstance();
-                app.RegisterDockablePane(new DockablePaneId(m_elementInfoPanel.Id), "构件信息", m_elementInfoPanel);
-                //
-                // Assembly members initialization 
-                string tabName = Res.String_AppTabName;
-                string addinAssembly = this.GetType().Assembly.Location;
-                string addinDir = Path.GetDirectoryName(addinAssembly);
-                string userManual = Path.Combine(addinDir, "help.pdf");
-                //
-                // Ribbon suites firstly
-                ContextualHelp cHelp = new ContextualHelp(ContextualHelpType.Url, userManual);
-                app.CreateRibbonTab(tabName);
-                RibbonPanel ribbonPanel = app.CreateRibbonPanel(tabName, Res.String_AppPanelName);
+            m_uiApp = app;
+            _app = this;
+            app.ViewActivated += OnViewActivated;
+            app.Idling += IdlingHandler;
+            string file = Path.Combine(Path.GetDirectoryName(typeof(App).Assembly.Location), "MahApps.Metro.dll");
+            if (File.Exists(file))
+                System.Reflection.Assembly.LoadFrom(file);
 
-                // settings
-                PushButton cmdButton = (PushButton)ribbonPanel.AddItem(
-                    new PushButtonData("Tooltip_Settings", Res.CommandName_Settings,
-                        addinAssembly, "Revit.Addin.RevitTooltip.CmdSettings"));
-                BitmapSource image = Utils.ConvertFromBitmap(Res.settings.ToBitmap());
-                cmdButton.Image = cmdButton.LargeImage = image;
-                cmdButton.ToolTip = Res.CommandDescription_Settings;
-                cmdButton.SetContextualHelp(cHelp);
-                ribbonPanel.AddSeparator();
+            m_elementInfoPanel = ElementInfoPanel.GetInstance();
+            app.RegisterDockablePane(new DockablePaneId(m_elementInfoPanel.Id), "构件信息", m_elementInfoPanel);
+            //
+            // Assembly members initialization 
+            string tabName = Res.String_AppTabName;
+            string addinAssembly = this.GetType().Assembly.Location;
+            string addinDir = Path.GetDirectoryName(addinAssembly);
+            string userManual = Path.Combine(addinDir, "help.pdf");
+            //
+            // Ribbon suites firstly
+            ContextualHelp cHelp = new ContextualHelp(ContextualHelpType.Url, userManual);
+            app.CreateRibbonTab(tabName);
+            RibbonPanel ribbonPanel = app.CreateRibbonPanel(tabName, Res.String_AppPanelName);
 
-                //////////////////////////////////////////////////////////////////////////
-                // dock panel
-                ElementInfoButton = (PushButton)ribbonPanel.AddItem(
+            // settings
+            PushButton cmdButton = (PushButton)ribbonPanel.AddItem(
+                new PushButtonData("Tooltip_Settings", Res.CommandName_Settings,
+                    addinAssembly, "Revit.Addin.RevitTooltip.CmdSettings"));
+            BitmapSource image = Utils.ConvertFromBitmap(Res.settings.ToBitmap());
+            cmdButton.Image = cmdButton.LargeImage = image;
+            cmdButton.ToolTip = Res.CommandDescription_Settings;
+            cmdButton.SetContextualHelp(cHelp);
+            ribbonPanel.AddSeparator();
+            //load excel file to DB
+            LoadExcelButton = (PushButton)ribbonPanel.AddItem(
+                    new PushButtonData("LoadExcelToDB", Res.CommandName_Import,
+                        addinAssembly, "Revit.Addin.RevitTooltip.CmdLoadExcelToDB"));
+            image = Utils.ConvertFromBitmap(Res.tooltip_on.ToBitmap());
+            LoadExcelButton.Image = LoadExcelButton.LargeImage = image;
+            LoadExcelButton.ToolTip = Res.CommandDescription_Import;
+            LoadExcelButton.SetContextualHelp(cHelp);
+            ribbonPanel.AddSeparator();
+
+            //////////////////////////////////////////////////////////////////////////
+            // dock panel
+            ElementInfoButton = (PushButton)ribbonPanel.AddItem(
                     new PushButtonData("ElementInfo", Res.Command_ElementInfo,
                         addinAssembly, "Revit.Addin.RevitTooltip.CmdElementInfo"));
-                image = Utils.ConvertFromBitmap(Res.tooltip_on.ToBitmap());
-                ElementInfoButton.Image = ElementInfoButton.LargeImage = image;
-                ElementInfoButton.ToolTip = Res.CommandDescription_TooltipOn;
-                ElementInfoButton.SetContextualHelp(cHelp);
-                // Tooltip off 
-                ribbonPanel.AddSeparator();
-                SurveyImageInfoButton= (PushButton)ribbonPanel.AddItem(
-                    new PushButtonData("SurveyImageInfo", Res.Command_SurveyImageInfo,
-                        addinAssembly, "Revit.Addin.RevitTooltip.CmdSurveyImageInfo"));
-                  image = Utils.ConvertFromBitmap(Res.tooltip_on.ToBitmap());
-                SurveyImageInfoButton.Image = SurveyImageInfoButton.LargeImage = image;
-                SurveyImageInfoButton.ToolTip = Res.CommandDescription_SurveyImage;
-                SurveyImageInfoButton.SetContextualHelp(cHelp);
-                //
-                ribbonPanel.AddSeparator();
-               //reload
-                ReloadDataButton = (PushButton)ribbonPanel.AddItem(
-                    new PushButtonData("CommandReloadExcelData", Res.Command_ReloadExcelData,
-                        addinAssembly, "Revit.Addin.RevitTooltip.CommandReloadExcelData"));
-                image = Utils.ConvertFromBitmap(Res.refresh);
-                ReloadDataButton.Image = ReloadDataButton.LargeImage = image;
-                ReloadDataButton.ToolTip = Res.CommandDescription_ReloadExcelData;
-                ReloadDataButton.SetContextualHelp(cHelp);
-                // Tooltip off 
-                ribbonPanel.AddSeparator();
+            image = Utils.ConvertFromBitmap(Res.tooltip_on.ToBitmap());
+            ElementInfoButton.Image = ElementInfoButton.LargeImage = image;
+            ElementInfoButton.ToolTip = Res.CommandDescription_TooltipOn;
+            ElementInfoButton.SetContextualHelp(cHelp);
+            // Tooltip off 
+            ribbonPanel.AddSeparator();
+            SurveyImageInfoButton = (PushButton)ribbonPanel.AddItem(
+                new PushButtonData("SurveyImageInfo", Res.Command_SurveyImageInfo,
+                    addinAssembly, "Revit.Addin.RevitTooltip.CmdSurveyImageInfo"));
+            image = Utils.ConvertFromBitmap(Res.tooltip_on.ToBitmap());
+            SurveyImageInfoButton.Image = SurveyImageInfoButton.LargeImage = image;
+            SurveyImageInfoButton.ToolTip = Res.CommandDescription_SurveyImage;
+            SurveyImageInfoButton.SetContextualHelp(cHelp);
+            //
+            ribbonPanel.AddSeparator();
+            //reload
+            ReloadDataButton = (PushButton)ribbonPanel.AddItem(
+                new PushButtonData("CommandReloadSQLiteData", Res.Command_ReloadExcelData,
+                    addinAssembly, "Revit.Addin.RevitTooltip.CommandReloadSQLiteData"));
+            image = Utils.ConvertFromBitmap(Res.refresh);
+            ReloadDataButton.Image = ReloadDataButton.LargeImage = image;
+            ReloadDataButton.ToolTip = Res.CommandDescription_ReloadExcelData;
+            ReloadDataButton.SetContextualHelp(cHelp);
+            // Tooltip off 
+            ribbonPanel.AddSeparator();
 
-                // About\Help
-                PushButtonData aboutButtonData = new PushButtonData("AboutButton",
-                    Res.CommandName_About, addinAssembly, "Revit.Addin.RevitTooltip.CommandAbout");
-                aboutButtonData.Image = Utils.ConvertFromBitmap(Properties.Resources.about_16.ToBitmap());
-                aboutButtonData.ToolTip = Properties.Resources.CommandDescription_About;
-                aboutButtonData.SetContextualHelp(cHelp);
-                PushButtonData helpButtonData = new PushButtonData("HelpButton",
-                    Res.CommandName_Help, addinAssembly, "Revit.Addin.RevitTooltip.CommandHelp");
-                helpButtonData.Image = Utils.ConvertFromBitmap(Properties.Resources.help_16.ToBitmap());
-                helpButtonData.ToolTip = Properties.Resources.CommandDescription_Help;
-                helpButtonData.SetContextualHelp(cHelp);
-                ribbonPanel.AddStackedItems(aboutButtonData, helpButtonData);
-                return Result.Succeeded;
-            
-            
+            // About\Help
+            PushButtonData aboutButtonData = new PushButtonData("AboutButton",
+                Res.CommandName_About, addinAssembly, "Revit.Addin.RevitTooltip.CommandAbout");
+            aboutButtonData.Image = Utils.ConvertFromBitmap(Properties.Resources.about_16.ToBitmap());
+            aboutButtonData.ToolTip = Properties.Resources.CommandDescription_About;
+            aboutButtonData.SetContextualHelp(cHelp);
+            PushButtonData helpButtonData = new PushButtonData("HelpButton",
+                Res.CommandName_Help, addinAssembly, "Revit.Addin.RevitTooltip.CommandHelp");
+            helpButtonData.Image = Utils.ConvertFromBitmap(Properties.Resources.help_16.ToBitmap());
+            helpButtonData.ToolTip = Properties.Resources.CommandDescription_Help;
+            helpButtonData.SetContextualHelp(cHelp);
+            ribbonPanel.AddStackedItems(aboutButtonData, helpButtonData);
+            return Result.Succeeded;
+
+
         }
 
         public void SetPanelEnabled(bool enabled)
@@ -180,12 +193,12 @@ namespace Revit.Addin.RevitTooltip
                     //}
                     m_previousDocPathName = e.Document.PathName;
                 }
-                    //hide the info panel if not registered
-                    DockablePane panel = m_uiApp.GetDockablePane(new DockablePaneId(ElementInfoPanel.GetInstance().Id));
-                    if (panel != null)
-                    {
-                        panel.Hide();
-                    }
+                //hide the info panel if not registered
+                DockablePane panel = m_uiApp.GetDockablePane(new DockablePaneId(ElementInfoPanel.GetInstance().Id));
+                if (panel != null)
+                {
+                    panel.Hide();
+                }
             }
             catch (System.Exception ex)
             {
@@ -195,7 +208,7 @@ namespace Revit.Addin.RevitTooltip
 
         public Result OnShutdown(UIControlledApplication a)
         {
-     
+
             return Result.Succeeded;
         }
         /// <summary>
@@ -213,7 +226,7 @@ namespace Revit.Addin.RevitTooltip
           object sender,
           IdlingEventArgs args)
         {
-               UIApplication uiapp = sender as UIApplication;
+            UIApplication uiapp = sender as UIApplication;
             UIDocument uidoc = uiapp.ActiveUIDocument;
 
             // UI document is null if the project is closed.
@@ -235,27 +248,28 @@ namespace Revit.Addin.RevitTooltip
                 if (selectElement != null)
                 {
                     entity = Utils.GetParameterValueAsString(selectElement, Res.String_ParameterName);
-                    if (!string.IsNullOrEmpty(entity)) {
-                        isSurvey = Res.String_ParameterSurveyType.Equals(selectElement.Name);
-                    mysql = MysqlUtil.CreateInstance();
-                    if (m_selectedElementId != selectElement.Id.IntegerValue)
+                    if (!string.IsNullOrEmpty(entity))
                     {
-                        m_selectedElementId = selectElement.Id.IntegerValue;
-                           // isSurvey = true;
+                        isSurvey = Res.String_ParameterSurveyType.Equals(selectElement.Name);
+                        mysql = MysqlUtil.CreateInstance();
+                        if (m_selectedElementId != selectElement.Id.IntegerValue)
+                        {
+                            m_selectedElementId = selectElement.Id.IntegerValue;
+                            // isSurvey = true;
                             if (!isSurvey)
-                        {//不是测量数据
-                         //mysql 
-                        // List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
-                         //sqlite
-                           List<ParameterData> parameterDataList = SQLiteHelper.CreateInstance().SelectEntityData(entity);
-                            ElementInfoPanel.GetInstance().Update(parameterDataList);
+                            {//不是测量数据
+                             //mysql 
+                             // List<ParameterData> parameterDataList = mysql.SelectEntityData(entity);
+                             //sqlite
+                                List<ParameterData> parameterDataList = SQLiteHelper.CreateInstance().SelectEntityData(entity);
+                                ElementInfoPanel.GetInstance().Update(parameterDataList);
+                            }
+                            else
+                            {//测量数据绘制折线图
+                                ImageForm.GetInstance().EntityName = entity;
+                                // ImageForm.GetInstance().EntityName = "CX1";
+                            }
                         }
-                        else
-                        {//测量数据绘制折线图
-                            ImageForm.GetInstance().EntityName = entity;
-                           // ImageForm.GetInstance().EntityName = "CX1";
-                        }
-                    }
                     }
                 }
                 else

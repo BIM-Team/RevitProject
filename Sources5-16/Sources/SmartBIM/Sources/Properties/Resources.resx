@@ -178,7 +178,7 @@
     <value>安全监测智能提示框</value>
   </data>
   <data name="CommandDescription_TooltipOn" xml:space="preserve">
-    <value>打开提示框显示，当鼠标移动到元素上时自动显示元素对应的检测数据。</value>
+    <value>打开属性面板，点击选取元素时自动显示元素相关属性</value>
   </data>
   <data name="CommandDescription_Settings" xml:space="preserve">
     <value>这顶监测时的相关数据，如导入监测数据及指定预警数值等。</value>
@@ -227,5 +227,11 @@
   </data>
   <data name="Command_SurveyImageInfo" xml:space="preserve">
     <value>绘制折线图</value>
+  </data>
+  <data name="CommandDescription_Import" xml:space="preserve">
+    <value>导入数据到Mysql数据库</value>
+  </data>
+  <data name="CommandName_Import" xml:space="preserve">
+    <value>导入Excel数据</value>
   </data>
 </root>

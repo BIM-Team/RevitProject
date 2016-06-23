@@ -55,13 +55,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textServerPath = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.buttonApply = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -77,17 +75,18 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(389, 450);
+            this.buttonCancel.Location = new System.Drawing.Point(278, 386);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
-            this.buttonCancel.Text = "退出";
+            this.buttonCancel.Text = "取消";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
             // buttonOK
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(281, 450);
+            this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.buttonOK.Location = new System.Drawing.Point(179, 386);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -103,6 +102,7 @@
             this.textBoxSurveyFile.Name = "textBoxSurveyFile";
             this.textBoxSurveyFile.Size = new System.Drawing.Size(372, 21);
             this.textBoxSurveyFile.TabIndex = 0;
+            this.textBoxSurveyFile.TextChanged += new System.EventHandler(this.textBoxSurveyFile_TextChanged);
             // 
             // buttonBrowseSurvey
             // 
@@ -131,6 +131,7 @@
             this.textBoxAlert.Size = new System.Drawing.Size(42, 21);
             this.textBoxAlert.TabIndex = 0;
             this.textBoxAlert.Text = "30";
+            this.textBoxAlert.TextChanged += new System.EventHandler(this.textBoxAlert_TextChanged);
             // 
             // label3
             // 
@@ -148,6 +149,7 @@
             this.alertNumberAdd.Size = new System.Drawing.Size(94, 21);
             this.alertNumberAdd.TabIndex = 0;
             this.alertNumberAdd.Text = "2";
+            this.alertNumberAdd.TextChanged += new System.EventHandler(this.alertNumberAdd_TextChanged);
             // 
             // groupBox1
             // 
@@ -184,6 +186,7 @@
             this.textBoxFoundationFile.Name = "textBoxFoundationFile";
             this.textBoxFoundationFile.Size = new System.Drawing.Size(372, 21);
             this.textBoxFoundationFile.TabIndex = 0;
+            this.textBoxFoundationFile.TextChanged += new System.EventHandler(this.textBoxFoundationFile_TextChanged);
             // 
             // buttonBrowseFoundationFile
             // 
@@ -215,6 +218,7 @@
             this.textBoxUnderWallFile.Name = "textBoxUnderWallFile";
             this.textBoxUnderWallFile.Size = new System.Drawing.Size(372, 21);
             this.textBoxUnderWallFile.TabIndex = 0;
+            this.textBoxUnderWallFile.TextChanged += new System.EventHandler(this.textBoxUnderWallFile_TextChanged);
             // 
             // buttonBrowseUnderWallFile
             // 
@@ -252,6 +256,7 @@
             this.textPass.Name = "textPass";
             this.textPass.Size = new System.Drawing.Size(100, 21);
             this.textPass.TabIndex = 9;
+            this.textPass.TextChanged += new System.EventHandler(this.textPass_TextChanged);
             // 
             // label8
             // 
@@ -268,6 +273,7 @@
             this.textUser.Name = "textUser";
             this.textUser.Size = new System.Drawing.Size(100, 21);
             this.textUser.TabIndex = 7;
+            this.textUser.TextChanged += new System.EventHandler(this.textUser_TextChanged);
             // 
             // label7
             // 
@@ -284,6 +290,7 @@
             this.textPort.Name = "textPort";
             this.textPort.Size = new System.Drawing.Size(100, 21);
             this.textPort.TabIndex = 5;
+            this.textPort.TextChanged += new System.EventHandler(this.textPort_TextChanged);
             // 
             // label6
             // 
@@ -300,6 +307,7 @@
             this.textDB.Name = "textDB";
             this.textDB.Size = new System.Drawing.Size(100, 21);
             this.textDB.TabIndex = 3;
+            this.textDB.TextChanged += new System.EventHandler(this.textDB_TextChanged);
             // 
             // label5
             // 
@@ -316,6 +324,7 @@
             this.textServerPath.Name = "textServerPath";
             this.textServerPath.Size = new System.Drawing.Size(300, 21);
             this.textServerPath.TabIndex = 1;
+            this.textServerPath.TextChanged += new System.EventHandler(this.textServerPath_TextChanged);
             // 
             // label4
             // 
@@ -326,24 +335,16 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "服务器地址";
             // 
-            // groupBox5
+            // buttonApply
             // 
-            this.groupBox5.Controls.Add(this.progressBar);
-            this.groupBox5.Location = new System.Drawing.Point(12, 363);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(444, 68);
-            this.groupBox5.TabIndex = 6;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "处理进度";
-            this.groupBox5.Visible = false;
-            // 
-            // progressBar
-            // 
-            this.progressBar.Location = new System.Drawing.Point(12, 26);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(422, 23);
-            this.progressBar.TabIndex = 0;
-            this.progressBar.Visible = false;
+            this.buttonApply.Enabled = false;
+            this.buttonApply.Location = new System.Drawing.Point(375, 386);
+            this.buttonApply.Name = "buttonApply";
+            this.buttonApply.Size = new System.Drawing.Size(75, 23);
+            this.buttonApply.TabIndex = 6;
+            this.buttonApply.Text = "应用";
+            this.buttonApply.UseVisualStyleBackColor = true;
+            this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
             // SettingsForm
             // 
@@ -351,8 +352,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(476, 485);
-            this.Controls.Add(this.groupBox5);
+            this.ClientSize = new System.Drawing.Size(476, 421);
+            this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -376,7 +377,6 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.groupBox5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -410,7 +410,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textServerPath;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.Button buttonApply;
     }
 }

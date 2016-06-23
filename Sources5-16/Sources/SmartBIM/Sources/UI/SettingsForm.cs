@@ -59,9 +59,10 @@ namespace Revit.Addin.RevitTooltip
         private void buttonOK_Click(object sender, EventArgs e)
         {
             buttonOK.Enabled = false;
+
             try
             {
-                RevitTooltip settings = ExtensibleStorage.GetTooltipInfo(m_doc.ProjectInformation);
+                RevitTooltip settings = App.settings;
                 if (null == settings)
                 {
                     settings = RevitTooltip.Default;
@@ -77,63 +78,9 @@ namespace Revit.Addin.RevitTooltip
                     settings.DfUser = textUser.Text;
                     settings.DfPassword = textPass.Text;
                 ExtensibleStorage.StoreTooltipInfo(m_doc.ProjectInformation, settings);
-                groupBox5.Visible = true;
-                progressBar.Visible = true;
-                ExcelReader excel =new  ExcelReader();
-                ExcelReader excel1 = new ExcelReader();
-                ExcelReader excel2 = new ExcelReader();
-                if (!string.IsNullOrEmpty(settings.SurveyFile)) {
-                    groupBox5.Text = "现在正在导入测量数据";
-                    excel.FilePath_Data = settings.SurveyFile;
-                    excel.UseExcelType = ExcelType.DataExcel;
-                    List<SheetInfo> sheets=excel.getSheetInfo_Range(0,excel.getSheetCount());
-                    foreach (SheetInfo sheet in sheets) {
-                        MysqlUtil.CreateInstance().InsertSheetInfo(sheet);
-                        if (sheet.SheetIndex <= 33) {
-                            progressBar.Value++;
-                        }
-                    }
-
-                }
-                if (!string.IsNullOrEmpty(settings.FoundationFile))
-                {
-                    groupBox5.Text = "现在正在导入基础数据";
-                    progressBar.Value = 34;
-                    excel1.FilePath_base = settings.FoundationFile;
-                    excel1.UseExcelType = ExcelType.BaseExcel;
-
-                    List<SheetInfo> sheets = excel1.getSheetInfo_Range(0, excel1.getSheetCount());
-                    foreach (SheetInfo sheet in sheets)
-                    {
-                        MysqlUtil.CreateInstance().InsertSheetInfo(sheet);
-                        if (sheet.SheetIndex <= 33)
-                        {
-                            progressBar.Value++;
-                        }
-                    }
-
-                }
-                if (!string.IsNullOrEmpty(settings.UnderWallFile))
-                {
-                    groupBox5.Text = "现在正在导入城墙数据";
-                    progressBar.Value = 67;
-                    excel2.FilePath_Wall = settings.UnderWallFile;
-                    excel2.UseExcelType = ExcelType.WallExcel;
-                    List<SheetInfo> sheets = excel2.getSheetInfo_Range(0, excel2.getSheetCount());
-                    foreach (SheetInfo sheet in sheets)
-                    {
-                        MysqlUtil.CreateInstance().InsertSheetInfo(sheet);
-                        if (sheet.SheetIndex <= 33)
-                        {
-                            progressBar.Value++;
-                        }
-                    }
-
-                }
-                groupBox5.Text = "导入完成";
-                progressBar.Value = 100;
+                //保存文档
+                m_doc.Save(); 
                 this.DialogResult = DialogResult.OK;
-                this.Close();
             }
             catch (Exception ex)
             {
@@ -166,6 +113,87 @@ namespace Revit.Addin.RevitTooltip
             {
                 textBoxUnderWallFile.Text = excelFile;
             }
+        }
+
+        private void buttonApply_Click(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = false;
+            try
+            {
+                RevitTooltip settings = App.settings;
+                if (null == settings)
+                {
+                    settings = RevitTooltip.Default;
+                }
+                settings.AlertNumber = double.Parse(textBoxAlert.Text);
+                settings.AlertNumberAdd = double.Parse(alertNumberAdd.Text);
+                settings.SurveyFile = textBoxSurveyFile.Text;
+                settings.FoundationFile = textBoxFoundationFile.Text;
+                settings.UnderWallFile = textBoxUnderWallFile.Text;
+                settings.DfServer = textServerPath.Text;
+                settings.DfDB = textDB.Text;
+                settings.DfPort = textPort.Text;
+                settings.DfUser = textUser.Text;
+                settings.DfPassword = textPass.Text;
+                ExtensibleStorage.StoreTooltipInfo(m_doc.ProjectInformation, settings);
+                //保存文档
+                m_doc.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+        private void textBoxSurveyFile_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textBoxAlert_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void alertNumberAdd_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textBoxFoundationFile_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textBoxUnderWallFile_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textServerPath_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textDB_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textPort_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textUser_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
+        }
+
+        private void textPass_TextChanged(object sender, EventArgs e)
+        {
+            buttonApply.Enabled = true;
         }
     }
 }

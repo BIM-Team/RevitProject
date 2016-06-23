@@ -116,6 +116,7 @@
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -157,6 +158,12 @@
     <Compile Include="UI\ImageInfo.xaml.cs">
       <DependentUpon>ImageInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\ProcessBarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ProcessBarForm.Designer.cs">
+      <DependentUpon>ProcessBarForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,6 +201,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ImageForm.resx">
       <DependentUpon>ImageForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ProcessBarForm.resx">
+      <DependentUpon>ProcessBarForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>

@@ -74,11 +74,10 @@ namespace Revit.Addin.RevitTooltip
                 SettingsForm setForm = new SettingsForm(commandData.Application.ActiveUIDocument.Document);
                 if (setForm.ShowDialog() == DialogResult.OK)
                 {
-                    //if (!SettingInfo.Instance.Refresh(commandData.Application.ActiveUIDocument.Document))
-                    //{
-                    //    MessageBox.Show("刷新数据失败:" + SettingInfo.Instance.ErrorMessage);
-                    //}
+                    //释放
+                    setForm.Dispose();
                 }
+
                 return Result.Succeeded;
             }
             catch (Exception ex)
@@ -124,7 +123,7 @@ namespace Revit.Addin.RevitTooltip
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     [Autodesk.Revit.Attributes.Journaling(Autodesk.Revit.Attributes.JournalingMode.NoCommandData)]
-    public class CommandReloadExcelData : TooltipCommandBase
+    public class CommandReloadSQLiteData : TooltipCommandBase
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -207,6 +206,19 @@ namespace Revit.Addin.RevitTooltip
         {
             ImageForm.GetInstance().Show();
             commandData.Application.Idling += App.Instance.IdlingHandler;
+            return Result.Succeeded;
+        }
+    }
+
+    [Transaction(TransactionMode.Manual)]
+    public class CmdLoadExcelToDB : TooltipCommandBase
+    {
+        public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            ProcessBarForm processBarForm = new ProcessBarForm();
+            if (processBarForm.ShowDialog() == DialogResult.OK) {
+            processBarForm.Dispose();
+            }    
             return Result.Succeeded;
         }
     }

@@ -52,7 +52,12 @@ namespace Revit.Addin.RevitTooltip
             settings.AlertNumberAdd = double.Parse(tooltipEntity.Get<string>("AlertNumberAdd"));
             settings.SurveyFile = tooltipEntity.Get<string>("SurveyFile");
             settings.UnderWallFile = tooltipEntity.Get<string>("UnderWallFile");
-
+            settings.DfServer = tooltipEntity.Get<string>("DfServer");
+            settings.DfDB = tooltipEntity.Get<string>("DfDB");
+            settings.DfPort = tooltipEntity.Get<string>("DfPort");
+            settings.DfUser = tooltipEntity.Get<string>("DfUser");
+            settings.DfPassword = tooltipEntity.Get<string>("DfPassword");
+            settings.DfCharset = tooltipEntity.Get<string>("DfCharset");
             return settings;
         }
     }
