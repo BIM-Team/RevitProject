@@ -66,19 +66,20 @@ namespace Revit.Addin.RevitTooltip.Util
 
         }
 
-        //设置SQLiteDB目录
-        public void setSQLiteDbDirectory(string path)
-        {
-            System.IO.Directory.SetCurrentDirectory(path);
-        }
+        ////设置SQLiteDB目录
+        //public void setSQLiteDbDirectory(string path)
+        //{
+        //    System.IO.Directory.SetCurrentDirectory(path);
+        //}
 
         //如果本地有SQLiteDB.db3数据库，先删除，再创建，并从Mysql数据中导入数据 
-        public void UpdateDB()
+        public void UpdateDB(string path="D:/")
         {
             //先关闭数据库连接
             if (conn.State == ConnectionState.Open)
                 Close();
-
+            //设置SQLiteDB目录
+            System.IO.Directory.SetCurrentDirectory(path);
             if (System.IO.File.Exists(dbPath))
             {
                 // Console.WriteLine(System.IO.Directory.GetCurrentDirectory());
