@@ -129,7 +129,9 @@ namespace Revit.Addin.RevitTooltip
         {
             try
             {
-                SQLiteHelper.CreateInstance().UpdateDB();
+                string path = commandData.Application.ActiveUIDocument.Document.PathName;
+                path=Directory.GetParent(path).ToString();
+                SQLiteHelper.CreateInstance().UpdateDB(path);
                 MessageBox.Show("数据更新成功");
                 return Result.Succeeded;
             }

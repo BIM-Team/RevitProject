@@ -334,13 +334,32 @@ namespace Revit.Addin.RevitTooltip.UI
 
         private void ImageForm_Load(object sender, EventArgs e)
         {
-           List<ParameterData> errorCXs= SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
-            this.dataGridView1.DataSource = errorCXs;
+           //List<ParameterData> errorCXs= SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
+           // this.dataGridView1.DataSource = errorCXs;
         }
 
         private void dataGridView1_CurrentCellChanged(object sender, EventArgs e)
         {
-            this.EntityName=dataGridView1.CurrentCell.Value.ToString();
+            string selection = string.Empty;
+            if (dataGridView1.CurrentCell!=null&&dataGridView1.CurrentCell.Value != null) {
+            selection= dataGridView1.CurrentCell.Value.ToString();
+            }
+            if (!string.IsNullOrEmpty(selection)) {
+            try {
+                    this.EntityName = selection;
+
+            }
+            catch (Exception ex) {
+                System.Console.WriteLine("异常"+ex.Message);
+            }
+
+            }
+        }
+
+        private void ImageForm_Shown(object sender, EventArgs e)
+        {
+            List<ParameterData> errorCXs = SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
+            this.dataGridView1.DataSource = errorCXs;
         }
     }
 }

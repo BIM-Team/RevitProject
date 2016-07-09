@@ -79,7 +79,9 @@ namespace Revit.Addin.RevitTooltip.Util
             if (conn.State == ConnectionState.Open)
                 Close();
             //设置SQLiteDB目录
+            if (!System.IO.Directory.GetCurrentDirectory().ToString().Equals(path)) {
             System.IO.Directory.SetCurrentDirectory(path);
+            }
             if (System.IO.File.Exists(dbPath))
             {
                 // Console.WriteLine(System.IO.Directory.GetCurrentDirectory());
@@ -87,12 +89,12 @@ namespace Revit.Addin.RevitTooltip.Util
                 // Console.WriteLine("成功删除SQLite数据库");
             }
 
+            mysql = MysqlUtil.CreateInstance();
             //打开数据库连接       
             if (conn.State != ConnectionState.Open)
             {
                 OpenConnect();
-            }
-            mysql = MysqlUtil.CreateInstance();
+            }            
 
             using (DbTransaction transaction = conn.BeginTransaction())
             {
