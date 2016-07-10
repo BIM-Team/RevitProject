@@ -244,9 +244,9 @@ namespace Revit.Addin.RevitTooltip
 #else
                 Element selectElement = uidoc.Selection.Elements.Cast<Element>().FirstOrDefault<Element>();
 #endif
-
                 if (selectElement != null)
                 {
+                Category category = selectElement.Category;
                     entity = Utils.GetParameterValueAsString(selectElement, Res.String_ParameterName);
                     if (!string.IsNullOrEmpty(entity))
                     {

@@ -1,4 +1,6 @@
-﻿using Revit.Addin.RevitTooltip.Util;
+﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
+using Revit.Addin.RevitTooltip.Util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,12 +8,21 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using static Revit.Addin.RevitTooltip.App;
+using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 
 namespace Revit.Addin.RevitTooltip.UI
 {
-    public partial class ImageForm : Form
+    public partial class ImageForm : System.Windows.Forms.Form
     {
         private static ImageForm _form = null;
+        private ExternalCommandData commandData = null;
+        public ExternalCommandData CommandData
+        {
+            set
+            {
+                this.commandData = value;
+            }
+        }
         // private MysqlUtil mysql;
         //实体名称
         private string entityName;
@@ -219,24 +230,24 @@ namespace Revit.Addin.RevitTooltip.UI
             try
             {
                 //清除屏幕
-                g.Clear(Color.White);
+                g.Clear(System.Drawing.Color.White);
                 //
 
                 //用于画正常的线段
-                Pen mypen = new Pen(Color.Blue, 1);
+                Pen mypen = new Pen(System.Drawing.Color.Blue, 1);
                 mypen.DashStyle = DashStyle.Dash;
                 //画坐标轴使用
-                Pen mypen1 = new Pen(Color.Blue, 2);
+                Pen mypen1 = new Pen(System.Drawing.Color.Blue, 2);
                 //用于画错误的线段
-                Pen pen_error = new Pen(Color.Red, 2);
+                Pen pen_error = new Pen(System.Drawing.Color.Red, 2);
                 pen_error.DashStyle = DashStyle.Dash;
                 //
-                Pen pen_error1 = new Pen(Color.Green, 2);
+                Pen pen_error1 = new Pen(System.Drawing.Color.Green, 2);
                 pen_error1.DashStyle = DashStyle.Dash;
                 //用于连接xy轴
-                Pen dotPen = new Pen(Color.Black, 0.5f);
+                Pen dotPen = new Pen(System.Drawing.Color.Black, 0.5f);
                 dotPen.DashStyle = DashStyle.Dot;
-                Pen dotPen1 = new Pen(Color.Red, 0.5f);
+                Pen dotPen1 = new Pen(System.Drawing.Color.Red, 0.5f);
                 dotPen1.DashStyle = DashStyle.Dot;
                 //画X轴
                 g.DrawLine(mypen1, startX, startY, endX, startY);
@@ -348,7 +359,48 @@ namespace Revit.Addin.RevitTooltip.UI
             try {
                     this.EntityName = selection;
 
-            }
+                    //
+                    BuiltInParameter testParam = BuiltInParameter.ALL_MODEL_TYPE_NAME;
+                    ParameterValueProvider pvp = new ParameterValueProvider(new ElementId(testParam));
+                    FilterStringEquals eq = new FilterStringEquals();
+                    FilterRule rule = new FilterStringRule(pvp,eq,Res.String_ParameterSurveyType,false);
+                    ElementParameterFilter paramFilter = new ElementParameterFilter(rule);
+
+
+                    //ElementClassFilter filter = new ElementClassFilter(typeof(FamilyInstance));
+                    Document document = this.commandData.Application.ActiveUIDocument.Document;
+                    Autodesk.Revit.DB.View view = this.commandData.Application.ActiveUIDocument.ActiveView;
+
+                    IList<UIView> uiViews = this.commandData.Application.ActiveUIDocument.GetOpenUIViews();
+                    UIView currentUIView = null;
+                    foreach (UIView ui in uiViews) {
+                        if (ui.ViewId.Equals(view.Id)) {
+                            currentUIView = ui;
+                        }
+                    }
+
+                    FilteredElementCollector elementCollector = new FilteredElementCollector(document);
+                    IList<Element> elems = elementCollector.WherePasses(paramFilter).ToElements();
+                    foreach (var elem in elems)
+                    {
+                        string param_value = string.Empty;
+                        Parameter param = elem.get_Parameter(Res.String_ParameterName);
+                        if (null != param && param.StorageType== StorageType.String)
+                        {
+                            param_value = param.AsString();
+                        }
+                        if (selection.Equals(param_value))
+                        {
+                            this.commandData.Application.ActiveUIDocument.ShowElements(elem.Id);
+                            IList<XYZ> corners = currentUIView.GetZoomCorners();
+                            XYZ center = (corners[0] + corners[1])/2;
+                            XYZ div = new XYZ(25,25,25);
+                            currentUIView.ZoomAndCenterRectangle(center-div,center+div);
+                            break;
+                        }
+                    }
+
+                }
             catch (Exception ex) {
                 System.Console.WriteLine("异常"+ex.Message);
             }
