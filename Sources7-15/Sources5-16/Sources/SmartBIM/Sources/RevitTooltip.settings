@@ -1,0 +1,39 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Revit.Addin.RevitTooltip" GeneratedClassName="RevitTooltip">
+  <Profiles />
+  <Settings>
+    <Setting Name="SurveyFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">施工BIM数据-检测.xlsx</Value>
+    </Setting>
+    <Setting Name="AlertNumber" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="AlertNumberAdd" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="FoundationFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">施工BIM数据-基础.xlsx</Value>
+    </Setting>
+    <Setting Name="UnderWallFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">施工BIM数据-地墙.xlsx</Value>
+    </Setting>
+    <Setting Name="DfServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">127.1.1.0</Value>
+    </Setting>
+    <Setting Name="DfDB" Type="System.String" Scope="User">
+      <Value Profile="(Default)">hzj</Value>
+    </Setting>
+    <Setting Name="DfUser" Type="System.String" Scope="User">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+    <Setting Name="DfPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">root</Value>
+    </Setting>
+    <Setting Name="DfCharset" Type="System.String" Scope="User">
+      <Value Profile="(Default)">utf8</Value>
+    </Setting>
+    <Setting Name="DfPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3306</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
