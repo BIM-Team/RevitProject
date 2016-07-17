@@ -87,8 +87,7 @@ namespace Revit.Addin.RevitTooltip.UI
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.ImageForm_Load);
-            this.Shown += new System.EventHandler(this.ImageForm_Shown);
+            this.Activated += new System.EventHandler(this.ImageForm_Actived);
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);

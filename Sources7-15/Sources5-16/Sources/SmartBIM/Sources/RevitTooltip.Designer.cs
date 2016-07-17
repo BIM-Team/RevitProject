@@ -8,12 +8,15 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System;
+
 namespace Revit.Addin.RevitTooltip {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
-    public sealed partial class RevitTooltip : global::System.Configuration.ApplicationSettingsBase {
+    public sealed partial class RevitTooltip : global::System.Configuration.ApplicationSettingsBase, ICloneable
+    {
         
         private static RevitTooltip defaultInstance = ((RevitTooltip)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new RevitTooltip())));
         
@@ -22,18 +25,7 @@ namespace Revit.Addin.RevitTooltip {
                 return defaultInstance;
             }
         }
-        public override bool Equals(object obj)
-        {
-            RevitTooltip o = (RevitTooltip)obj;
-
-            return this.DfDB.Equals(o.DfDB)&&this.DfPassword.Equals(o.DfPassword)
-                &&this.DfServer.Equals(o.DfServer)&&this.DfUser.Equals(o.DfUser)&&
-                this.DfPort.Equals(o.DfPort);
-        }
-        public override int GetHashCode()
-        {
-            return (this.DfDB+this.DfPassword+this.DfServer+this.DfUser+this.DfPort).GetHashCode();
-        }
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("施工BIM数据-检测.xlsx")]
@@ -164,6 +156,49 @@ namespace Revit.Addin.RevitTooltip {
             set {
                 this["DfPort"] = value;
             }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\SqliteDBFile")]
+        public string SqliteFilePath {
+            get {
+                return ((string)(this["SqliteFilePath"]));
+            }
+            set {
+                this["SqliteFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("SqliteDfFile.db")]
+        public string SqliteFileName {
+            get {
+                return ((string)(this["SqliteFileName"]));
+            }
+            set {
+                this["SqliteFileName"] = value;
+            }
+        }
+
+        public object Clone()
+        {
+            RevitTooltip newOne = new RevitTooltip();
+            newOne.SurveyFile = this.SurveyFile;
+            newOne.AlertNumber = this.AlertNumber;
+            newOne.AlertNumberAdd = this.AlertNumberAdd;
+            newOne.FoundationFile = this.FoundationFile;
+            newOne.UnderWallFile = this.UnderWallFile;
+            newOne.DfServer = this.DfServer;
+            newOne.DfDB = this.DfDB;
+            newOne.DfPort = this.DfPort;
+            newOne.DfUser = this.DfUser;
+            newOne.DfCharset = this.DfCharset;
+            newOne.DfPassword = this.DfPassword;
+            newOne.SqliteFileName = this.SqliteFileName;
+            newOne.SqliteFilePath = this.SqliteFilePath;
+            return newOne;
         }
     }
 }

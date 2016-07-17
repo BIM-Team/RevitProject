@@ -47,7 +47,7 @@ namespace Revit.Addin.RevitTooltip.Util
         //初始化
         private MysqlUtil(RevitTooltip settings)
         {
-            MysqlUtil.settings = settings;
+            MysqlUtil.settings =(RevitTooltip) settings.Clone();
 
         }
 
@@ -71,8 +71,11 @@ namespace Revit.Addin.RevitTooltip.Util
         //销毁当前对象
         public void Dispose()
         {
+            if (conn != null) {
+
             conn.Close();
             conn.Dispose();
+            }
             GC.SuppressFinalize(this);
             this.isOpen = false;
         }

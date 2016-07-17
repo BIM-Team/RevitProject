@@ -35,5 +35,11 @@
     <Setting Name="DfPort" Type="System.String" Scope="User">
       <Value Profile="(Default)">3306</Value>
     </Setting>
+    <Setting Name="SqliteFilePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\SqliteDBFile</Value>
+    </Setting>
+    <Setting Name="SqliteFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">SqliteDfFile.db</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

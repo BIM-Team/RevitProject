@@ -6,6 +6,7 @@ using System.Data.SQLite;
 using MySql.Data.MySqlClient;
 using static Revit.Addin.RevitTooltip.App;
 using System.Windows;
+using System.IO;
 
 namespace Revit.Addin.RevitTooltip.Util
 {
@@ -18,8 +19,8 @@ namespace Revit.Addin.RevitTooltip.Util
         //连接
         private SQLiteConnection conn;
         private string connectionString = string.Empty;
-        private string dbName = "本地数据库";
-        private static string dbPath = "D:/TO 卫老师/1-测试模型";        //App.settings.PropertyName();
+        private static string dbName = App.settings.SqliteFileName;
+        private static string dbPath = App.settings.SqliteFilePath;        //App.settings.PropertyName();
 
         //构造函数
         private SQLiteHelper()
@@ -33,6 +34,14 @@ namespace Revit.Addin.RevitTooltip.Util
         {
             if (null == sqliteHelper)
             {
+                sqliteHelper = new SQLiteHelper();
+            }
+            else if (!App.settings.SqliteFileName.Equals(SQLiteHelper.dbName) ||
+               !App.settings.SqliteFilePath.Equals(SQLiteHelper.dbPath))
+            {
+                SQLiteHelper.dbName = App.settings.SqliteFileName;
+                SQLiteHelper.dbPath = App.settings.SqliteFilePath;
+                sqliteHelper.Dispose();
                 sqliteHelper = new SQLiteHelper();
             }
             return sqliteHelper;
@@ -68,19 +77,16 @@ namespace Revit.Addin.RevitTooltip.Util
         }
 
         //如果本地有SQLiteDB数据库，先删除，再创建，并从Mysql数据中导入数据 
-        public void UpdateDB(string path= "D:/TO 卫老师/1-测试模型")
+        public void UpdateDB()
         {
             //先关闭数据库连接
             if (conn.State == ConnectionState.Open)
                 Close();
-            //设置SQLiteDB目录
-            if (!System.IO.Directory.GetCurrentDirectory().ToString().Equals(path)) {
-                setSQLiteDbDirectory(path);
-            }
+           
             //删除原有本地数据库
-            if (System.IO.File.Exists(dbName))
+            if (System.IO.File.Exists(Path.Combine(App.settings.SqliteFilePath,App.settings.SqliteFileName)))
             {
-                System.IO.File.Delete(dbName);               
+                System.IO.File.Delete(Path.Combine(App.settings.SqliteFilePath, App.settings.SqliteFileName));               
             }
 
             mysql = MysqlUtil.CreateInstance();

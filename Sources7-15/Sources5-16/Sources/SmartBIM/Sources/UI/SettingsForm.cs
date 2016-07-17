@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.IO;
-using Revit.Addin.RevitTooltip.Util;
-using System.Collections.Generic;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -31,6 +29,8 @@ namespace Revit.Addin.RevitTooltip
                 textPort.Text = settings.DfPort;
                 textUser.Text = settings.DfUser;
                 textPass.Text = settings.DfPassword;
+                sqliteFilePath.Text = settings.SqliteFilePath;
+                sqliteFileName.Text = settings.SqliteFileName;
 
 
             }
@@ -50,6 +50,8 @@ namespace Revit.Addin.RevitTooltip
                 textPort.Text = settings.DfPort;
                 textUser.Text = settings.DfUser;
                 textPass.Text = settings.DfPassword;
+                sqliteFilePath.Text = settings.SqliteFilePath;
+                sqliteFileName.Text = settings.SqliteFileName;
 
 
             }
@@ -77,6 +79,8 @@ namespace Revit.Addin.RevitTooltip
                     settings.DfPort = textPort.Text;
                     settings.DfUser = textUser.Text;
                     settings.DfPassword = textPass.Text;
+                    settings.SqliteFilePath = sqliteFilePath.Text;
+                    settings.SqliteFileName = sqliteFileName.Text;
                 ExtensibleStorage.StoreTooltipInfo(m_doc.ProjectInformation, settings);
                 //保存文档
                 m_doc.Save(); 
@@ -115,87 +119,21 @@ namespace Revit.Addin.RevitTooltip
             }
         }
 
-        private void buttonApply_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            buttonApply.Enabled = false;
-            try
-            {
-                RevitTooltip settings = App.settings;
-                if (null == settings)
-                {
-                    settings = RevitTooltip.Default;
-                }
-                settings.AlertNumber = double.Parse(textBoxAlert.Text);
-                settings.AlertNumberAdd = double.Parse(alertNumberAdd.Text);
-                settings.SurveyFile = textBoxSurveyFile.Text;
-                settings.FoundationFile = textBoxFoundationFile.Text;
-                settings.UnderWallFile = textBoxUnderWallFile.Text;
-                settings.DfServer = textServerPath.Text;
-                settings.DfDB = textDB.Text;
-                settings.DfPort = textPort.Text;
-                settings.DfUser = textUser.Text;
-                settings.DfPassword = textPass.Text;
-                ExtensibleStorage.StoreTooltipInfo(m_doc.ProjectInformation, settings);
-                //保存文档
-                m_doc.Save();
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Sqlite文件（*.db）|*.db";
+            saveDialog.FileName = "SqliteDfFile";
+            saveDialog.DefaultExt = "db";
+            saveDialog.AddExtension = false;
+            saveDialog.RestoreDirectory = true;
+            if (saveDialog.ShowDialog() == DialogResult.OK) {
+                String fullPath = saveDialog.FileName;
+                String path = fullPath.Substring(0, fullPath.LastIndexOf("\\"));
+                String fileName = fullPath.Substring(fullPath.LastIndexOf("\\")+1);
+                this.sqliteFilePath.Text = path;
+                this.sqliteFileName.Text = fileName;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
         }
-
-        private void textBoxSurveyFile_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textBoxAlert_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void alertNumberAdd_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textBoxFoundationFile_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textBoxUnderWallFile_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textServerPath_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textDB_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textPort_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textUser_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-        private void textPass_TextChanged(object sender, EventArgs e)
-        {
-            buttonApply.Enabled = true;
-        }
-
-    
     }
 }

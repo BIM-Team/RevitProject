@@ -58,6 +58,8 @@ namespace Revit.Addin.RevitTooltip
             settings.DfUser = tooltipEntity.Get<string>("DfUser");
             settings.DfPassword = tooltipEntity.Get<string>("DfPassword");
             settings.DfCharset = tooltipEntity.Get<string>("DfCharset");
+            settings.SqliteFilePath = tooltipEntity.Get<string>("SqliteFilePath");
+            settings.SqliteFileName = tooltipEntity.Get<string>("SqliteFileName");
             return settings;
         }
     }

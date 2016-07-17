@@ -55,11 +55,17 @@
             this.label5 = new System.Windows.Forms.Label();
             this.textServerPath = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.buttonApply = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.sqliteFileName = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.sqliteBtn = new System.Windows.Forms.Button();
+            this.sqliteFilePath = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -75,7 +81,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(278, 386);
+            this.buttonCancel.Location = new System.Drawing.Point(298, 467);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
@@ -86,7 +92,7 @@
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(179, 386);
+            this.buttonOK.Location = new System.Drawing.Point(93, 467);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -102,7 +108,6 @@
             this.textBoxSurveyFile.Name = "textBoxSurveyFile";
             this.textBoxSurveyFile.Size = new System.Drawing.Size(372, 21);
             this.textBoxSurveyFile.TabIndex = 0;
-            this.textBoxSurveyFile.TextChanged += new System.EventHandler(this.textBoxSurveyFile_TextChanged);
             // 
             // buttonBrowseSurvey
             // 
@@ -128,15 +133,13 @@
             // 
             this.textBoxAlert.Location = new System.Drawing.Point(126, 66);
             this.textBoxAlert.Name = "textBoxAlert";
-            this.textBoxAlert.Size = new System.Drawing.Size(42, 21);
+            this.textBoxAlert.Size = new System.Drawing.Size(72, 21);
             this.textBoxAlert.TabIndex = 0;
-            this.textBoxAlert.Text = "30";
-            this.textBoxAlert.TextChanged += new System.EventHandler(this.textBoxAlert_TextChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(179, 69);
+            this.label3.Location = new System.Drawing.Point(205, 69);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 12);
             this.label3.TabIndex = 0;
@@ -144,12 +147,10 @@
             // 
             // alertNumberAdd
             // 
-            this.alertNumberAdd.Location = new System.Drawing.Point(286, 66);
+            this.alertNumberAdd.Location = new System.Drawing.Point(300, 66);
             this.alertNumberAdd.Name = "alertNumberAdd";
-            this.alertNumberAdd.Size = new System.Drawing.Size(94, 21);
+            this.alertNumberAdd.Size = new System.Drawing.Size(80, 21);
             this.alertNumberAdd.TabIndex = 0;
-            this.alertNumberAdd.Text = "2";
-            this.alertNumberAdd.TextChanged += new System.EventHandler(this.alertNumberAdd_TextChanged);
             // 
             // groupBox1
             // 
@@ -186,7 +187,6 @@
             this.textBoxFoundationFile.Name = "textBoxFoundationFile";
             this.textBoxFoundationFile.Size = new System.Drawing.Size(372, 21);
             this.textBoxFoundationFile.TabIndex = 0;
-            this.textBoxFoundationFile.TextChanged += new System.EventHandler(this.textBoxFoundationFile_TextChanged);
             // 
             // buttonBrowseFoundationFile
             // 
@@ -218,7 +218,6 @@
             this.textBoxUnderWallFile.Name = "textBoxUnderWallFile";
             this.textBoxUnderWallFile.Size = new System.Drawing.Size(372, 21);
             this.textBoxUnderWallFile.TabIndex = 0;
-            this.textBoxUnderWallFile.TextChanged += new System.EventHandler(this.textBoxUnderWallFile_TextChanged);
             // 
             // buttonBrowseUnderWallFile
             // 
@@ -256,7 +255,6 @@
             this.textPass.Name = "textPass";
             this.textPass.Size = new System.Drawing.Size(100, 21);
             this.textPass.TabIndex = 9;
-            this.textPass.TextChanged += new System.EventHandler(this.textPass_TextChanged);
             // 
             // label8
             // 
@@ -273,7 +271,6 @@
             this.textUser.Name = "textUser";
             this.textUser.Size = new System.Drawing.Size(100, 21);
             this.textUser.TabIndex = 7;
-            this.textUser.TextChanged += new System.EventHandler(this.textUser_TextChanged);
             // 
             // label7
             // 
@@ -290,7 +287,6 @@
             this.textPort.Name = "textPort";
             this.textPort.Size = new System.Drawing.Size(100, 21);
             this.textPort.TabIndex = 5;
-            this.textPort.TextChanged += new System.EventHandler(this.textPort_TextChanged);
             // 
             // label6
             // 
@@ -307,7 +303,6 @@
             this.textDB.Name = "textDB";
             this.textDB.Size = new System.Drawing.Size(100, 21);
             this.textDB.TabIndex = 3;
-            this.textDB.TextChanged += new System.EventHandler(this.textDB_TextChanged);
             // 
             // label5
             // 
@@ -324,7 +319,6 @@
             this.textServerPath.Name = "textServerPath";
             this.textServerPath.Size = new System.Drawing.Size(300, 21);
             this.textServerPath.TabIndex = 1;
-            this.textServerPath.TextChanged += new System.EventHandler(this.textServerPath_TextChanged);
             // 
             // label4
             // 
@@ -335,16 +329,61 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "服务器地址";
             // 
-            // buttonApply
+            // groupBox5
             // 
-            this.buttonApply.Enabled = false;
-            this.buttonApply.Location = new System.Drawing.Point(375, 386);
-            this.buttonApply.Name = "buttonApply";
-            this.buttonApply.Size = new System.Drawing.Size(75, 23);
-            this.buttonApply.TabIndex = 6;
-            this.buttonApply.Text = "应用";
-            this.buttonApply.UseVisualStyleBackColor = true;
-            this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
+            this.groupBox5.Controls.Add(this.sqliteFileName);
+            this.groupBox5.Controls.Add(this.label10);
+            this.groupBox5.Controls.Add(this.sqliteBtn);
+            this.groupBox5.Controls.Add(this.sqliteFilePath);
+            this.groupBox5.Controls.Add(this.label9);
+            this.groupBox5.Location = new System.Drawing.Point(12, 367);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(444, 88);
+            this.groupBox5.TabIndex = 6;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "本地设置";
+            // 
+            // sqliteFileName
+            // 
+            this.sqliteFileName.Location = new System.Drawing.Point(80, 49);
+            this.sqliteFileName.Name = "sqliteFileName";
+            this.sqliteFileName.Size = new System.Drawing.Size(301, 21);
+            this.sqliteFileName.TabIndex = 9;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(12, 57);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(53, 12);
+            this.label10.TabIndex = 8;
+            this.label10.Text = "文件命名";
+            // 
+            // sqliteBtn
+            // 
+            this.sqliteBtn.Location = new System.Drawing.Point(386, 20);
+            this.sqliteBtn.Name = "sqliteBtn";
+            this.sqliteBtn.Size = new System.Drawing.Size(48, 23);
+            this.sqliteBtn.TabIndex = 7;
+            this.sqliteBtn.Text = "...";
+            this.sqliteBtn.UseVisualStyleBackColor = true;
+            this.sqliteBtn.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // sqliteFilePath
+            // 
+            this.sqliteFilePath.Location = new System.Drawing.Point(80, 21);
+            this.sqliteFilePath.Name = "sqliteFilePath";
+            this.sqliteFilePath.Size = new System.Drawing.Size(301, 21);
+            this.sqliteFilePath.TabIndex = 1;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(12, 26);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(53, 12);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "文件路径";
             // 
             // SettingsForm
             // 
@@ -352,8 +391,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(476, 421);
-            this.Controls.Add(this.buttonApply);
+            this.ClientSize = new System.Drawing.Size(476, 502);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -377,6 +416,8 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -410,6 +451,11 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textServerPath;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button buttonApply;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.TextBox sqliteFileName;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button sqliteBtn;
+        private System.Windows.Forms.TextBox sqliteFilePath;
+        private System.Windows.Forms.Label label9;
     }
 }

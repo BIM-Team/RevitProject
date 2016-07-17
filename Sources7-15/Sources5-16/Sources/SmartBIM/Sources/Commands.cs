@@ -108,11 +108,6 @@ namespace Revit.Addin.RevitTooltip
             ofd.Multiselect = false;
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                //App.Instance.SurveyInfo = SurveyDataInfo.LoadSurveyFromFile(ofd.FileName);
-                //string msg = string.Empty;
-                //msg += "MonitorDatetime:" + App.Instance.SurveyInfo.MonitorDatetime + System.Environment.NewLine;
-                //msg += "Data count:" + App.Instance.SurveyInfo.Data.Count + System.Environment.NewLine;
-                //MessageBox.Show(msg);
                 return ofd.FileName;
             }
             return string.Empty;
@@ -129,9 +124,9 @@ namespace Revit.Addin.RevitTooltip
         {
             try
             {
-                string path = commandData.Application.ActiveUIDocument.Document.PathName;
-                path=Directory.GetParent(path).ToString();
-                SQLiteHelper.CreateInstance().UpdateDB(path);
+                //string path = commandData.Application.ActiveUIDocument.Document.PathName;
+                //path=Directory.GetParent(path).ToString();
+                SQLiteHelper.CreateInstance().UpdateDB();
                 MessageBox.Show("数据更新成功");
                 return Result.Succeeded;
             }
@@ -194,6 +189,11 @@ namespace Revit.Addin.RevitTooltip
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
+            if (!File.Exists(Path.Combine(App.settings.SqliteFilePath, App.settings.SqliteFileName)))
+            {
+                MessageBox.Show("本地数据文件不存在，请先更新");
+                return Result.Succeeded;
+            }
             DockablePane panel = commandData.Application.GetDockablePane(new DockablePaneId(ElementInfoPanel.GetInstance().Id));
             panel.Show();
             commandData.Application.Idling += App.Instance.IdlingHandler;
@@ -207,6 +207,10 @@ namespace Revit.Addin.RevitTooltip
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             commandData.Application.Idling += App.Instance.IdlingHandler;
+            if (!File.Exists(Path.Combine(App.settings.SqliteFilePath, App.settings.SqliteFileName))) {
+                MessageBox.Show("本地数据文件不存在，请先更新");
+                return Result.Succeeded;
+            }
             ImageForm imageForm = ImageForm.GetInstance();
             imageForm.CommandData = commandData;
             imageForm.Show();
