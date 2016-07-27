@@ -202,130 +202,8 @@ namespace Revit.Addin.RevitTooltip.UI
             }
         }
 
-      
-
-        private void dataGridView1_CurrentCellChanged(object sender, EventArgs e)
-        {
-            //string selection = string.Empty;
-            //if (dataGridView1.CurrentCell!=null&&dataGridView1.CurrentCell.Value != null) {
-            //selection= dataGridView1.CurrentCell.Value.ToString();
-            //}
-            //if (!string.IsNullOrEmpty(selection)) {
-            //try {
-            //        this.EntityName = selection;
-
-            //        //
-            //        BuiltInParameter testParam = BuiltInParameter.ALL_MODEL_TYPE_NAME;
-            //        ParameterValueProvider pvp = new ParameterValueProvider(new ElementId(testParam));
-            //        FilterStringEquals eq = new FilterStringEquals();
-            //        FilterRule rule = new FilterStringRule(pvp,eq,Res.String_ParameterSurveyType,false);
-            //        ElementParameterFilter paramFilter = new ElementParameterFilter(rule);
-
-
-            //        //ElementClassFilter filter = new ElementClassFilter(typeof(FamilyInstance));
-            //        Document document = this.commandData.Application.ActiveUIDocument.Document;
-            //        Autodesk.Revit.DB.View view = this.commandData.Application.ActiveUIDocument.ActiveView;
-
-            //        IList<UIView> uiViews = this.commandData.Application.ActiveUIDocument.GetOpenUIViews();
-            //        UIView currentUIView = null;
-            //        foreach (UIView ui in uiViews) {
-            //            if (ui.ViewId.Equals(view.Id)) {
-            //                currentUIView = ui;
-            //            }
-            //        }
-
-            //        FilteredElementCollector elementCollector = new FilteredElementCollector(document);
-            //        IList<Element> elems = elementCollector.WherePasses(paramFilter).ToElements();
-            //        foreach (var elem in elems)
-            //        {
-            //            string param_value = string.Empty;
-            //            Parameter param = elem.get_Parameter(Res.String_ParameterName);
-            //            if (null != param && param.StorageType== StorageType.String)
-            //            {
-            //                param_value = param.AsString();
-            //            }
-            //            if (selection.Equals(param_value))
-            //            {                        
-            //                this.commandData.Application.ActiveUIDocument.ShowElements(elem.Id);
-            //                this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
-            //                this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
-            //                IList<XYZ> corners = currentUIView.GetZoomCorners();
-            //                XYZ center = (corners[0] + corners[1])/2;
-            //                XYZ div = new XYZ(25,25,25);
-            //                currentUIView.ZoomAndCenterRectangle(center-div,center+div);
-            //                break;
-            //            }
-            //        }
-
-            //    }
-            //catch (Exception ex) {
-            //    System.Console.WriteLine("异常"+ex.Message);
-            //}
-
-            //}
-        }
-
-        private void ImageForm_Actived(object sender, EventArgs e)
-        {
-            List<ParameterData> errorCXs = SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
-            this.dataGridView1.DataSource = errorCXs;
-            List<string> listCX = new List<string>();
-            foreach (ParameterData param in errorCXs) {
-                listCX.Add(param.Name);
-            }
-            try
-            {
-                //
-                BuiltInParameter testParam = BuiltInParameter.ALL_MODEL_TYPE_NAME;
-                ParameterValueProvider pvp = new ParameterValueProvider(new ElementId(testParam));
-                FilterStringEquals eq = new FilterStringEquals();
-                FilterRule rule = new FilterStringRule(pvp, eq, Res.String_ParameterSurveyType, false);
-                ElementParameterFilter paramFilter = new ElementParameterFilter(rule);
-
-
-                Document document = this.commandData.Application.ActiveUIDocument.Document;
-                Autodesk.Revit.DB.View view = this.commandData.Application.ActiveUIDocument.ActiveView;
-
-                IList<UIView> uiViews = this.commandData.Application.ActiveUIDocument.GetOpenUIViews();
-                UIView currentUIView = null;
-                foreach (UIView ui in uiViews)
-                {
-                    if (ui.ViewId.Equals(view.Id))
-                    {
-                        currentUIView = ui;
-                    }
-                }
-
-                FilteredElementCollector elementCollector = new FilteredElementCollector(document);
-                IList<Element> elems = elementCollector.WherePasses(paramFilter).ToElements();
-                this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
-                ICollection<ElementId> elemIds = new List<ElementId>();
-                foreach (var elem in elems)
-                {
-                    string param_value = string.Empty;
-                    Parameter param = elem.get_Parameter(Res.String_ParameterName);
-                    if (null != param && param.StorageType == StorageType.String)
-                    {
-                        param_value = param.AsString();
-                    }
-                    if (listCX.Contains(param_value))
-                    {
-                        this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
-                        elemIds.Add(elem.Id);
-                    }
-                }
-                        this.commandData.Application.ActiveUIDocument.ShowElements(elemIds);
-                        //IList<XYZ> corners = currentUIView.GetZoomCorners();
-                        //XYZ center = (corners[0] + corners[1]) / 2;
-                        //XYZ div = new XYZ(25, 25, 25);
-                        //currentUIView.ZoomAndCenterRectangle(center - div, center + div);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine("异常" + ex.Message);
-            }
-        }
-
+     
+   
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             string selection = string.Empty;
@@ -391,5 +269,69 @@ namespace Revit.Addin.RevitTooltip.UI
                 }
             }
             }
+
+        private void ImageForm_VisibleChanged(object sender, EventArgs e)
+        {
+            if (((ImageForm)sender).Visible == true) {
+            List<ParameterData> errorCXs = SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
+            this.dataGridView1.DataSource = errorCXs;
+            List<string> listCX = new List<string>();
+            foreach (ParameterData param in errorCXs)
+            {
+                listCX.Add(param.Name);
+            }
+            try
+            {
+                //
+                BuiltInParameter testParam = BuiltInParameter.ALL_MODEL_TYPE_NAME;
+                ParameterValueProvider pvp = new ParameterValueProvider(new ElementId(testParam));
+                FilterStringEquals eq = new FilterStringEquals();
+                FilterRule rule = new FilterStringRule(pvp, eq, Res.String_ParameterSurveyType, false);
+                ElementParameterFilter paramFilter = new ElementParameterFilter(rule);
+
+
+                Document document = this.commandData.Application.ActiveUIDocument.Document;
+                Autodesk.Revit.DB.View view = this.commandData.Application.ActiveUIDocument.ActiveView;
+
+                IList<UIView> uiViews = this.commandData.Application.ActiveUIDocument.GetOpenUIViews();
+                UIView currentUIView = null;
+                foreach (UIView ui in uiViews)
+                {
+                    if (ui.ViewId.Equals(view.Id))
+                    {
+                        currentUIView = ui;
+                    }
+                }
+
+                FilteredElementCollector elementCollector = new FilteredElementCollector(document);
+                IList<Element> elems = elementCollector.WherePasses(paramFilter).ToElements();
+                this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
+                ICollection<ElementId> elemIds = new List<ElementId>();
+                foreach (var elem in elems)
+                {
+                    string param_value = string.Empty;
+                    Parameter param = elem.get_Parameter(Res.String_ParameterName);
+                    if (null != param && param.StorageType == StorageType.String)
+                    {
+                        param_value = param.AsString();
+                    }
+                    if (listCX.Contains(param_value))
+                    {
+                        this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
+                        elemIds.Add(elem.Id);
+                    }
+                }
+                this.commandData.Application.ActiveUIDocument.ShowElements(elemIds);
+                //IList<XYZ> corners = currentUIView.GetZoomCorners();
+                //XYZ center = (corners[0] + corners[1]) / 2;
+                //XYZ div = new XYZ(25, 25, 25);
+                //currentUIView.ZoomAndCenterRectangle(center - div, center + div);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine("异常" + ex.Message);
+            }
+        }
+      }
     }
 }

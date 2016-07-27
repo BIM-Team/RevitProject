@@ -65,7 +65,6 @@ namespace Revit.Addin.RevitTooltip.UI
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
-            this.dataGridView1.CurrentCellChanged += new System.EventHandler(this.dataGridView1_CurrentCellChanged);
             // 
             // Column1
             // 
@@ -88,7 +87,7 @@ namespace Revit.Addin.RevitTooltip.UI
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.TopMost = true;
-            this.Activated += new System.EventHandler(this.ImageForm_Actived);
+            this.VisibleChanged += new System.EventHandler(this.ImageForm_VisibleChanged);
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
