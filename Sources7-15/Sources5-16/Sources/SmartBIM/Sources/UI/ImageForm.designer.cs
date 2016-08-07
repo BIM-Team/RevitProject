@@ -16,13 +16,9 @@ namespace Revit.Addin.RevitTooltip.UI
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            //if (disposing && (components != null))
-            //{
-            //    components.Dispose();
-            //}
-            //base.Dispose(disposing);
             this.Visible = false;
             base.Visible = false;
+
         }
 
         #region Windows Form Designer generated code
@@ -82,7 +78,6 @@ namespace Revit.Addin.RevitTooltip.UI
             this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "ImageForm";
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;

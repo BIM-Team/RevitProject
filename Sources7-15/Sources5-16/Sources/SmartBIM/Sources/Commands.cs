@@ -214,6 +214,14 @@ namespace Revit.Addin.RevitTooltip
             ImageForm imageForm = ImageForm.GetInstance();
             imageForm.CommandData = commandData;
             imageForm.Show();
+            try {
+                if (commandData.Application.ActiveUIDocument.Document.IsModified) {
+
+                commandData.Application.ActiveUIDocument.Document.Save();
+                }
+            } catch (Exception e) {
+                message = "ÎÄµµ±£´æ³ö´í"+e.Message;
+            }
             return Result.Succeeded;
         }
     }
@@ -230,4 +238,5 @@ namespace Revit.Addin.RevitTooltip
             return Result.Succeeded;
         }
     }
+    
 }

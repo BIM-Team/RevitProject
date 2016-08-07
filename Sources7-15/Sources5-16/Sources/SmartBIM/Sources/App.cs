@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Diagnostics;
 using Revit.Addin.RevitTooltip.Util;
 using Revit.Addin.RevitTooltip.UI;
+using System.Threading;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -34,6 +35,7 @@ namespace Revit.Addin.RevitTooltip
         ElementInfoPanel m_elementInfoPanel = null;
         private int m_selectedElementId = -1;
         UIControlledApplication m_uiApp = null;
+        
 
         /// <summary>
         /// Provide access to singleton class instance.
@@ -179,18 +181,12 @@ namespace Revit.Addin.RevitTooltip
         private void OnViewActivated(object sender, ViewActivatedEventArgs e)
         {
             settings = ExtensibleStorage.GetTooltipInfo(e.Document.ProjectInformation);
-
-            //currentDoc = e.Document;
-            //ProjectInfo info = currentDoc.ProjectInformation;
             //load project settings when document changed
             try
             {
                 if (string.IsNullOrEmpty(m_previousDocPathName) || m_previousDocPathName != e.Document.PathName)
                 {
-                    //if (!SettingInfo.Instance.Refresh(e.Document))
-                    //{
-                    //    Debug.WriteLine("Ë¢ÐÂÊý¾ÝÊ§°Ü£º" + SettingInfo.Instance.ErrorMessage);
-                    //}
+                   
                     m_previousDocPathName = e.Document.PathName;
                 }
                 //hide the info panel if not registered
@@ -199,6 +195,7 @@ namespace Revit.Addin.RevitTooltip
                 {
                     panel.Hide();
                 }
+                
             }
             catch (System.Exception ex)
             {
@@ -280,6 +277,37 @@ namespace Revit.Addin.RevitTooltip
                         ElementInfoPanel.GetInstance().Update(new List<ParameterData>());
                     }
                 }
+                //if (color_gray != null && color_red != null) {
+                //    using (Transaction trans = new Transaction(uiapp.ActiveUIDocument.Document, "changeColor"))
+                //    {
+                //        trans.Start();
+                //        foreach (Element elem in uiapp.ActiveUIDocument.Selection.Elements)
+                //        {
+                //            Parameter param = elem.get_Parameter(Res.String_Color);
+                //            if (param != null && param.StorageType == StorageType.ElementId)
+                //            {
+                //                Material ma = uiapp.ActiveUIDocument.Document.GetElement(param.AsElementId()) as Material;
+                //                Material _var = null;
+                //                if (ma != null && ma.Name.Equals(Res.String_Color_Gray))
+                //                {
+                //                    _var = color_red;
+                //                }
+                //                if (ma != null && ma.Name.Equals(Res.String_Color_Red))
+                //                {
+                //                    _var = color_gray;
+                //                }
+                //                if (!param.IsReadOnly && _var != null)
+                //                {
+                //                    param.Set(_var.Id);
+                //                }
+                //            }
+                //        }
+                //        //commandData.Application.ActiveUIDocument.Document.Save();
+                //        trans.Commit();
+                //    }
+                //        uiapp.ActiveUIDocument.RefreshActiveView();
+
+                //}
             }
         }
 
@@ -310,5 +338,7 @@ namespace Revit.Addin.RevitTooltip
         {
             return "BIMRevit2014-2016";
         }
+       
+        
     }
 }

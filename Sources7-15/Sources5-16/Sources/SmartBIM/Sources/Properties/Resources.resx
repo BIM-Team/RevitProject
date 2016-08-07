@@ -234,4 +234,19 @@
   <data name="CommandName_Import" xml:space="preserve">
     <value>导入Excel数据</value>
   </data>
+  <data name="String_Color" xml:space="preserve">
+    <value>颜色</value>
+    <comment>Never change this string!</comment>
+  </data>
+  <data name="String_Color_Gray" xml:space="preserve">
+    <value>灰色</value>
+    <comment>根据需要更改</comment>
+  </data>
+  <data name="String_Color_Red" xml:space="preserve">
+    <value>红线</value>
+    <comment>根据需要更改</comment>
+  </data>
+  <data name="String_Reg" xml:space="preserve">
+    <value>CX</value>
+  </data>
 </root>

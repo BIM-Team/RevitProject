@@ -1,4 +1,5 @@
-﻿using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Revit.Addin.RevitTooltip.Util;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using static Revit.Addin.RevitTooltip.App;
 using Res = Revit.Addin.RevitTooltip.Properties.Resources;
@@ -17,11 +19,34 @@ namespace Revit.Addin.RevitTooltip.UI
     {
         private static ImageForm _form = null;
         private ExternalCommandData commandData = null;
+        private Material color_red = null;
+        private Material color_gray = null;
         public ExternalCommandData CommandData
         {
             set
             {
                 this.commandData = value;
+                //init the two color materials to be ready to be used
+                FilteredElementCollector elementCollector = new FilteredElementCollector(this.commandData.Application.ActiveUIDocument.Document);
+                IEnumerable<Material> allMaterial = elementCollector.OfClass(typeof(Material)).Cast<Material>();
+                color_red = null;
+                color_gray = null;
+                foreach (Material elem in allMaterial)
+                {
+                    if (elem.Name.Equals(Res.String_Color_Red))
+                    {
+                        color_red = elem;
+                    }
+                    if (elem.Name.Equals(Res.String_Color_Gray))
+                    {
+                        color_gray = elem;
+                    }
+                    if (color_gray != null && color_red != null)
+                    {
+                        break;
+                    }
+                }
+
             }
         }
         // private MysqlUtil mysql;
@@ -202,8 +227,8 @@ namespace Revit.Addin.RevitTooltip.UI
             }
         }
 
-     
-   
+
+
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             string selection = string.Empty;
@@ -252,8 +277,8 @@ namespace Revit.Addin.RevitTooltip.UI
                         if (selection.Equals(param_value))
                         {
                             this.commandData.Application.ActiveUIDocument.ShowElements(elem.Id);
-                            this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
-                            this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
+                            //this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
+                            //this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
                             IList<XYZ> corners = currentUIView.GetZoomCorners();
                             XYZ center = (corners[0] + corners[1]) / 2;
                             XYZ div = new XYZ(25, 25, 25);
@@ -268,70 +293,99 @@ namespace Revit.Addin.RevitTooltip.UI
                     System.Console.WriteLine("异常" + ex.Message);
                 }
             }
-            }
+        }
 
         private void ImageForm_VisibleChanged(object sender, EventArgs e)
         {
-            if (((ImageForm)sender).Visible == true) {
-            List<ParameterData> errorCXs = SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
-            this.dataGridView1.DataSource = errorCXs;
-            List<string> listCX = new List<string>();
-            foreach (ParameterData param in errorCXs)
+            using (Transaction tran = new Transaction(this.commandData.Application.ActiveUIDocument.Document, "saveColorChange"))
             {
-                listCX.Add(param.Name);
-            }
-            try
-            {
-                //
-                BuiltInParameter testParam = BuiltInParameter.ALL_MODEL_TYPE_NAME;
-                ParameterValueProvider pvp = new ParameterValueProvider(new ElementId(testParam));
-                FilterStringEquals eq = new FilterStringEquals();
-                FilterRule rule = new FilterStringRule(pvp, eq, Res.String_ParameterSurveyType, false);
-                ElementParameterFilter paramFilter = new ElementParameterFilter(rule);
-
-
-                Document document = this.commandData.Application.ActiveUIDocument.Document;
-                Autodesk.Revit.DB.View view = this.commandData.Application.ActiveUIDocument.ActiveView;
-
-                IList<UIView> uiViews = this.commandData.Application.ActiveUIDocument.GetOpenUIViews();
-                UIView currentUIView = null;
-                foreach (UIView ui in uiViews)
+                if (((ImageForm)sender).Visible == true)
                 {
-                    if (ui.ViewId.Equals(view.Id))
+                    List<ParameterData> errorCXs = SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
+                    this.dataGridView1.DataSource = errorCXs;
+                    List<string> listCX = new List<string>();
+                    foreach (ParameterData param in errorCXs)
                     {
-                        currentUIView = ui;
+                        listCX.Add(param.Name);
+                    }
+                    try
+                    {
+                        //
+                        BuiltInParameter testParam = BuiltInParameter.ALL_MODEL_TYPE_NAME;
+                        ParameterValueProvider pvp = new ParameterValueProvider(new ElementId(testParam));
+                        FilterStringEquals eq = new FilterStringEquals();
+                        FilterRule rule = new FilterStringRule(pvp, eq, Res.String_ParameterSurveyType, false);
+                        ElementParameterFilter paramFilter = new ElementParameterFilter(rule);
+
+
+                        Document document = this.commandData.Application.ActiveUIDocument.Document;
+                        Autodesk.Revit.DB.View view = this.commandData.Application.ActiveUIDocument.ActiveView;
+
+                        IList<UIView> uiViews = this.commandData.Application.ActiveUIDocument.GetOpenUIViews();
+                        UIView currentUIView = null;
+                        foreach (UIView ui in uiViews)
+                        {
+                            if (ui.ViewId.Equals(view.Id))
+                            {
+                                currentUIView = ui;
+                            }
+                        }
+
+                        FilteredElementCollector elementCollector = new FilteredElementCollector(document);
+                        IList<Element> elems = elementCollector.WherePasses(paramFilter).ToElements();
+                        //this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
+                        ICollection<ElementId> elemIds = new List<ElementId>();
+                        //ICollection<ElementId> materials = new List<ElementId>();
+                        tran.Start();
+                        foreach (var elem in elems)
+                        {
+                            string param_value = string.Empty;
+                            Parameter param = elem.get_Parameter(Res.String_ParameterName);
+
+                            if (null != param && param.StorageType == StorageType.String)
+                            {
+                                param_value = param.AsString();
+                            }
+                            if (!string.IsNullOrEmpty(param_value) && param_value.Substring(0, Res.String_Reg.Length).Equals(Res.String_Reg))
+                            {
+                                Parameter param_ma = elem.get_Parameter(Res.String_Color);
+                                if (listCX.Contains(param_value))
+                                {
+                                    // this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
+                                    elemIds.Add(elem.Id);
+                                    if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
+                                    {
+                                        //materials.Add(param_ma.AsElementId());
+                                        param_ma.Set(color_red.Id);
+                                    }
+                                }
+                                else if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
+                                {
+                                    //materials.Add(param_ma.AsElementId());
+                                    param_ma.Set(color_gray.Id);
+                                }
+                            }
+                        }
+                        tran.Commit();
+                        //this.commandData.Application.ActiveUIDocument.Document.Save();
+                        this.commandData.Application.ActiveUIDocument.ShowElements(elemIds);
+
+                        //this.commandData.Application.ActiveUIDocument.RefreshActiveView();
+
+                        IList<XYZ> corners = currentUIView.GetZoomCorners();
+                        XYZ center = (corners[0] + corners[1]) / 2;
+                        XYZ div = (corners[1] - corners[0]) / 4;
+                        currentUIView.ZoomAndCenterRectangle(corners[0] + div, corners[1] - div);
+                    }
+                    catch (Exception ex)
+                    {
+                        tran.RollBack();
+                        System.Console.WriteLine("异常" + ex.Message);
                     }
                 }
-
-                FilteredElementCollector elementCollector = new FilteredElementCollector(document);
-                IList<Element> elems = elementCollector.WherePasses(paramFilter).ToElements();
-                this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
-                ICollection<ElementId> elemIds = new List<ElementId>();
-                foreach (var elem in elems)
-                {
-                    string param_value = string.Empty;
-                    Parameter param = elem.get_Parameter(Res.String_ParameterName);
-                    if (null != param && param.StorageType == StorageType.String)
-                    {
-                        param_value = param.AsString();
-                    }
-                    if (listCX.Contains(param_value))
-                    {
-                        this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
-                        elemIds.Add(elem.Id);
-                    }
-                }
-                this.commandData.Application.ActiveUIDocument.ShowElements(elemIds);
-                //IList<XYZ> corners = currentUIView.GetZoomCorners();
-                //XYZ center = (corners[0] + corners[1]) / 2;
-                //XYZ div = new XYZ(25, 25, 25);
-                //currentUIView.ZoomAndCenterRectangle(center - div, center + div);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine("异常" + ex.Message);
             }
         }
-      }
+
+
     }
 }

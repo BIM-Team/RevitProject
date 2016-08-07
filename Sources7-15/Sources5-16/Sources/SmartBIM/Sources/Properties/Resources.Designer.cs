@@ -328,6 +328,33 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 颜色 的本地化字符串。
+        /// </summary>
+        internal static string String_Color {
+            get {
+                return ResourceManager.GetString("String_Color", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 灰色 的本地化字符串。
+        /// </summary>
+        internal static string String_Color_Gray {
+            get {
+                return ResourceManager.GetString("String_Color_Gray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 红线 的本地化字符串。
+        /// </summary>
+        internal static string String_Color_Red {
+            get {
+                return ResourceManager.GetString("String_Color_Red", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 测点编号 的本地化字符串。
         /// </summary>
         internal static string String_ParameterName {
@@ -351,6 +378,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         internal static string String_ParameterWallTypeName {
             get {
                 return ResourceManager.GetString("String_ParameterWallTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 CX 的本地化字符串。
+        /// </summary>
+        internal static string String_Reg {
+            get {
+                return ResourceManager.GetString("String_Reg", resourceCulture);
             }
         }
         
