@@ -222,12 +222,26 @@ namespace Revit.Addin.RevitTooltip
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            ProcessBarForm processBarForm = new ProcessBarForm();
+            ProcessBarForm processBarForm = new ProcessBarForm( MysqlUtil.CreateInstance());
             if (processBarForm.ShowDialog() == DialogResult.OK) {
             processBarForm.Dispose();
             }    
             return Result.Succeeded;
         }
     }
-    
+    [Transaction(TransactionMode.Manual)]
+    public class CmdLoadExcelToSQLite : TooltipCommandBase
+    {
+        public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            ProcessBarForm processBarForm = new ProcessBarForm(SQLiteHelper.CreateInstance());
+            if (processBarForm.ShowDialog() == DialogResult.OK)
+            {
+                processBarForm.Dispose();
+            }
+            return Result.Succeeded;
+        }
+    }
+
+
 }

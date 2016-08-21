@@ -5,7 +5,7 @@ using MySql.Data.MySqlClient;
 
 namespace Revit.Addin.RevitTooltip.Util
 {
-    public class MysqlUtil : IDisposable, IMysqlUtil
+    public class MysqlUtil : IDisposable, IMysqlUtil, IWriter
     {
         //单例模式
         private static MysqlUtil mysqlUtil;

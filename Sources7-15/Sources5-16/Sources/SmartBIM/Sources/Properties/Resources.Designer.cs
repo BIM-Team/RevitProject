@@ -80,7 +80,7 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
-        ///   查找类似 刷新数据 的本地化字符串。
+        ///   查找类似 刷新本地数据 的本地化字符串。
         /// </summary>
         internal static string Command_ReloadExcelData {
             get {
@@ -89,7 +89,7 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
-        ///   查找类似 绘制折线图 的本地化字符串。
+        ///   查找类似 绘折线图 的本地化字符串。
         /// </summary>
         internal static string Command_SurveyImageInfo {
             get {
@@ -134,6 +134,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 导入excel表到本地数据库 的本地化字符串。
+        /// </summary>
+        internal static string CommandDescription_Import_SQLite {
+            get {
+                return ResourceManager.GetString("CommandDescription_Import_SQLite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 To view the license information of the application. 的本地化字符串。
         /// </summary>
         internal static string CommandDescription_LicenseInfo {
@@ -143,7 +152,7 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
-        ///   查找类似 重新加载Excel数据源 的本地化字符串。
+        ///   查找类似 重新加载Excel数据 的本地化字符串。
         /// </summary>
         internal static string CommandDescription_ReloadExcelData {
             get {
@@ -206,11 +215,20 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
-        ///   查找类似 导入Excel数据 的本地化字符串。
+        ///   查找类似 导入数据 的本地化字符串。
         /// </summary>
         internal static string CommandName_Import {
             get {
                 return ResourceManager.GetString("CommandName_Import", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 导入至本地 的本地化字符串。
+        /// </summary>
+        internal static string CommandName_Import_SQLite {
+            get {
+                return ResourceManager.GetString("CommandName_Import_SQLite", resourceCulture);
             }
         }
         

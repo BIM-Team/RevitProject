@@ -56,6 +56,7 @@ namespace Revit.Addin.RevitTooltip
         /// 点击加载excel
         /// </summary>
         internal PushButton LoadExcelButton { get; set; }
+        internal PushButton LoadExcelToSQLiteButton { get; set; }
 
         /// <summary>
         /// 点击重新加载::加载到SQLite
@@ -106,6 +107,16 @@ namespace Revit.Addin.RevitTooltip
             LoadExcelButton.Image = LoadExcelButton.LargeImage = image;
             LoadExcelButton.ToolTip = Res.CommandDescription_Import;
             LoadExcelButton.SetContextualHelp(cHelp);
+            ribbonPanel.AddSeparator();
+
+            //load excel file to SQLite
+            LoadExcelToSQLiteButton = (PushButton)ribbonPanel.AddItem(
+                    new PushButtonData("LoadExcelToSQLite", Res.CommandName_Import_SQLite,
+                        addinAssembly, "Revit.Addin.RevitTooltip.CmdLoadExcelToSQLite"));
+            image = Utils.ConvertFromBitmap(Res.tooltip_on.ToBitmap());
+            LoadExcelToSQLiteButton.Image = LoadExcelToSQLiteButton.LargeImage = image;
+            LoadExcelToSQLiteButton.ToolTip = Res.CommandDescription_Import_SQLite;
+            LoadExcelToSQLiteButton.SetContextualHelp(cHelp);
             ribbonPanel.AddSeparator();
 
             //////////////////////////////////////////////////////////////////////////
@@ -277,37 +288,6 @@ namespace Revit.Addin.RevitTooltip
                         ElementInfoPanel.GetInstance().Update(new List<ParameterData>());
                     }
                 }
-                //if (color_gray != null && color_red != null) {
-                //    using (Transaction trans = new Transaction(uiapp.ActiveUIDocument.Document, "changeColor"))
-                //    {
-                //        trans.Start();
-                //        foreach (Element elem in uiapp.ActiveUIDocument.Selection.Elements)
-                //        {
-                //            Parameter param = elem.get_Parameter(Res.String_Color);
-                //            if (param != null && param.StorageType == StorageType.ElementId)
-                //            {
-                //                Material ma = uiapp.ActiveUIDocument.Document.GetElement(param.AsElementId()) as Material;
-                //                Material _var = null;
-                //                if (ma != null && ma.Name.Equals(Res.String_Color_Gray))
-                //                {
-                //                    _var = color_red;
-                //                }
-                //                if (ma != null && ma.Name.Equals(Res.String_Color_Red))
-                //                {
-                //                    _var = color_gray;
-                //                }
-                //                if (!param.IsReadOnly && _var != null)
-                //                {
-                //                    param.Set(_var.Id);
-                //                }
-                //            }
-                //        }
-                //        //commandData.Application.ActiveUIDocument.Document.Save();
-                //        trans.Commit();
-                //    }
-                //        uiapp.ActiveUIDocument.RefreshActiveView();
-
-                //}
             }
         }
 

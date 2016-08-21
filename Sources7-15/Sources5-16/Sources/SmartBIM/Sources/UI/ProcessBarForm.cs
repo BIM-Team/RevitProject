@@ -6,9 +6,11 @@ namespace Revit.Addin.RevitTooltip.UI
 {
     public partial class ProcessBarForm : Form
     {
-        
-        public ProcessBarForm()
+        private IWriter dbWriter=null;
+       
+        public ProcessBarForm(IWriter dbw)
         {
+            this.dbWriter = dbw;
             InitializeComponent();
         }
 
@@ -26,7 +28,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 List<SheetInfo> sheets = excel.getSheetInfo_Range(0, excel.getSheetCount());
                 foreach (SheetInfo sheet in sheets)
                 {
-                    MysqlUtil.CreateInstance().InsertSheetInfo(sheet);
+                    dbWriter.InsertSheetInfo(sheet);
                     if (sheet.SheetIndex <= 33)
                     {
                       progressBar.Value++;
@@ -44,7 +46,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 List<SheetInfo> sheets = excel1.getSheetInfo_Range(0, excel1.getSheetCount());
                 foreach (SheetInfo sheet in sheets)
                 {
-                    MysqlUtil.CreateInstance().InsertSheetInfo(sheet);
+                    dbWriter.InsertSheetInfo(sheet);
                     if (sheet.SheetIndex <= 33)
                     {
                         progressBar.Value++;
@@ -61,7 +63,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 List<SheetInfo> sheets = excel2.getSheetInfo_Range(0, excel2.getSheetCount());
                 foreach (SheetInfo sheet in sheets)
                 {
-                    MysqlUtil.CreateInstance().InsertSheetInfo(sheet);
+                    dbWriter.InsertSheetInfo(sheet);
                     if (sheet.SheetIndex <= 33)
                     {
                         progressBar.Value++;

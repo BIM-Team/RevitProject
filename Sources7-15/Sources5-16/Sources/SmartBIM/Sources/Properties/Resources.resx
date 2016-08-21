@@ -206,10 +206,10 @@
     <value>打开构件信息检测面板</value>
   </data>
   <data name="Command_ReloadExcelData" xml:space="preserve">
-    <value>刷新数据</value>
+    <value>刷新本地数据</value>
   </data>
   <data name="CommandDescription_ReloadExcelData" xml:space="preserve">
-    <value>重新加载Excel数据源</value>
+    <value>重新加载Excel数据</value>
   </data>
   <data name="refresh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\refresh.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -226,13 +226,13 @@
     <value>点击，弹出绘制折线图的对话框</value>
   </data>
   <data name="Command_SurveyImageInfo" xml:space="preserve">
-    <value>绘制折线图</value>
+    <value>绘折线图</value>
   </data>
   <data name="CommandDescription_Import" xml:space="preserve">
     <value>导入数据到Mysql数据库</value>
   </data>
   <data name="CommandName_Import" xml:space="preserve">
-    <value>导入Excel数据</value>
+    <value>导入数据</value>
   </data>
   <data name="String_Color" xml:space="preserve">
     <value>颜色</value>
@@ -254,5 +254,11 @@
   </data>
   <data name="Double_Df_Radius" xml:space="preserve">
     <value>600</value>
+  </data>
+  <data name="CommandDescription_Import_SQLite" xml:space="preserve">
+    <value>导入excel表到本地数据库</value>
+  </data>
+  <data name="CommandName_Import_SQLite" xml:space="preserve">
+    <value>导入至本地</value>
   </data>
 </root>
