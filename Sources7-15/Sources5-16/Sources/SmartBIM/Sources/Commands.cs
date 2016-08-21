@@ -124,8 +124,6 @@ namespace Revit.Addin.RevitTooltip
         {
             try
             {
-                //string path = commandData.Application.ActiveUIDocument.Document.PathName;
-                //path=Directory.GetParent(path).ToString();
                 SQLiteHelper.CreateInstance().UpdateDB();
                 MessageBox.Show("数据更新成功");
                 return Result.Succeeded;
@@ -212,16 +210,9 @@ namespace Revit.Addin.RevitTooltip
                 return Result.Succeeded;
             }
             ImageForm imageForm = ImageForm.GetInstance();
+
             imageForm.CommandData = commandData;
             imageForm.Show();
-            try {
-                if (commandData.Application.ActiveUIDocument.Document.IsModified) {
-
-                commandData.Application.ActiveUIDocument.Document.Save();
-                }
-            } catch (Exception e) {
-                message = "文档保存出错"+e.Message;
-            }
             return Result.Succeeded;
         }
     }

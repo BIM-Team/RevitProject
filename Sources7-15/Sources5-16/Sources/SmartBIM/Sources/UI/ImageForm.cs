@@ -15,12 +15,14 @@ using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 
 namespace Revit.Addin.RevitTooltip.UI
 {
-    public partial class ImageForm : System.Windows.Forms.Form
+    public partial class ImageForm : System.Windows.Forms.Form, IExternalEventHandler
     {
         private static ImageForm _form = null;
         private ExternalCommandData commandData = null;
+        private ExternalEvent _externalEvent = null;
         private Material color_red = null;
         private Material color_gray = null;
+        private List<Element> error_list = new List<Element>();
         public ExternalCommandData CommandData
         {
             set
@@ -47,9 +49,10 @@ namespace Revit.Addin.RevitTooltip.UI
                     }
                 }
 
+
+
             }
         }
-        // private MysqlUtil mysql;
         //实体名称
         private string entityName;
         public string EntityName
@@ -88,7 +91,7 @@ namespace Revit.Addin.RevitTooltip.UI
 
         private ImageForm()
         {
-
+            _externalEvent = ExternalEvent.Create(this);
             InitializeComponent();
         }
 
@@ -250,7 +253,6 @@ namespace Revit.Addin.RevitTooltip.UI
                     ElementParameterFilter paramFilter = new ElementParameterFilter(rule);
 
 
-                    //ElementClassFilter filter = new ElementClassFilter(typeof(FamilyInstance));
                     Document document = this.commandData.Application.ActiveUIDocument.Document;
                     Autodesk.Revit.DB.View view = this.commandData.Application.ActiveUIDocument.ActiveView;
 
@@ -277,8 +279,6 @@ namespace Revit.Addin.RevitTooltip.UI
                         if (selection.Equals(param_value))
                         {
                             this.commandData.Application.ActiveUIDocument.ShowElements(elem.Id);
-                            //this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
-                            //this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
                             IList<XYZ> corners = currentUIView.GetZoomCorners();
                             XYZ center = (corners[0] + corners[1]) / 2;
                             XYZ div = new XYZ(25, 25, 25);
@@ -297,9 +297,14 @@ namespace Revit.Addin.RevitTooltip.UI
 
         private void ImageForm_VisibleChanged(object sender, EventArgs e)
         {
-            using (Transaction tran = new Transaction(this.commandData.Application.ActiveUIDocument.Document, "saveColorChange"))
+            _externalEvent.Raise();
+        }
+
+        public void Execute(UIApplication app)
+        {
+            if (this.Visible == true)
             {
-                if (((ImageForm)sender).Visible == true)
+                using (Transaction tran = new Transaction(this.commandData.Application.ActiveUIDocument.Document, "saveChange"))
                 {
                     List<ParameterData> errorCXs = SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
                     this.dataGridView1.DataSource = errorCXs;
@@ -330,13 +335,10 @@ namespace Revit.Addin.RevitTooltip.UI
                                 currentUIView = ui;
                             }
                         }
-
+                        tran.Start();
                         FilteredElementCollector elementCollector = new FilteredElementCollector(document);
                         IList<Element> elems = elementCollector.WherePasses(paramFilter).ToElements();
-                        //this.commandData.Application.ActiveUIDocument.Selection.Elements.Clear();
                         ICollection<ElementId> elemIds = new List<ElementId>();
-                        //ICollection<ElementId> materials = new List<ElementId>();
-                        tran.Start();
                         foreach (var elem in elems)
                         {
                             string param_value = string.Empty;
@@ -349,28 +351,27 @@ namespace Revit.Addin.RevitTooltip.UI
                             if (!string.IsNullOrEmpty(param_value) && param_value.Substring(0, Res.String_Reg.Length).Equals(Res.String_Reg))
                             {
                                 Parameter param_ma = elem.get_Parameter(Res.String_Color);
+                                Parameter param_re = elem.get_Parameter(Res.String_Radius);
                                 if (listCX.Contains(param_value))
                                 {
-                                    // this.commandData.Application.ActiveUIDocument.Selection.Elements.Add(elem);
                                     elemIds.Add(elem.Id);
+                                    error_list.Add(elem);
                                     if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
                                     {
-                                        //materials.Add(param_ma.AsElementId());
                                         param_ma.Set(color_red.Id);
                                     }
-                                }
-                                else if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
-                                {
-                                    //materials.Add(param_ma.AsElementId());
-                                    param_ma.Set(color_gray.Id);
+                                    if (param_re != null && param_re.StorageType == StorageType.Double)
+                                    {
+                                        double val = Convert.ToDouble(Res.Double_Df_Radius) * 4;
+                                        double val2 = UnitUtils.Convert(val, DisplayUnitType.DUT_MILLIMETERS, DisplayUnitType.DUT_DECIMAL_FEET);
+                                        param_re.Set(val2);
+                                    }
                                 }
                             }
                         }
                         tran.Commit();
-                        //this.commandData.Application.ActiveUIDocument.Document.Save();
                         this.commandData.Application.ActiveUIDocument.ShowElements(elemIds);
 
-                        //this.commandData.Application.ActiveUIDocument.RefreshActiveView();
 
                         IList<XYZ> corners = currentUIView.GetZoomCorners();
                         XYZ center = (corners[0] + corners[1]) / 2;
@@ -384,8 +385,49 @@ namespace Revit.Addin.RevitTooltip.UI
                     }
                 }
             }
+            else
+            {
+                using (Transaction tran = new Transaction(this.commandData.Application.ActiveUIDocument.Document, "recoverChange"))
+                {
+                    tran.Start();
+                    foreach (Element elem in error_list)
+                    {
+                        Parameter param_ma = elem.get_Parameter(Res.String_Color);
+                        Parameter param_re = elem.get_Parameter(Res.String_Radius);
+                        if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
+                        {
+                            param_ma.Set(this.color_gray.Id);
+                        }
+                        if (param_re != null && param_re.StorageType == StorageType.Double)
+                        {
+                            double val = Convert.ToDouble(Res.Double_Df_Radius);
+                            double val2 = UnitUtils.Convert(val, DisplayUnitType.DUT_MILLIMETERS, DisplayUnitType.DUT_DECIMAL_FEET);
+                            param_re.Set(val2);
+                        }
+                    }
+                    error_list.Clear();
+                    tran.Commit();
+                }
+
+                try
+                {
+                    if (this.commandData.Application.ActiveUIDocument.Document.IsModified)
+                    {
+
+                        this.commandData.Application.ActiveUIDocument.Document.Save();
+                    }
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine(error.Message);
+                }
+            }
+
         }
 
-
+        public string GetName()
+        {
+            return "StyleChange";
+        }
     }
 }

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Autodesk.Revit.DB;
+using System;
+using System.Collections.Generic;
 using static Revit.Addin.RevitTooltip.App;
+using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 
 namespace Revit.Addin.RevitTooltip.UI
 {
@@ -19,7 +22,7 @@ namespace Revit.Addin.RevitTooltip.UI
             this.Visible = false;
             base.Visible = false;
 
-        }
+            }
 
         #region Windows Form Designer generated code
 

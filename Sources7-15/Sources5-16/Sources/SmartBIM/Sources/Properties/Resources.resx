@@ -249,4 +249,10 @@
   <data name="String_Reg" xml:space="preserve">
     <value>CX</value>
   </data>
+  <data name="String_Radius" xml:space="preserve">
+    <value>半径</value>
+  </data>
+  <data name="Double_Df_Radius" xml:space="preserve">
+    <value>600</value>
+  </data>
 </root>

@@ -251,6 +251,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 600 的本地化字符串。
+        /// </summary>
+        internal static string Double_Df_Radius {
+            get {
+                return ResourceManager.GetString("Double_Df_Radius", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 备注 的本地化字符串。
         /// </summary>
         internal static string ExcelColumnHeader_Comment {
@@ -378,6 +387,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         internal static string String_ParameterWallTypeName {
             get {
                 return ResourceManager.GetString("String_ParameterWallTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 半径 的本地化字符串。
+        /// </summary>
+        internal static string String_Radius {
+            get {
+                return ResourceManager.GetString("String_Radius", resourceCulture);
             }
         }
         
