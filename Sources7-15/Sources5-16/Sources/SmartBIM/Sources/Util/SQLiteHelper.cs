@@ -1186,12 +1186,11 @@ namespace Revit.Addin.RevitTooltip.Util
         ///查询CX中的异常点，返回异常的entity值
         /// </summary>
         /// <param name="threshold">累计预警值threshold</param>
-        /// <param name="D_value">相邻差值预警D_value</param>
         /// <returns>返回list<string></returns>
-        public List<ParameterData> SelectExceptionalCX(double threshold, double D_value)
+        public List<ParameterData> SelectExceptionalCX1(double threshold)
         {
             List<ParameterData> ExceptionalCX = new List<ParameterData>();
-            string sql = String.Format("select distinct b.ENTITY from CXTable a, CXTable b where a.ENTITY = b.ENTITY and b.ID - a.ID = 1 and b.VALUE - a.VALUE > {0} or b.VALUE > {1} ", D_value, threshold);
+            string sql = String.Format("select distinct b.ENTITY from  CXTable b where   b.VALUE > {0} ", threshold);
 
             //判断数据库是否打开
             if (conn.State != ConnectionState.Open)
@@ -1230,6 +1229,56 @@ namespace Revit.Addin.RevitTooltip.Util
                 }
             }
         }
+
+        /// <summary>
+        /// 
+        ///查询CX中的异常点，返回异常的entity值
+        /// </summary>
+        /// <param name="D_value">相邻差值预警D_value</param>
+        /// <returns>返回list<string></returns>
+        public List<ParameterData> SelectExceptionalCX2( double D_value)
+        {
+            List<ParameterData> ExceptionalCX = new List<ParameterData>();
+            string sql = String.Format("select distinct b.ENTITY from CXTable a, CXTable b where a.ENTITY = b.ENTITY and b.ID - a.ID = 1 and b.VALUE - a.VALUE > {0} ", D_value);
+
+            //判断数据库是否打开
+            if (conn.State != ConnectionState.Open)
+            {
+                OpenConnect();
+            }
+            //判断是否创建该查询的表（一定要先打开数据库）
+            if (!isExist("CXTable", "table"))
+            {
+                MessageBox.Show("本地数据库不存在，建议更新本地数据库！");
+                return ExceptionalCX;
+            }
+
+            using (SQLiteCommand command = new SQLiteCommand(sql, conn)) //建立执行命令语句对象
+            {
+                SQLiteDataReader reader = command.ExecuteReader();
+                try
+                {
+                    while (reader.Read())
+                    {
+                        if (reader.HasRows)
+                        {
+                            ExceptionalCX.Add(new ParameterData(reader.GetString(0), reader.GetString(0)));
+                        }
+                    }
+                    return ExceptionalCX;
+
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                finally
+                {
+                    reader.Close();  //关闭
+                }
+            }
+        }
+
 
         //根据Entity名，查询基础数据和地墙数据，   //Revit.Addin.RevitTooltip.App.ParameterData
         public List<ParameterData> SelectEntityData(string entity)

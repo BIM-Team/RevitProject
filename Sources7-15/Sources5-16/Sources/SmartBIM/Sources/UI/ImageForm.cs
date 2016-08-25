@@ -22,6 +22,7 @@ namespace Revit.Addin.RevitTooltip.UI
         private ExternalEvent _externalEvent = null;
         private Material color_red = null;
         private Material color_gray = null;
+        private Material color_blue = null;
         private List<Element> error_list = new List<Element>();
         public ExternalCommandData CommandData
         {
@@ -31,8 +32,6 @@ namespace Revit.Addin.RevitTooltip.UI
                 //init the two color materials to be ready to be used
                 FilteredElementCollector elementCollector = new FilteredElementCollector(this.commandData.Application.ActiveUIDocument.Document);
                 IEnumerable<Material> allMaterial = elementCollector.OfClass(typeof(Material)).Cast<Material>();
-                color_red = null;
-                color_gray = null;
                 foreach (Material elem in allMaterial)
                 {
                     if (elem.Name.Equals(Res.String_Color_Red))
@@ -43,7 +42,11 @@ namespace Revit.Addin.RevitTooltip.UI
                     {
                         color_gray = elem;
                     }
-                    if (color_gray != null && color_red != null)
+                    if (elem.Name.Equals(Res.String_Color_Blue))
+                    {
+                        color_blue = elem;
+                    }
+                    if (color_gray != null && color_red != null&& color_blue!=null)
                     {
                         break;
                     }
@@ -306,8 +309,27 @@ namespace Revit.Addin.RevitTooltip.UI
             {
                 using (Transaction tran = new Transaction(this.commandData.Application.ActiveUIDocument.Document, "saveChange"))
                 {
-                    List<ParameterData> errorCXs = SQLiteHelper.CreateInstance().SelectExceptionalCX(App.settings.AlertNumber, App.settings.AlertNumberAdd);
+                    List<ParameterData> errorCXs1 = SQLiteHelper.CreateInstance().SelectExceptionalCX1(App.settings.AlertNumber);
+                    List<ParameterData> errorCXs2 = SQLiteHelper.CreateInstance().SelectExceptionalCX2(App.settings.AlertNumberAdd);
+                    List<ParameterData> errorCXs = new List<ParameterData>();
+                    errorCXs.AddRange(errorCXs1);
+                    foreach (ParameterData p in errorCXs2) {
+                        if (!errorCXs.Contains(p)) {
+                            errorCXs.Add(p);
+                        }
+                    }
+                    errorCXs.Sort();
                     this.dataGridView1.DataSource = errorCXs;
+                    List<string> listCX1 = new List<string>();
+                    foreach (ParameterData param in errorCXs1)
+                    {
+                        listCX1.Add(param.Name);
+                    }
+                    List<string> listCX2 = new List<string>();
+                    foreach (ParameterData param in errorCXs2)
+                    {
+                        listCX2.Add(param.Name);
+                    }
                     List<string> listCX = new List<string>();
                     foreach (ParameterData param in errorCXs)
                     {
@@ -356,15 +378,25 @@ namespace Revit.Addin.RevitTooltip.UI
                                 {
                                     elemIds.Add(elem.Id);
                                     error_list.Add(elem);
-                                    if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
-                                    {
-                                        param_ma.Set(color_red.Id);
-                                    }
                                     if (param_re != null && param_re.StorageType == StorageType.Double)
                                     {
                                         double val = Convert.ToDouble(Res.Double_Df_Radius) * 4;
                                         double val2 = UnitUtils.Convert(val, DisplayUnitType.DUT_MILLIMETERS, DisplayUnitType.DUT_DECIMAL_FEET);
                                         param_re.Set(val2);
+                                    }
+                                }
+                                if (listCX2.Contains(param_value))
+                                {
+                                    if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
+                                    {
+                                        param_ma.Set(color_blue.Id);
+                                    }
+                                }
+                                if (listCX1.Contains(param_value))
+                                {
+                                    if (param_ma != null && param_ma.StorageType == StorageType.ElementId)
+                                    {
+                                        param_ma.Set(color_red.Id);
                                     }
                                 }
                             }

@@ -13,6 +13,7 @@ using System.Diagnostics;
 using Revit.Addin.RevitTooltip.Util;
 using Revit.Addin.RevitTooltip.UI;
 using System.Threading;
+using System;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -291,7 +292,7 @@ namespace Revit.Addin.RevitTooltip
             }
         }
 
-        public class ParameterData
+        public class ParameterData : IComparable<ParameterData>
         {
             public string Name { get; set; }
             public string Value { get; set; }
@@ -300,6 +301,20 @@ namespace Revit.Addin.RevitTooltip
             {
                 Name = name;
                 Value = value;
+            }
+            public override bool Equals(object obj)
+            {
+                ParameterData o = (ParameterData)obj;
+                return this.Value.Equals(o.Value)&&this.Name.Equals(o.Name);
+            }
+            public override int GetHashCode()
+            {
+                return (this.Name+this.Value).GetHashCode();
+            }
+
+            public int CompareTo(ParameterData other)
+            {
+                return Convert.ToInt32(this.Value.Substring(Res.String_Reg.Length))- Convert.ToInt32(other.Value.Substring(Res.String_Reg.Length));
             }
         }
 

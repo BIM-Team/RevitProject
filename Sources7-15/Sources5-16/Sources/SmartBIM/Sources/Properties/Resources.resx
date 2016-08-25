@@ -261,4 +261,8 @@
   <data name="CommandName_Import_SQLite" xml:space="preserve">
     <value>导入至本地</value>
   </data>
+  <data name="String_Color_Blue" xml:space="preserve">
+    <value>蓝色</value>
+    <comment>根据需要更改</comment>
+  </data>
 </root>

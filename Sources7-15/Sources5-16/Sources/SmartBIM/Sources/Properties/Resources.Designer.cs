@@ -364,6 +364,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 蓝色 的本地化字符串。
+        /// </summary>
+        internal static string String_Color_Blue {
+            get {
+                return ResourceManager.GetString("String_Color_Blue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 灰色 的本地化字符串。
         /// </summary>
         internal static string String_Color_Gray {
