@@ -1,0 +1,17 @@
+【文件夹结构】
+Sources: 插件的核心源代码
+
+ThirdParty: 插件所依赖的第三方库，包括Excel读取等
+
+Install: 安装包相关的项目
+
+Bin: 编译输出时的路径
+
+【编译说明】
+- 请确保文件夹结构里面的路径
+- 用Visual Studio 2012打开Sources\RevitTooltip.csproj
+- 重新生成
+- 如果想编译Revit 2015, 2016版的，可以分别打开Sources\RevitTooltip2015.csproj及Sources\RevitTooltip2016.csproj
+
+贾合丰
+QQ: 1809400658
