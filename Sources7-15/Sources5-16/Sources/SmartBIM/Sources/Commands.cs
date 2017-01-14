@@ -1,21 +1,13 @@
 #region Namespaces
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Autodesk.Revit.UI.Selection;
 #endregion
 
-using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 using System.Windows.Forms;
 using Revit.Addin.RevitTooltip.UI;
-using Revit.Addin.RevitTooltip;
-using Revit.Addin.RevitTooltip.Util;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -71,13 +63,9 @@ namespace Revit.Addin.RevitTooltip
         {
             try
             {
-                SettingsForm setForm = new SettingsForm(commandData.Application.ActiveUIDocument.Document);
-                if (setForm.ShowDialog() == DialogResult.OK)
-                {
-                    //释放
-                    setForm.Dispose();
-                }
-
+                NewSettings settingForm = new NewSettings(App.Instance.settings);
+                settingForm.Show();
+                commandData.Application.Idling += App.Instance.SettingIdlingHandler;
                 return Result.Succeeded;
             }
             catch (Exception ex)
@@ -88,44 +76,22 @@ namespace Revit.Addin.RevitTooltip
         }
     }
 
-    [Transaction(TransactionMode.Manual)]
-    public class CmdLoadFile : TooltipCommandBase
-    {
-        public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
-        {
-            LoadFromFile();
-            return Result.Succeeded;
-        }
-
-        public static string LoadFromFile()
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = Res.String_SelectExcelFile;
-            ofd.DefaultExt = ".xls";
-            ofd.FilterIndex = 0;
-            ofd.RestoreDirectory = true;
-            ofd.Filter = "Excel 97-2003 Workbook(*.xls)|*.xls";
-            ofd.Multiselect = false;
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                return ofd.FileName;
-            }
-            return string.Empty;
-        }
-    }
+    
 
     #region CommandReloadExcelData
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     [Autodesk.Revit.Attributes.Journaling(Autodesk.Revit.Attributes.JournalingMode.NoCommandData)]
-    public class CommandReloadSQLiteData : TooltipCommandBase
+    public class CmdLoadSQLiteData : TooltipCommandBase
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             try
             {
-                SQLiteHelper.CreateInstance().UpdateDB();
-                MessageBox.Show("数据更新成功");
+                if (App.Instance.Sqlite.LoadDataToSqlite()) {
+                    App.Instance.ThresholdChanged = true;
+                    MessageBox.Show("数据更新成功");
+                }
                 return Result.Succeeded;
             }
             catch (Exception ex)
@@ -187,7 +153,7 @@ namespace Revit.Addin.RevitTooltip
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            if (!File.Exists(Path.Combine(App.settings.SqliteFilePath, App.settings.SqliteFileName)))
+            if (!File.Exists(Path.Combine(App.Instance.settings.SqliteFilePath, App.Instance.settings.SqliteFileName)))
             {
                 MessageBox.Show("本地数据文件不存在，请先更新");
                 return Result.Succeeded;
@@ -200,48 +166,51 @@ namespace Revit.Addin.RevitTooltip
     }
 
     [Transaction(TransactionMode.Manual)]
-    public class CmdSurveyImageInfo : TooltipCommandBase
+    public class CmdImageControl : TooltipCommandBase
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            commandData.Application.Idling += App.Instance.IdlingHandler;
-            if (!File.Exists(Path.Combine(App.settings.SqliteFilePath, App.settings.SqliteFileName))) {
+            if (!File.Exists(Path.Combine(App.Instance.settings.SqliteFilePath, App.Instance.settings.SqliteFileName))) {
                 MessageBox.Show("本地数据文件不存在，请先更新");
                 return Result.Succeeded;
             }
-            ImageForm imageForm = ImageForm.GetInstance();
+            ImageControl.Instance().setExcelType(App.Instance.Sqlite.SelectDrawTypes());
+            DockablePane imagePanel = commandData.Application.GetDockablePane(new DockablePaneId(ImageControl.Instance().Id));
+            imagePanel.Show();
+            commandData.Application.Idling += App.Instance.IdlingHandler;
+            commandData.Application.Idling += App.Instance.ImageControlIdlingHandler;
 
-            imageForm.CommandData = commandData;
-            imageForm.Show();
+            //对模型的处理，后续可能删除
+            //Material color_red = null;
+            //Material color_gray = null;
+            //Material color_blue = null;
+            //FilteredElementCollector elementCollector = new FilteredElementCollector(commandData.Application.ActiveUIDocument.Document);
+            //IEnumerable<Material> allMaterial = elementCollector.OfClass(typeof(Material)).Cast<Material>();
+            //        foreach (Material elem in allMaterial)
+            //        {
+            //            if (elem.Name.Equals(Res.String_Color_Red))
+            //            {
+            //                color_red = elem;
+            //            }
+            //            if (elem.Name.Equals(Res.String_Color_Gray))
+            //            {
+            //                color_gray = elem;
+            //            }
+            //            if (elem.Name.Equals(Res.String_Color_Blue))
+            //            {
+            //                color_blue = elem;
+            //            }
+            //            if (color_gray != null && color_red != null&& color_blue!=null)
+            //            {
+            //                break;
+            //            }
+            //        }
+
+
             return Result.Succeeded;
         }
     }
 
-    [Transaction(TransactionMode.Manual)]
-    public class CmdLoadExcelToDB : TooltipCommandBase
-    {
-        public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
-        {
-            ProcessBarForm processBarForm = new ProcessBarForm( MysqlUtil.CreateInstance());
-            if (processBarForm.ShowDialog() == DialogResult.OK) {
-            processBarForm.Dispose();
-            }    
-            return Result.Succeeded;
-        }
-    }
-    [Transaction(TransactionMode.Manual)]
-    public class CmdLoadExcelToSQLite : TooltipCommandBase
-    {
-        public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
-        {
-            ProcessBarForm processBarForm = new ProcessBarForm(SQLiteHelper.CreateInstance());
-            if (processBarForm.ShowDialog() == DialogResult.OK)
-            {
-                processBarForm.Dispose();
-            }
-            return Result.Succeeded;
-        }
-    }
 
 
 }

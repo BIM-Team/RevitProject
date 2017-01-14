@@ -6,7 +6,7 @@
              xmlns:wnds="http://schemas.microsoft.com/xps/2005/06"
              mc:Ignorable="d" FontSize="15"
              TextOptions.TextFormattingMode="Display"
-             d:DesignHeight="600" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" >
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -14,14 +14,14 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Background="White">
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="6*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <DataGrid x:Name="dg" Margin="0" AutoGenerateColumns="False" SelectionChanged="OnDGSelectionChanged">
+        <DataGrid x:Name="dg" Margin="0" AutoGenerateColumns="False" SelectionChanged="OnDGSelectionChanged" CanUserAddRows="False" Height="auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <DataGrid.Columns>
-                <DataGridTextColumn IsReadOnly="True" Binding="{Binding Name}" Header="属性名称" Width="5*" SortMemberPath="Name">
+                <DataGridTextColumn IsReadOnly="True" Binding="{Binding Name}" Header="属性名称" Width="5*" CanUserSort="False">
                     <DataGridTextColumn.CellStyle>
                         <Style TargetType="DataGridCell">
                             <Style.Triggers>
@@ -32,12 +32,12 @@
                         </Style>
                     </DataGridTextColumn.CellStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Binding="{Binding Value}" Header="属性数据" Width="5*">
+                <DataGridTextColumn Binding="{Binding Value}" Header="属性数据" Width="5*" CanUserSort="False">
                 </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Grid Grid.Row="1">
-            <Button Grid.Column="2" Height="30" Click="OnSaveClick" Content="保存"/>
+        <Grid Grid.Row="1" VerticalAlignment="Top">
+            <Button  Height="30" Click="OnSaveClick" Content="保存" FontSize="15"/>
         </Grid>
     </Grid>
 </UserControl>

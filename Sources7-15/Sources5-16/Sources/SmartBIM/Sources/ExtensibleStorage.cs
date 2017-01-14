@@ -47,11 +47,6 @@ namespace Revit.Addin.RevitTooltip
             {
                 return settings;
             }
-            settings.AlertNumber = double.Parse(tooltipEntity.Get<string>("AlertNumber"));
-            settings.FoundationFile = tooltipEntity.Get<string>("FoundationFile");
-            settings.AlertNumberAdd = double.Parse(tooltipEntity.Get<string>("AlertNumberAdd"));
-            settings.SurveyFile = tooltipEntity.Get<string>("SurveyFile");
-            settings.UnderWallFile = tooltipEntity.Get<string>("UnderWallFile");
             settings.DfServer = tooltipEntity.Get<string>("DfServer");
             settings.DfDB = tooltipEntity.Get<string>("DfDB");
             settings.DfPort = tooltipEntity.Get<string>("DfPort");
@@ -66,7 +61,7 @@ namespace Revit.Addin.RevitTooltip
 
     class TooltipSchemaWrapper
     {
-        public static readonly Guid SchemaGuid = new Guid("71C7278F-6D71-4E49-8BA5-4132B1EE8A6C");
+        public static readonly Guid SchemaGuid = new Guid("3A8441FB-1A43-4FB8-A6B8-1BD614060310");
         private RevitTooltip m_settings = null;
 
         public TooltipSchemaWrapper(RevitTooltip settings)
@@ -76,18 +71,26 @@ namespace Revit.Addin.RevitTooltip
 
         public Schema GetTooltipSchema()
         {
+            Schema schema = Schema.Lookup(TooltipSchemaWrapper.SchemaGuid);
+            if (schema != null) {
+                return schema;
+            }
             SchemaBuilder schemaBuilder = new SchemaBuilder(SchemaGuid);
             schemaBuilder.SetReadAccessLevel(AccessLevel.Public);
             schemaBuilder.SetWriteAccessLevel(AccessLevel.Public);
-            schemaBuilder.SetSchemaName("TooltipSchema");
+            schemaBuilder.SetSchemaName("RevitTipSettings");
             schemaBuilder.SetDocumentation("this is a schema to store tool tip info");
-
             foreach (SettingsProperty property in m_settings.Properties)
             {
                 schemaBuilder.AddSimpleField(property.Name, typeof(string));
             }
-
-            Schema schema = schemaBuilder.Finish();
+            try
+            {
+                schema = schemaBuilder.Finish();
+            }
+            catch (Exception e) {
+                throw e;
+            }
             return schema;
         }
     }

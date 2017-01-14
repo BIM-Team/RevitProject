@@ -6,8 +6,16 @@
              xmlns:local="clr-namespace:Revit.Addin.RevitTooltip"
              mc:Ignorable="d" 
              SizeChanged="OnPageSizeChanged"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="300" Width="400">
     <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" Height="auto" Margin="0" VerticalAlignment="Top" Width="auto">
+            <TabItem Header="全部">
         <local:ElementInfoHost HorizontalAlignment="Left" VerticalAlignment="Top" x:Name="elementInfoHost"/>
-   </Grid>
+            </TabItem>
+            
+        </TabControl>
+    </Grid>
 </Page>
