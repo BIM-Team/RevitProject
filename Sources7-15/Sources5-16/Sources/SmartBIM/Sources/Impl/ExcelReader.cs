@@ -117,7 +117,7 @@ namespace Revit.Addin.RevitTooltip.Impl
                                             catch (Exception) {
                                                 continue;
                                             }
-                                            dValue = (float)Math.Round(dValue, 2, MidpointRounding.AwayFromZero);
+                                            dValue = (float)Math.Round(dValue, 5, MidpointRounding.AwayFromZero);
                                             double date = Convert.ToDouble(eHelper.GetCellValue(0, c));
                                             DateTime dateTime;
                                             try
@@ -160,9 +160,9 @@ namespace Revit.Addin.RevitTooltip.Impl
                             drawEntityData.Data = new List<DrawData>();
                             int row = eHelper.GetUsedRowCount(i);
                             int col = eHelper.GetUsedColumnCount(i);
-                            text.Clear();
                             for (int c = 1; c < col; c++)
                             {
+                                text.Clear();
                                 string _min = eHelper.GetCellValue(1, c);
                                 //如果第一个测量值为空，跳过该列
                                 if (string.IsNullOrWhiteSpace(_min)){
@@ -178,7 +178,7 @@ namespace Revit.Addin.RevitTooltip.Impl
                                 {
                                     continue;
                                 }
-                                min = (float)Math.Round(min,2,MidpointRounding.AwayFromZero);
+                                min = (float)Math.Round(min,5,MidpointRounding.AwayFromZero);
                                 float mid = min;
                                 float max = min;
                                 int minCount = 0;
@@ -198,7 +198,7 @@ namespace Revit.Addin.RevitTooltip.Impl
                                         {
                                             continue;
                                         }
-                                        dValue = (float)Math.Round(dValue, 2, MidpointRounding.AwayFromZero);
+                                        dValue = (float)Math.Round(dValue, 5, MidpointRounding.AwayFromZero);
                                         text.Append(eHelper.GetCellValue(r, 0) + ":" + dValue + ";");
                                         //计算最小值
                                         if (min > dValue)

@@ -261,4 +261,8 @@
   <data name="String_No" xml:space="preserve">
     <value>没有异常</value>
   </data>
+  <data name="String_FontName" xml:space="preserve">
+    <value>文字</value>
+    <comment>Never change this string!</comment>
+  </data>
 </root>

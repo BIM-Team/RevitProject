@@ -28,16 +28,25 @@ namespace Revit.Addin.RevitTooltip.Dto
         /// 用于查询返回
         /// 累计阈值
         /// </summary>
-        public float? Total_hold { get; set; }
+        public string Total_hold { get; set; }
         /// <summary>
         /// 用于查询返回
         /// 相邻阈值
         /// </summary>
-        public float? Diff_hold { get; set; }
+        public string Diff_hold { get; set; }
         /// <summary>
         /// 记录所有导入过的文件
         /// </summary>
         public string History { get; set; }
+        /// <summary>
+        /// 记录该Excel的测量数据的比较方式
+        /// TotalThrehold的计算方式
+        /// </summary>
+        public string TotalOperator { get; set; }
+        /// <summary>
+        /// DiffThreshold的计算方式
+        /// </summary>
+        public string DiffOperator { get; set; }
     }
     /// <summary>
     /// 对应于InfoTable某个entity和其相关的所有Info数据
@@ -78,6 +87,12 @@ namespace Revit.Addin.RevitTooltip.Dto
     /// </summary>
     public class DrawData
     {
+        /// <summary>
+        /// 用于唯一标识
+        /// </summary>
+        public String UniId { set; get; }
+        public String EntityName { set; get; }
+
         DateTime date;
         /// <summary>
         /// 对应于DrawTable中的日期
@@ -152,12 +167,21 @@ namespace Revit.Addin.RevitTooltip.Dto
         /// 用于查询返回
         /// 累计阈值
         /// </summary>
-        public float Total_hold { get; set; }
+        public string Total_hold { get; set; }
         /// <summary>
         /// 用于查询返回
         /// 相邻阈值
         /// </summary>
-        public float Diff_hold { get; set; }
+        public string Diff_hold { get; set; }
+        /// <summary>
+        /// 记录该Excel的测量数据的比较方式
+        /// TotalThrehold的计算方式
+        /// </summary>
+        public string TotalOperator { get; set; }
+        /// <summary>
+        /// DiffThreshold的计算方式
+        /// </summary>
+        public string DiffOperator { get; set; }
 
     }
     /// <summary>

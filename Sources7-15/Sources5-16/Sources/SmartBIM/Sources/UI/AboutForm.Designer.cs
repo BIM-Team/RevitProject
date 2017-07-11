@@ -131,11 +131,11 @@
             this.linkLabel2.AutoSize = true;
             this.linkLabel2.Location = new System.Drawing.Point(82, 127);
             this.linkLabel2.Name = "linkLabel2";
-            this.linkLabel2.Size = new System.Drawing.Size(137, 12);
+            this.linkLabel2.Size = new System.Drawing.Size(149, 12);
             this.linkLabel2.TabIndex = 32;
             this.linkLabel2.TabStop = true;
             this.linkLabel2.Tag = "http://www.smartbim.cn/";
-            this.linkLabel2.Text = "上海慧之建技术有限公司";
+            this.linkLabel2.Text = "上海慧乘信息技术有限公司";
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked_1);
             // 
             // pictureBox3

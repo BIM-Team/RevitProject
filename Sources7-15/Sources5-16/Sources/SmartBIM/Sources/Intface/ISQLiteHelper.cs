@@ -29,12 +29,12 @@ namespace Revit.Addin.RevitTooltip.Intface
         /// 查询DrawDataTable
         ///查询Entity某日期的数据
         /// </summary>
-        DrawData SelectDrawData(string EntityName, DateTime Date);
+        List<DrawData> SelectDrawData( String signal,DateTime Date);
         /// <summary>
         /// 通过传入的Signal，查询与之对应的所有的测点
         ///传入的Signal应该是测量数据的signal
         /// </summary>
-        List<CEntityName> SelectAllEntitiesAndErr(string ExcelSignal);
+        List<CEntityName> SelectAllEntitiesAndErr(string ExcelSignal,DateTime? start=null,DateTime? end=null);
         /// <summary>
         /// 获取所有的entity和ErrMsg
         /// </summary>
@@ -94,7 +94,7 @@ namespace Revit.Addin.RevitTooltip.Intface
         /// <param name="signal"></param>
         /// <param name="total_hold"></param>
         /// <param name="diff_hold"></param>
-        bool ModifyThreshold(string signal, float total_hold, float diff_hold);
+        bool ModifyThreshold(string signal, string total_hold, string diff_hold,string totalOpr,string diffOpr);
         /// <summary>
         /// 删除分组
         /// </summary>
@@ -102,5 +102,6 @@ namespace Revit.Addin.RevitTooltip.Intface
         /// <returns></returns>
         bool DeleteGroup(int id);
         Group AddNewGroup(string signal, string newGroupName);
+        ExcelTable SelectADrawType(string EntityName);
     }
 }

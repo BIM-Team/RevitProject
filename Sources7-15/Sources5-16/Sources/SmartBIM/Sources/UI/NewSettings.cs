@@ -1,5 +1,7 @@
-﻿using Res = Revit.Addin.RevitTooltip.Properties.Resources;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
+using Revit.Addin.RevitTooltip.Dto;
+using Revit.Addin.RevitTooltip.Impl;
+using Revit.Addin.RevitTooltip.Intface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,9 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Revit.Addin.RevitTooltip.Intface;
-using Revit.Addin.RevitTooltip.Impl;
-using Revit.Addin.RevitTooltip.Dto;
+using Res = Revit.Addin.RevitTooltip.Properties.Resources;
 
 namespace Revit.Addin.RevitTooltip.UI
 {
@@ -51,6 +51,7 @@ namespace Revit.Addin.RevitTooltip.UI
             dataGridView2.AutoGenerateColumns = false;
             dataGridView1.AutoGenerateColumns = false;
             excelReader = new ExcelReader();
+            //totalOpr.ValueMember = "TotalOperator";
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -165,7 +166,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("导入异常，成功处理" + i + "个文件");
+                    MessageBox.Show("导入异常，成功处理" + i + "个文件,"+fileNames[i]+"有错误");
                     return;
                 }
                 MessageBox.Show("导入成功");
@@ -243,23 +244,37 @@ namespace Revit.Addin.RevitTooltip.UI
                 this.combExcel.DataSource = tables;
             }
         }
-
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             int row = e.RowIndex;
             string Signal = this.dataGridView1.CurrentRow.Cells[1].Value.ToString();
             try
             {
-                float Total_hold = float.Parse(this.dataGridView1.CurrentRow.Cells[3].Value.ToString());
-                float Diff_hold = float.Parse(this.dataGridView1.CurrentRow.Cells[4].Value.ToString());
+                string Total_hold = this.dataGridView1.CurrentRow.Cells[4].Value.ToString();
+                string TotalOpr=this.dataGridView1.CurrentRow.Cells[3].Value.ToString();
+                if (!System.Text.RegularExpressions.Regex.IsMatch(Total_hold, @"^(\d+(.\d+)?)([,，]\d+(.\d+)?)?$")) {
+                   throw new Exception("阈值不符合规则");
+                }
+                if (!TotalOpr.Equals("IN") &&!TotalOpr.Equals("OUT")) {
+                    Total_hold = Total_hold.Split(new Char[] {',','，' })[0];
+                }
+                string Diff_hold = this.dataGridView1.CurrentRow.Cells[6].Value.ToString();
+                string DiffOpr = this.dataGridView1.CurrentRow.Cells[5].Value.ToString();
+                if (!System.Text.RegularExpressions.Regex.IsMatch(Diff_hold, @"^(\d+(.\d+)?)([,，]\d+(.\d+)?)?$"))
+                {
+                    throw new Exception("阈值不符合规则");
+                }
+                if (!DiffOpr.Equals("IN") && !DiffOpr.Equals("OUT")) {
+                    Diff_hold = Diff_hold.Split(new Char[] { ',', '，' })[0];
+                }
                 if (useSqliteThreshold.Checked)
                 {
-                    App.Instance.Sqlite.ModifyThreshold(Signal, Total_hold, Diff_hold);
+                    App.Instance.Sqlite.ModifyThreshold(Signal, Total_hold, Diff_hold,TotalOpr,DiffOpr);
                     this.IsThresholdChanged = true;
                 }
                 else if (App.Instance.MySql.IsReady)
                 {
-                    App.Instance.MySql.ModifyThreshold(Signal, Total_hold, Diff_hold);
+                    App.Instance.MySql.ModifyThreshold(Signal, Total_hold, Diff_hold, TotalOpr, DiffOpr);
                 }
             }
             catch (Exception)
@@ -272,13 +287,13 @@ namespace Revit.Addin.RevitTooltip.UI
 
 
 
-        private void combExcel_SelectionChangeCommitted(object sender, EventArgs e)
+        private void combExcel_SelectedIndexChanged(object sender, EventArgs e)
         {
             string signal = combExcel.SelectedValue.ToString();
 
             if (!string.IsNullOrWhiteSpace(signal))
             {
-                List<Group> groups = null;
+                List<Group> groups = new List<Group>();
                 List<CKeyName> keyNames = null;
                 if (useSqlitePro.Checked)
                 {
@@ -291,7 +306,7 @@ namespace Revit.Addin.RevitTooltip.UI
                     keyNames = App.Instance.MySql.loadKeyNameForExcelAndGroup(signal);
                 }
                 this.combGroup.DataSource = groups;
-                this.dataGridView2.DataSource = keyNames;
+                this.combGroup.SelectedIndex = 0;
             }
             else
             {
@@ -299,7 +314,7 @@ namespace Revit.Addin.RevitTooltip.UI
             }
         }
 
-        private void combGroup_SelectionChangeCommitted(object sender, EventArgs e)
+        private void combGroup_SelectedIndexChanged(object sender, EventArgs e)
         {
             string signal = this.combExcel.SelectedValue.ToString();
             int id = Convert.ToInt32(this.combGroup.SelectedValue.ToString());
@@ -345,7 +360,10 @@ namespace Revit.Addin.RevitTooltip.UI
             else
             {
                 group_id = Convert.ToInt32(this.combGroup.SelectedValue.ToString());
-
+                //直接选择新建分组，不做处理
+                if (group_id == -1) {
+                    return;
+                }
             }
             List<int> OK_ids = new List<int>();
             foreach (DataGridViewRow row in this.dataGridView2.Rows)
@@ -356,21 +374,24 @@ namespace Revit.Addin.RevitTooltip.UI
                 }
             }
             bool tag = false;
+            List<Group> newGroupResult = new List<Group>();
             if (useSqlitePro.Checked)
             {
                 tag = App.Instance.Sqlite.AddKeysToGroup(group_id, OK_ids);
-                this.combGroup.DataSource= App.Instance.Sqlite.loadGroupForAExcel(signal);
-                this.dataGridView2.DataSource= App.Instance.Sqlite.loadKeyNameForExcelAndGroup(signal);
+                newGroupResult = App.Instance.Sqlite.loadGroupForAExcel(signal);
+                
             }
             else if (App.Instance.MySql.IsReady)
             {
                 tag = App.Instance.MySql.AddKeysToGroup(group_id, OK_ids);
-                this.combGroup.DataSource = App.Instance.MySql.loadGroupForAExcel(signal);
-                this.dataGridView2.DataSource = App.Instance.MySql.loadKeyNameForExcelAndGroup(signal);
+                newGroupResult = App.Instance.MySql.loadGroupForAExcel(signal);
             }
             if (tag)
             {
-
+                this.combGroup.DataSource = newGroupResult;
+                if (newGroupResult.Count > 1) {
+                this.combGroup.SelectedIndex = newGroupResult.Count - 2;
+                }
                 MessageBox.Show("修改成功");
             }
         }
@@ -406,15 +427,22 @@ namespace Revit.Addin.RevitTooltip.UI
                 tables = App.Instance.MySql.ListExcelsMessage(true);
             }
             this.combExcel.DataSource = tables;
-            this.combGroup.DataSource = new List<Group>();
-            this.combGroup.Text = "";
-            this.dataGridView2.DataSource = new List<CKeyName>();
+            if (tables != null && tables.Count > 0)
+            {
+                this.combExcel.SelectedIndex = 0;
+            }
+            else {
+                this.combExcel.Text = "没有数据";
+                this.combGroup.DataSource = new List<Group>();
+                this.combGroup.Text = "没有数据";
+                this.dataGridView2.DataSource = new List<CKeyName>();
+            }
         }
 
         private void label13_Click(object sender, EventArgs e)
         {
             Group select_Group = combGroup.SelectedItem as Group;
-            if (select_Group != null)
+            if (select_Group != null&& select_Group.Id!=-1)
             {
                 bool tag = false;
                 try
@@ -446,9 +474,7 @@ namespace Revit.Addin.RevitTooltip.UI
                         }
                         //CombGroup
                         this.combGroup.DataSource = groups;
-                        this.combGroup.Text = "";
-                        ////dataGrid
-                        this.dataGridView2.DataSource = keyNames;
+                       
                         MessageBox.Show("删除成功");
                     }
                 }

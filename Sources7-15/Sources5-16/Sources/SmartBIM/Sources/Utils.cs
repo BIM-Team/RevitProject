@@ -78,6 +78,14 @@ namespace Revit.Addin.RevitTooltip
 
             return _param.AsString();
         }
+        public static void SetParameterValue(Element elem, String strValue) {
+#if (Since2016)
+            Parameter _param = elem.LookupParameter(parameterName);
+#else
+            Parameter _param = elem.get_Parameter(Res.String_FontName);
+#endif
+            _param.SetValueString(strValue);
+        }
     }
     
 }

@@ -154,6 +154,12 @@
     <Compile Include="UI\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\ChildForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ChildForm.Designer.cs">
+      <DependentUpon>ChildForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ElementInfoHost.xaml.cs">
       <DependentUpon>ElementInfoHost.xaml</DependentUpon>
     </Compile>
@@ -184,6 +190,8 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Properties\DataSources\Revit.Addin.RevitTooltip.Properties.Resources.datasource" />
+    <None Include="Properties\DataSources\RevitTooltip.datasource" />
     <None Include="RevitTooltip.addin">
       <SubType>Designer</SubType>
     </None>
@@ -200,6 +208,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ChildForm.resx">
+      <DependentUpon>ChildForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\NewImageForm.resx">
       <DependentUpon>NewImageForm.cs</DependentUpon>

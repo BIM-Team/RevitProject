@@ -28,7 +28,14 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Label x:Name="label2" Content="类型" HorizontalAlignment="Left"  Margin="0"  Grid.RowSpan="1" VerticalAlignment="Top"/>
-        <ComboBox x:Name="comboBox" Grid.Column="1" HorizontalAlignment="Left" Margin="0"  VerticalAlignment="Top" Width="120" SelectionChanged="comboBox_SelectionChanged" SelectedValuePath="Signal" DisplayMemberPath="CurrentFile"/>
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+        <ComboBox x:Name="comboBox" Grid.Column="0" HorizontalAlignment="Left" Margin="0"  VerticalAlignment="Top" Width="120" SelectionChanged="comboBox_SelectionChanged" SelectedValuePath="Signal" DisplayMemberPath="CurrentFile"/>
+            <Label x:Name="detail" Content="测斜详情" Grid.Column="1" MouseDown="detail_MouseDown" HorizontalAlignment="Center" />
+        </Grid>
         <Label x:Name="label" Content="开始时间" HorizontalAlignment="Right" Margin="0" VerticalAlignment="Center" Grid.Row="1"/>
         <TextBox x:Name="startBox"  HorizontalAlignment="Left" Height="23" Margin="0" TextWrapping="Wrap"  VerticalAlignment="Center" Width="120" GotFocus="startBox_GotFocus" Grid.Column="1" IsReadOnly="True" Grid.Row="1"/>
         <Calendar  x:Name="startTime" HorizontalAlignment="Center"  VerticalAlignment="Top" Margin="0" Grid.ColumnSpan="2" Panel.ZIndex="10" Visibility="Hidden" SelectedDatesChanged="startTime_SelectedDatesChanged" Grid.RowSpan="5" Grid.Row="2"/>

@@ -61,7 +61,7 @@ namespace Revit.Addin.RevitTooltip.Intface
         /// 修改阈值Total_hold和Diff_hold
         ///修改某一种Excel表的阈值，这里的Excel表必须是测量数据表
         /// </summary>
-        bool ModifyThreshold(string signal, float Total_hold, float Diff_hold);
+        bool ModifyThreshold(string signal, string Total_holds, string Diff_holds, string totalOpr, string diffOpr);
 
        
         /// <summary>

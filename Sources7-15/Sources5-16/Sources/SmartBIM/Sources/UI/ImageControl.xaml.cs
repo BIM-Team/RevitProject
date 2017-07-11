@@ -48,12 +48,13 @@ namespace Revit.Addin.RevitTooltip.UI
             CEntityName selectedItem = this.dataGrid.SelectedItem as CEntityName;
             if (selectedItem == null)
             {
-                NewImageForm.Instance().EntityData = null;
+                //NewImageForm.Instance().EntityData = null;
                 return;
             }
             DateTime? start = this.startTime.SelectedDate as DateTime?;
             DateTime? end = this.endTime.SelectedDate as DateTime?;
             NewImageForm.Instance().EntityData = App.Instance.Sqlite.SelectDrawEntityData(selectedItem.EntityName, start, end);
+            NewImageForm.Instance().Text = (this.comboBox.SelectedItem as ExcelTable)==null? "测点" + selectedItem.EntityName + "的测量数据":(this.comboBox.SelectedItem as ExcelTable).CurrentFile + ": 测点" + selectedItem.EntityName + "的测量数据";
             if (!NewImageForm.Instance().Visible)
             {
                 NewImageForm.Instance().Show();
@@ -80,14 +81,37 @@ namespace Revit.Addin.RevitTooltip.UI
 
         private void startTime_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
-            startBox.Text = Convert.ToDateTime(startTime.SelectedDate).ToString("yyyy/MM/dd");
+            DateTime? start = startTime.SelectedDate;
+            DateTime? end = endTime.SelectedDate;
+            startBox.Text = Convert.ToDateTime(start).ToString("yyyy/MM/dd");
             startTime.Visibility = Visibility.Hidden;
+            ExcelTable excel = this.comboBox.SelectedItem as ExcelTable;
+
+            List<CEntityName> all_entity = new List<CEntityName>();
+            if (excel != null)
+            {
+
+                all_entity = App.Instance.Sqlite.SelectAllEntitiesAndErr(excel.Signal,start,end);
+            }
+            this.dataGrid.ItemsSource = all_entity;
+
         }
 
         private void endTime_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
         {
-            endBox.Text = Convert.ToDateTime(endTime.SelectedDate).ToString("yyyy/MM/dd");
+            DateTime? start = startTime.SelectedDate;
+            DateTime? end = endTime.SelectedDate;
+            endBox.Text = Convert.ToDateTime(end).ToString("yyyy/MM/dd");
             endTime.Visibility = Visibility.Hidden;
+            ExcelTable excel = this.comboBox.SelectedItem as ExcelTable;
+
+            List<CEntityName> all_entity = new List<CEntityName>();
+            if (excel != null)
+            {
+                all_entity = App.Instance.Sqlite.SelectAllEntitiesAndErr(excel.Signal,start,end);
+            }
+            this.dataGrid.ItemsSource = all_entity;
+
         }
 
         public void SetupDockablePane(DockablePaneProviderData data)
@@ -105,6 +129,10 @@ namespace Revit.Addin.RevitTooltip.UI
             if (excel != null)
             {
                 all_entity = App.Instance.Sqlite.SelectAllEntitiesAndErr(excel.Signal);
+                //初始化绘图面板
+                NewImageForm.Instance().EntityData = null;
+                NewImageForm.Instance().Text = "";
+
             }
             this.dataGrid.ItemsSource = all_entity;
             this.startTime.SelectedDate = null;
@@ -115,6 +143,15 @@ namespace Revit.Addin.RevitTooltip.UI
         public void setExcelType(System.Collections.IEnumerable itemsSource)
         {
             this.comboBox.ItemsSource = itemsSource;
+        }
+
+        private void startBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+        }
+
+        private void detail_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            NewImageForm.Instance().Child.Show();
         }
     }
 

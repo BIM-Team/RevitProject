@@ -409,6 +409,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 文字 的本地化字符串。
+        /// </summary>
+        internal static string String_FontName {
+            get {
+                return ResourceManager.GetString("String_FontName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 没有异常 的本地化字符串。
         /// </summary>
         internal static string String_No {

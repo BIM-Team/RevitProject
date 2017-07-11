@@ -256,7 +256,7 @@ namespace Revit.Addin.RevitTooltip.Impl
                     }
                     if (!hasDone) {
                         string history = exist.History + ";" + sheetInfo.ExcelTableData.CurrentFile;
-                        command.CommandText = string.Format("update ExcelTable set CurrentFile='{0}',History='{1},Version='{4}' where ExcelSignal='{3}'",
+                        command.CommandText = string.Format("update ExcelTable set CurrentFile='{0}',History='{1}',Version='{3}' where ExcelSignal='{2}'",
                         sheetInfo.ExcelTableData.CurrentFile, history, signal,newTimeStamp);
                     //更新已有的数据表
                     command.ExecuteNonQuery();
@@ -397,13 +397,17 @@ namespace Revit.Addin.RevitTooltip.Impl
                 if (data != null&&data.Count!=0) {
                     buider = new StringBuilder("insert into DrawTable(Entity_ID,Date,EntityMaxValue,EntityMidValue,EntityMinValue,Detail,Version) values");
                 }
+                bool hasValue = false;
                 foreach (DrawData p in data) {
                     if (maxDate==null||p.Date > maxDate) {
+                        hasValue = true;
                     buider.AppendFormat(" ({0},'{1}','{2}','{3}','{4}','{5}','{6}'),",entity.Id,p.Date,p.MaxValue,p.MidValue,p.MinValue,p.Detail,timeStamp);
                     }
                 }
+                if (hasValue) {
                 buider.Remove(buider.Length - 1, 1);
                 new MySqlCommand(buider.ToString(), tran.Connection, tran).ExecuteNonQuery();
+                }
             }
 
         }
@@ -459,8 +463,8 @@ namespace Revit.Addin.RevitTooltip.Impl
                     result.Id = reader.GetInt32(0);
                     result.CurrentFile = reader.GetString(1);
                     result.Signal = reader.GetString(2);
-                    result.Total_hold = reader.GetFloat(3);
-                    result.Diff_hold = reader.GetFloat(4);
+                    result.Total_hold = reader.GetString(3);
+                    result.Diff_hold = reader.GetString(4);
                     result.History = reader.GetString(5);
                 }
             }
@@ -481,11 +485,11 @@ namespace Revit.Addin.RevitTooltip.Impl
        /// <param name="Total_hold"></param>
        /// <param name="Diff_hold"></param>
        /// <returns></returns>
-        public bool ModifyThreshold(string signal, float Total_hold, float Diff_hold)
+        public bool ModifyThreshold(string signal, string Total_hold, string Diff_hold,string TotalOpr,string DiffOpr)
         {
             
             bool flag = false;
-            string sql= String.Format("Update ExcelTable set Total_hold = '{0}', Diff_hold = '{1}' where ExcelSignal = '{2}'", Total_hold, Diff_hold, signal);
+            string sql= String.Format("Update ExcelTable set Total_hold = '{0}', Diff_hold = '{1}',Total_operator='{3}',Diff_operator='{4}' where ExcelSignal = '{2}'", Total_hold, Diff_hold, signal,TotalOpr,DiffOpr);
            
             MySqlConnection conn = new MySqlConnection(this.connectMessage);
             MySqlTransaction tran = null;
@@ -518,7 +522,7 @@ namespace Revit.Addin.RevitTooltip.Impl
             List<ExcelTable> result = null;
             MySqlConnection conn = new MySqlConnection(this.connectMessage);
 
-            string sql = String.Format("select ID,CurrentFile,ExcelSignal,Total_hold,Diff_hold,History from ExcelTable where IsInfo = {0}", isInfo);
+            string sql = String.Format("select ID,CurrentFile,ExcelSignal,Total_hold,Diff_hold,History,Total_operator,Diff_operator from ExcelTable where IsInfo = {0}", isInfo);
             try
             {
                 conn.Open();
@@ -534,9 +538,11 @@ namespace Revit.Addin.RevitTooltip.Impl
                     one.Id = reader.GetInt32(0);
                     one.CurrentFile = reader.GetString(1);
                     one.Signal = reader.GetString(2);
-                    one.Total_hold = reader.GetFloat(3);
-                    one.Diff_hold = reader.GetFloat(4);
+                    one.Total_hold = reader.GetString(3);
+                    one.Diff_hold = reader.GetString(4);
                     one.History = reader.GetString(5);
+                    one.TotalOperator = reader.GetString(6);
+                    one.DiffOperator = reader.GetString(7);
                     result.Add(one);
                 }
 
@@ -555,10 +561,6 @@ namespace Revit.Addin.RevitTooltip.Impl
         public List<Group> loadGroupForAExcel(string signal)
         {
             List<Group> groups = new List<Group>() ;
-            Group newOne = new Group();
-            //newOne.Id = -1;
-            //newOne.GroupName = "新建";
-            //groups.Add(newOne);
             string sql = string.Format("select ID,GroupName from GroupTable where ExcelSignal='{0}'", signal);
             MySqlConnection conn = new MySqlConnection(this.connectMessage);
             MySqlDataReader reader = null;
@@ -585,6 +587,10 @@ namespace Revit.Addin.RevitTooltip.Impl
                 conn.Close();
                 conn.Dispose();
             }
+            Group newOne = new Group();
+            newOne.Id = -1;
+            newOne.GroupName = "新建分组";
+            groups.Add(newOne);
             return groups;
         }
 
@@ -803,7 +809,7 @@ namespace Revit.Addin.RevitTooltip.Impl
                         string newTimeStamp = Convert.ToInt64((DateTime.Now - new DateTime(2016, 12, 14, 0, 0, 0)).TotalMilliseconds).ToString();
                         string newHis = His.Substring(0, His.LastIndexOf(';'));
                         string newCurrentFile = files[files.Count() - 2];
-                        buider.AppendFormat("Update ExcelTable Set CurrentFile='{0}',Version='{1}' Where Version='{2}';", newCurrentFile, newTimeStamp, timeStamp);
+                        buider.AppendFormat("Update ExcelTable Set CurrentFile='{0}',Version='{1}',History='{3}' Where Version='{2}';", newCurrentFile, newTimeStamp, timeStamp,newHis);
                     }
                     else if (files.Count() == 1)
                     {
