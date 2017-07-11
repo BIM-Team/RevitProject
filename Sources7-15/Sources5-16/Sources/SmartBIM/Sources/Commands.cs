@@ -180,31 +180,7 @@ namespace Revit.Addin.RevitTooltip
             commandData.Application.Idling += App.Instance.IdlingHandler;
             commandData.Application.Idling += App.Instance.ImageControlIdlingHandler;
 
-            //对模型的处理，后续可能删除
-            //Material color_red = null;
-            //Material color_gray = null;
-            //Material color_blue = null;
-            //FilteredElementCollector elementCollector = new FilteredElementCollector(commandData.Application.ActiveUIDocument.Document);
-            //IEnumerable<Material> allMaterial = elementCollector.OfClass(typeof(Material)).Cast<Material>();
-            //        foreach (Material elem in allMaterial)
-            //        {
-            //            if (elem.Name.Equals(Res.String_Color_Red))
-            //            {
-            //                color_red = elem;
-            //            }
-            //            if (elem.Name.Equals(Res.String_Color_Gray))
-            //            {
-            //                color_gray = elem;
-            //            }
-            //            if (elem.Name.Equals(Res.String_Color_Blue))
-            //            {
-            //                color_blue = elem;
-            //            }
-            //            if (color_gray != null && color_red != null&& color_blue!=null)
-            //            {
-            //                break;
-            //            }
-            //        }
+            
 
 
             return Result.Succeeded;
