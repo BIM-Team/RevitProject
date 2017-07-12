@@ -86,19 +86,24 @@ namespace Revit.Addin.RevitTooltip
     {
         public override Result RunIt(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            try
+            if (MessageBox.Show("确定同步本地文件与Mysql一致?", "", MessageBoxButtons.OKCancel) == DialogResult.OK)
             {
-                if (App.Instance.Sqlite.LoadDataToSqlite()) {
-                    App.Instance.ThresholdChanged = true;
-                    MessageBox.Show("数据更新成功");
+                try
+                {
+                    if (App.Instance.Sqlite.LoadDataToSqlite())
+                    {
+                        App.Instance.ThresholdChanged = true;
+                        MessageBox.Show("数据更新成功");
+                    }
+                    return Result.Succeeded;
                 }
-                return Result.Succeeded;
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return Result.Failed;
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return Result.Failed;
-            }
+            return Result.Cancelled;
         }
     }
     #endregion
