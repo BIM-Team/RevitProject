@@ -36,7 +36,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.label7 = new System.Windows.Forms.Label();
-            this.labelVersion = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
@@ -47,7 +46,7 @@
             // 
             this.labelAppName.AutoSize = true;
             this.labelAppName.Font = new System.Drawing.Font("Calibri", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelAppName.Location = new System.Drawing.Point(100, 9);
+            this.labelAppName.Location = new System.Drawing.Point(90, 32);
             this.labelAppName.Name = "labelAppName";
             this.labelAppName.Size = new System.Drawing.Size(330, 24);
             this.labelAppName.TabIndex = 2;
@@ -72,6 +71,7 @@
             this.buttonCancel.TabIndex = 4;
             this.buttonCancel.Text = "退出(&E)";
             this.buttonCancel.UseVisualStyleBackColor = true;
+            this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
             // 
             // linkLabelCopyright
             // 
@@ -117,16 +117,6 @@
             this.label7.TabIndex = 34;
             this.label7.Text = "label7";
             // 
-            // labelVersion
-            // 
-            this.labelVersion.AutoSize = true;
-            this.labelVersion.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelVersion.Location = new System.Drawing.Point(219, 41);
-            this.labelVersion.Name = "labelVersion";
-            this.labelVersion.Size = new System.Drawing.Size(46, 23);
-            this.labelVersion.TabIndex = 2;
-            this.labelVersion.Text = "V1.1";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -144,7 +134,7 @@
             this.linkLabel2.Size = new System.Drawing.Size(149, 12);
             this.linkLabel2.TabIndex = 32;
             this.linkLabel2.TabStop = true;
-            this.linkLabel2.Tag = "http://www.bimcoder.com/";
+            this.linkLabel2.Tag = "http://www.smartbim.cn/";
             this.linkLabel2.Text = "上海慧乘信息技术有限公司";
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked_1);
             // 
@@ -152,7 +142,7 @@
             // 
             this.pictureBox3.Image = global::Revit.Addin.RevitTooltip.Properties.Resources.Tooltip_64;
             this.pictureBox3.Location = new System.Drawing.Point(11, 11);
-            this.pictureBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(64, 64);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -176,7 +166,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.labelAppName);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -204,7 +193,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label labelVersion;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.LinkLabel linkLabel2;
         private System.Windows.Forms.PictureBox pictureBox3;

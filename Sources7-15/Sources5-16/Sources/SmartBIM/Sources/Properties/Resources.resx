@@ -192,10 +192,6 @@
   <data name="license_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\license_16.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="String_UnderWallName" xml:space="preserve">
-    <value>地下连续墙</value>
-    <comment>Jim: Never change this string!</comment>
-  </data>
   <data name="String_SelectExcelFile" xml:space="preserve">
     <value>选择要导入的监测数据</value>
   </data>
@@ -238,23 +234,6 @@
     <value>颜色</value>
     <comment>Never change this string!</comment>
   </data>
-  <data name="String_Color_Gray" xml:space="preserve">
-    <value>灰色</value>
-    <comment>根据需要更改</comment>
-  </data>
-  <data name="String_Color_Red" xml:space="preserve">
-    <value>红线</value>
-    <comment>根据需要更改</comment>
-  </data>
-  <data name="String_Reg" xml:space="preserve">
-    <value>CX</value>
-  </data>
-  <data name="String_Radius" xml:space="preserve">
-    <value>半径</value>
-  </data>
-  <data name="Double_Df_Radius" xml:space="preserve">
-    <value>600</value>
-  </data>
   <data name="CommandDescription_Import_SQLite" xml:space="preserve">
     <value>导入excel表到本地数据库</value>
   </data>
@@ -263,6 +242,27 @@
   </data>
   <data name="String_Color_Blue" xml:space="preserve">
     <value>蓝色</value>
-    <comment>根据需要更改</comment>
+  </data>
+  <data name="String_Color_Gray" xml:space="preserve">
+    <value>灰色</value>
+  </data>
+  <data name="String_Color_Redline" xml:space="preserve">
+    <value>红线</value>
+  </data>
+  <data name="String_Err1" xml:space="preserve">
+    <value>异常一</value>
+  </data>
+  <data name="String_Err1Err2" xml:space="preserve">
+    <value>两种异常</value>
+  </data>
+  <data name="String_Err2" xml:space="preserve">
+    <value>异常二</value>
+  </data>
+  <data name="String_No" xml:space="preserve">
+    <value>没有异常</value>
+  </data>
+  <data name="String_FontName" xml:space="preserve">
+    <value>文字</value>
+    <comment>Never change this string!</comment>
   </data>
 </root>

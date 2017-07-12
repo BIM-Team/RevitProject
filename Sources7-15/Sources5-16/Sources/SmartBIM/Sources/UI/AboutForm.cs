@@ -89,5 +89,10 @@ namespace Revit.Addin.RevitTooltip
                 MessageBox.Show("Hello, You may miss Jim ? :)");
             }
         }
+
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            this.Dispose();
+        }
     }
 }

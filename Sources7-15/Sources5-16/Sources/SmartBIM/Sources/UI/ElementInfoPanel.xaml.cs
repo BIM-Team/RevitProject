@@ -15,6 +15,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Autodesk.Revit.UI;
+using Revit.Addin.RevitTooltip.Dto;
+using System.Collections.ObjectModel;
+using Revit.Addin.RevitTooltip.UI;
 
 namespace Revit.Addin.RevitTooltip
 {
@@ -30,9 +33,43 @@ namespace Revit.Addin.RevitTooltip
             InitializeComponent();
         }
 
-        public void Update(System.Collections.IEnumerable itemsSource)
+        public void Update(InfoEntityData infoEntityData)
         {
-            elementInfoHost.Update( itemsSource);
+            List<ParameterData> list = new List<ParameterData>();
+            list.Add(new ParameterData("构件名称", infoEntityData.EntityName));
+            if (infoEntityData != null && infoEntityData.Data != null)
+            {
+                Dictionary<string, string> data = infoEntityData.Data;
+                foreach (string key in data.Keys)
+                {
+                    list.Add(new ParameterData(key, data[key]));
+                }
+                //添加备注列
+                list.Add(new ParameterData("备注", infoEntityData.Remark));
+                Dictionary<string, List<string>> groupMsg = infoEntityData.GroupMsg;
+                ItemCollection currentItems = this.tabControl.Items;
+                //清空items
+                //从后向前删除
+                //最后一个不删
+                for (int i = currentItems.Count-1; i >0; i--)
+                {
+                    currentItems.Remove(currentItems[i]);
+                }
+                foreach (string groupName in groupMsg.Keys)
+                {
+                    TabItem item = new TabItem() { Header = groupName };
+                    TabItemControl Itemcontent = new TabItemControl();
+                    item.Content = Itemcontent;
+                    List<ParameterData> content_data = new List<ParameterData>();
+                    foreach (string keyName in groupMsg[groupName])
+                    {
+                        content_data.Add(new ParameterData(keyName, data[keyName]));
+                    }
+                    Itemcontent.Update(content_data);
+                    this.tabControl.Items.Add(item);
+                }
+            }
+            elementInfoHost.Update(list);
         }
 
         public static ElementInfoPanel GetInstance()
