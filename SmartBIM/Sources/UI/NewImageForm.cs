@@ -104,12 +104,43 @@ namespace Revit.Addin.RevitTooltip.UI
             }
             //y轴的梯度值
             float div_y10 = (Max - Min) / 10;
-            //对梯度值做尾数处理，处理成0.5形式
+            //对梯度值做尾数处理，处理成0.5,0.05,0.005,0.0005,0.00005形式
+            //处理成对等精度
+            float tail = 0.5f;
+            float tail_add = 0.4f;
+            float tail_reduce = 0.1f;
+            float _v = div_y10;
+            int fix_len = 1;
+            while (_v * 10.0f < 1) {
+                _v *= 10.0f;
+                tail /= 10.0f;
+                tail_add /=10.0f;
+                tail_reduce /= 10.0f;
+                fix_len++;
+            }
+            div_y10 = Convert.ToInt32((div_y10 + tail_add) / tail) * tail;
 
-            div_y10 = Convert.ToInt32((div_y10 + 0.4f) / 0.5f) * 0.5f;
 
-            Max = Convert.ToInt32((Max + div_y10 - 0.1f) / div_y10) * div_y10;
-            Min = Convert.ToInt32((Min - div_y10 + 0.1f) / div_y10) * div_y10;
+            if (Max >= 0)
+            {
+                Max = ((int)((Max + div_y10 - tail_reduce) / div_y10)) * div_y10;
+            }
+            else {
+                Max = ((int)(Max / div_y10)) * div_y10;
+            }
+            if (Min >= 0)
+            {
+                Min = ((int)(Min / div_y10)) * div_y10;
+            }
+            else {
+                Min = ((int)((Min-div_y10+tail_reduce) / div_y10)) * div_y10;
+            }
+            
+
+            //div_y10 = Convert.ToInt32((div_y10 + 0.4f) / 0.5f) * 0.5f;
+
+            //Max = Convert.ToInt32((Max + div_y10 - 0.1f) / div_y10) * div_y10;
+            //Min = Convert.ToInt32((Min - div_y10 + 0.1f) / div_y10) * div_y10;
 
 
             float divX = (endX - startX) / length;
@@ -149,8 +180,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 {
                     float y10 = startY - i * div_height;
                     float x10 = startX + i * div_width;
-                    string str_va = Convert.ToString(div_value * i + Min);
-                    //string str_va = Math.Round((div_value * i + Min), 5, MidpointRounding.AwayFromZero).ToString();
+                    string str_va = Math.Round((div_value * i + Min), fix_len, MidpointRounding.AwayFromZero).ToString("F"+fix_len);
                     g.DrawLine(dotPen, startX, y10, endX, y10);
                     g.DrawLine(dotPen, x10, startY, x10, endY);
                     g.DrawString(str_va, font, Brushes.Black, startX - g.MeasureString(str_va, font).Width, y10);

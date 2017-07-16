@@ -18,11 +18,12 @@ namespace Revit.Addin.RevitTooltip.UI
             InitializeComponent();
             this.dataGridView1.AutoGenerateColumns = false;
             this.dataGridView2.AutoGenerateColumns = false;
-            List<CEntityName> items= App.Instance.Sqlite.SelectAllEntitiesAndErr("CX");
+            List<CEntityName> items = App.Instance.Sqlite.SelectAllEntitiesAndErr("CX");
             this.comboBox1.DisplayMember = "EntityName";
             this.comboBox1.ValueMember = "EntityName";
             this.comboBox1.DataSource = items;
-            if (items.Count != 0) {
+            if (items.Count != 0)
+            {
                 this.comboBox1.SelectedIndex = 0;
             }
         }
@@ -31,12 +32,16 @@ namespace Revit.Addin.RevitTooltip.UI
         /// </summary>
         public NewImageForm FatherForm { get; set; }
         //private List<CEntityName> all_entity;
-        public List<CEntityName> All_Entities { set {
+        public List<CEntityName> All_Entities
+        {
+            set
+            {
                 comboBox1.DataSource = value;
-            } }
+            }
+        }
 
         private List<DrawData> details = new List<DrawData>();
-        
+
 
         private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
         {
@@ -57,26 +62,62 @@ namespace Revit.Addin.RevitTooltip.UI
             float MaxValue = 0L;
             float MinValue = float.MaxValue;
             int CountX = 0;
-            foreach (DrawData one in details) {
+            foreach (DrawData one in details)
+            {
                 String[] arr = one.Detail.Split(';');
                 int len = arr.Count();
                 float v_max = one.MaxValue;
                 float v_min = one.MinValue;
-                if (v_max - MaxValue > 0.01){ MaxValue = v_max; }
+                if (v_max - MaxValue > 0.01) { MaxValue = v_max; }
                 if (v_min - MinValue < 0.01) { MinValue = v_min; }
                 if (len > CountX) { CountX = len; }
             }
-            float divX = (endX - startX) /(MaxValue - MinValue) ;
-            float divY =  (startY-endY)/CountX ;
+            float divX = (endX - startX) / (MaxValue - MinValue);
+            float divY = (startY - endY) / CountX;
 
             float divYY = (startY - endY) / 10;
-            float divYV = (MaxValue - MinValue) / 10;
+            //float divYV = (MaxValue - MinValue) / 10;
             float divXX = (endX - startX) / 10;
             float divXV = (MaxValue - MinValue) / 10;
-                Pen mypen = new Pen(System.Drawing.Color.Blue, 1);
-                //画坐标轴使用
-                Pen mypen1 = new Pen(System.Drawing.Color.Blue, 2);
-                Pen dotPen = new Pen(Color.FromArgb(128, Color.Black), 0.3f);
+            //对尾数进行处理，处理成尾数以5结尾
+            float tail = 0.5f;
+            float tail_add = 0.4f;
+            float tail_reduce = 0.1f;
+            float _v = divXV;
+            int fix_len = 1;
+            while (_v * 10.0f < 1)
+            {
+                _v *= 10.0f;
+                tail /= 10.0f;
+                tail_add /= 10.0f;
+                tail_reduce /= 10.0f;
+                fix_len++;
+            }
+            divXV = Convert.ToInt32((divXV + tail_add) / tail) * tail;
+
+
+            if (MaxValue >= 0)
+            {
+                MaxValue = ((int)((MaxValue + divXV - tail_reduce) / divXV)) * divXV;
+            }
+            else {
+                MaxValue = ((int)(MaxValue / divXV)) * divXV;
+            }
+            if (MinValue >= 0)
+            {
+                MinValue = ((int)(MinValue / divXV)) * divXV;
+            }
+            else {
+                MinValue = ((int)((MinValue- divXV+ tail_reduce) / divXV)) * divXV;
+            }
+            
+
+
+
+            Pen mypen = new Pen(System.Drawing.Color.Blue, 1);
+            //画坐标轴使用
+            Pen mypen1 = new Pen(System.Drawing.Color.Blue, 2);
+            Pen dotPen = new Pen(Color.FromArgb(128, Color.Black), 0.3f);
             try
             {
                 g.Clear(System.Drawing.Color.White);
@@ -90,28 +131,29 @@ namespace Revit.Addin.RevitTooltip.UI
                 for (int i = 0; i <= 10; i++)
                 {
                     float newX = startX + i * divXX;
-                    float v_X = (float)Math.Round(MinValue + i * divXV, 2, MidpointRounding.AwayFromZero);
                     g.DrawLine(dotPen, newX, startY, newX, endY);
-                    String s_Y = v_X.ToString();
-                    g.DrawString(s_Y, font, Brushes.Black, newX- g.MeasureString(s_Y, font).Width/2, endY- g.MeasureString(s_Y, font).Height);
+                    String s_Y = Math.Round(MinValue + i * divXV, fix_len, MidpointRounding.AwayFromZero).ToString("F" + fix_len);
+                    g.DrawString(s_Y, font, Brushes.Black, newX - g.MeasureString(s_Y, font).Width / 2, endY - g.MeasureString(s_Y, font).Height);
                 }
                 //画横线
                 for (int j = 0; j <= CountX; j++)
                 {
-                    float newY = endY +j * divY;
+                    float newY = endY + j * divY;
                     g.DrawLine(dotPen, startX, newY, endX, newY);
-                    float v_Y = (float)(j * 0.5);
-                    String s_X = v_Y.ToString();
-                    if (j % 5 == 0&&CountX-j>3) {
-                    g.DrawString(s_X, font, Brushes.Black, startX- g.MeasureString(s_X, font).Width, newY);
+                    //float v_Y = (float)(j * 0.5);
+                    String s_X = (j * 0.5).ToString("F1");
+                    if (j % 5 == 0 && CountX - j > 3)
+                    {
+                        g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY);
                     }
-                    if (j == CountX) {
-                    g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY- g.MeasureString(s_X, font).Height/2);
+                    if (j == CountX)
+                    {
+                        g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY - g.MeasureString(s_X, font).Height / 2);
                     }
                 }
                 Random radom = new Random();
-                Color color_b = Color.FromArgb(radom.Next(80, 128),radom.Next(0,128), radom.Next(0, 128));
-                for(int k=0;k<details.Count;k++)
+                Color color_b = Color.FromArgb(radom.Next(80, 128), radom.Next(0, 128), radom.Next(0, 128));
+                for (int k = 0; k < details.Count; k++)
                 {
                     DrawData one = details[k];
                     String[] arr = one.Detail.Split(';');
@@ -119,16 +161,17 @@ namespace Revit.Addin.RevitTooltip.UI
                     float pre_x = 0;
                     float pre_y = 0;
                     int add = radom.Next(32, 128);
-                    int which = radom.Next(0,2);
+                    int which = radom.Next(0, 2);
                     int c_r = color_b.R;
                     int c_g = color_b.G;
                     int c_b = color_b.B;
-                    switch (which) {
-                        case 0: c_r=(color_b.R + add ) % 255;break;
-                        case 1: c_g = (color_b.G + add ) % 255;break;
-                        case 2:c_b= (color_b.B + add ) % 255;break;
+                    switch (which)
+                    {
+                        case 0: c_r = (color_b.R + add) % 255; break;
+                        case 1: c_g = (color_b.G + add) % 255; break;
+                        case 2: c_b = (color_b.B + add) % 255; break;
                     }
-                    
+
                     Color color = Color.FromArgb(c_r, c_g, c_b);
                     color_b = color;
                     SolidBrush brush = new SolidBrush(color);
@@ -145,8 +188,9 @@ namespace Revit.Addin.RevitTooltip.UI
                         if (h != 0)
                         {
                             g.DrawLine(temp_pen, pre_x, pre_y, curr_x, curr_y);
-                            if (h == len / 2) {
-                                g.DrawString(one.UniId, font, brush, (pre_x+curr_x-g.MeasureString(one.UniId,font).Width)/2,(pre_y+curr_y- g.MeasureString(one.UniId,font).Width)/2,format);
+                            if (h == len / 2)
+                            {
+                                g.DrawString(one.UniId, font, brush, (pre_x + curr_x - g.MeasureString(one.UniId, font).Width) / 2, (pre_y + curr_y - g.MeasureString(one.UniId, font).Width) / 2, format);
                             }
                         }
                         pre_x = curr_x;
@@ -159,7 +203,8 @@ namespace Revit.Addin.RevitTooltip.UI
             {
                 throw ex;
             }
-            finally {
+            finally
+            {
                 g.Dispose();
                 mypen.Dispose();
                 mypen1.Dispose();
@@ -171,14 +216,15 @@ namespace Revit.Addin.RevitTooltip.UI
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             CEntityName item = comboBox1.SelectedItem as CEntityName;
-            if (item != null) {
-                DrawEntityData drawEntityData= App.Instance.Sqlite.SelectDrawEntityData(item.EntityName,null,null);
+            if (item != null)
+            {
+                DrawEntityData drawEntityData = App.Instance.Sqlite.SelectDrawEntityData(item.EntityName, null, null);
                 this.dataGridView1.DataSource = drawEntityData.Data;
                 this.dataGridView2.DataSource = null;
             }
         }
 
-        
+
 
         private void label2_Click(object sender, EventArgs e)
         {
@@ -189,7 +235,8 @@ namespace Revit.Addin.RevitTooltip.UI
 
         private void ChildForm_VisibleChanged(object sender, EventArgs e)
         {
-            if (this.Visible && this.FatherForm.Visible) {
+            if (this.Visible && this.FatherForm.Visible)
+            {
                 this.FatherForm.Visible = false;
             }
         }
