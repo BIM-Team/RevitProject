@@ -47,184 +47,6 @@ namespace Revit.Addin.RevitTooltip.UI
 
 
 
-        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-            //Graphics g = e.Graphics;
-            //g.SmoothingMode = SmoothingMode.AntiAlias;
-            //float height = this.splitContainer1.Panel2.ClientRectangle.Height;
-            //float width = this.splitContainer1.Panel2.ClientRectangle.Width;
-            //float startX = width / 10, endX = width - 15;
-            //float startY = height - 15, endY = 30;
-            //Font font = new Font("Arial", 9, System.Drawing.FontStyle.Regular);
-            //if (details.Count == 0)
-            //{
-            //    g.DrawString("没有数据", font, Brushes.Black, (startX + endX - g.MeasureString("没有数据", font).Width) / 2, (startY + endY) / 2);
-            //    return;
-            //}
-            //StringFormat format = new StringFormat();
-            //format.FormatFlags = StringFormatFlags.DirectionVertical;
-            //float MaxValue = 0L;
-            //float MinValue = float.MaxValue;
-            //int CountX = 0;
-            //foreach (DrawData one in details)
-            //{
-            //    String[] arr = one.Detail.Split(';');
-            //    int len = arr.Count();
-            //    float v_max = one.MaxValue;
-            //    float v_min = one.MinValue;
-            //    if (v_max - MaxValue > 0.01) { MaxValue = v_max; }
-            //    if (v_min - MinValue < 0.01) { MinValue = v_min; }
-            //    if (len > CountX) { CountX = len; }
-            //}
-            //float divX = (endX - startX) / (MaxValue - MinValue);
-            //float divY = (startY - endY) / CountX;
-
-            //float divYY = (startY - endY) / 10;
-            ////float divYV = (MaxValue - MinValue) / 10;
-            //float divXX = (endX - startX) / 10;
-            //float divXV = (MaxValue - MinValue) / 10;
-            ////对尾数进行处理，处理成尾数以5结尾
-            //float tail = 0.5f;
-            //float tail_add = 0.4f;
-            //float tail_reduce = 0.1f;
-            //float _v = divXV;
-            //int fix_len = 1;
-            //while (_v * 10.0f < 1)
-            //{
-            //    _v *= 10.0f;
-            //    tail /= 10.0f;
-            //    tail_add /= 10.0f;
-            //    tail_reduce /= 10.0f;
-            //    fix_len++;
-            //}
-            //divXV = Convert.ToInt32((divXV + tail_add) / tail) * tail;
-
-
-            //if (MaxValue >= 0)
-            //{
-            //    MaxValue = ((int)((MaxValue + divXV - tail_reduce) / divXV)) * divXV;
-            //}
-            //else
-            //{
-            //    MaxValue = ((int)(MaxValue / divXV)) * divXV;
-            //}
-            //if (MinValue >= 0)
-            //{
-            //    MinValue = ((int)(MinValue / divXV)) * divXV;
-            //}
-            //else
-            //{
-            //    MinValue = ((int)((MinValue - divXV + tail_reduce) / divXV)) * divXV;
-            //}
-            //Pen mypen = new Pen(System.Drawing.Color.Blue, 1);
-            ////画坐标轴使用
-            //Pen mypen1 = new Pen(System.Drawing.Color.Blue, 2);
-            //Pen dotPen = new Pen(Color.FromArgb(128, Color.Black), 0.3f);
-            //try
-            //{
-            //    g.Clear(System.Drawing.Color.White);
-            //    //用于画正常的线段
-            //    dotPen.DashStyle = DashStyle.Dot;
-            //    //画X轴
-            //    g.DrawLine(mypen1, startX, endY, endX, endY);
-            //    //画Y轴
-            //    g.DrawLine(mypen1, startX, endY, startX, startY);
-            //    //画竖线
-            //    for (int i = 0; i <= 10; i++)
-            //    {
-            //        float newX = startX + i * divXX;
-            //        g.DrawLine(dotPen, newX, startY, newX, endY);
-            //        String s_Y = Math.Round(MinValue + i * divXV, fix_len, MidpointRounding.AwayFromZero).ToString("F" + fix_len);
-            //        g.DrawString(s_Y, font, Brushes.Black, newX - g.MeasureString(s_Y, font).Width / 2, endY - g.MeasureString(s_Y, font).Height);
-            //    }
-            //    //画横线
-            //    for (int j = 0; j <= CountX; j++)
-            //    {
-            //        float newY = endY + j * divY;
-            //        g.DrawLine(dotPen, startX, newY, endX, newY);
-            //        String s_X = (j * 0.5).ToString("F1");
-            //        if (j % 5 == 0 && CountX - j > 3)
-            //        {
-            //            g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY);
-            //        }
-            //        if (j == CountX)
-            //        {
-            //            g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY - g.MeasureString(s_X, font).Height / 2);
-            //        }
-            //    }
-            //    //Random radom = new Random();
-            //    //Color color_b = Color.FromArgb(radom.Next(80, 128), radom.Next(0, 128), radom.Next(0, 128));
-            //    SolidBrush brush_unselect = new SolidBrush(Color.Black);
-            //    Pen pen_unselect = new Pen(Color.Black, 1);
-            //    SolidBrush brush_select = new SolidBrush(Color.Red);
-            //    Pen pen_select = new Pen(Color.Red, 3);
-            //    for (int k = 0; k < details.Count; k++)
-            //    {
-            //        DrawData one = details[k];
-            //        String[] arr = one.Detail.Split(';');
-            //        int len = arr.Count();
-            //        float pre_x = 0;
-            //        float pre_y = 0;
-            //        //int add = radom.Next(32, 128);
-            //        //int which = radom.Next(0, 2);
-            //        //int c_r = color_b.R;
-            //        //int c_g = color_b.G;
-            //        //int c_b = color_b.B;
-            //        //switch (which)
-            //        //{
-            //        //    case 0: c_r = (color_b.R + add) % 255; break;
-            //        //    case 1: c_g = (color_b.G + add) % 255; break;
-            //        //    case 2: c_b = (color_b.B + add) % 255; break;
-            //        //}
-
-            //        //Color color = Color.FromArgb(c_r, c_g, c_b);
-            //        //color_b = color;
-            //        SolidBrush brush = brush_unselect;
-            //        Pen temp_pen = pen_unselect;
-            //        if (k == this.selectedItem)
-            //        {
-            //            brush = brush_select;
-            //            temp_pen = pen_select;
-            //        }
-
-
-            //        for (int h = 0; h < len; h++)
-            //        {
-            //            String[] s_arr = arr[h].Split(':');
-            //            int y_index = (int)(Convert.ToSingle(s_arr[0]) / 0.5);
-            //            float v_x = Convert.ToSingle(s_arr[1]);
-            //            float curr_x = startX + (v_x - MinValue) * divX;
-            //            float curr_y = endY + y_index * divY;
-
-            //            if (h != 0)
-            //            {
-            //                g.DrawLine(temp_pen, pre_x, pre_y, curr_x, curr_y);
-            //                if (h == len / 2)
-            //                {
-            //                    g.DrawString(one.UniId, font, brush, (pre_x + curr_x - g.MeasureString(one.UniId, font).Width) / 2, (pre_y + curr_y - g.MeasureString(one.UniId, font).Width) / 2, format);
-            //                }
-            //            }
-            //            pre_x = curr_x;
-            //            pre_y = curr_y;
-            //        }
-
-            //    }
-            //    pen_unselect.Dispose();
-            //    pen_select.Dispose();
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw ex;
-            //}
-            //finally
-            //{
-            //    g.Dispose();
-            //    mypen.Dispose();
-            //    mypen1.Dispose();
-            //    dotPen.Dispose();
-            //}
-
-        }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -310,11 +132,8 @@ namespace Revit.Addin.RevitTooltip.UI
                 if (v_min < MinValue) { MinValue = v_min; }
                 if (len > CountX) { CountX = len; }
             }
-            //float divX = (endX - startX) / (MaxValue - MinValue);
             float divY = (startY - endY) / CountX;
 
-            //float divYY = (startY - endY) / 5;
-            //float divYV = (MaxValue - MinValue) / 10;
             float divXX = (endX - startX) / 10;
             float divXV = (MaxValue - MinValue) / 10;
             //对尾数进行处理，处理成尾数以5结尾
@@ -337,7 +156,7 @@ namespace Revit.Addin.RevitTooltip.UI
             if (MaxValue >= 0)
             {
                 MaxValue = ((int)((MaxValue + divXV - tail_reduce) / divXV)) * divXV;
- 
+
             }
             else
             {
@@ -351,7 +170,8 @@ namespace Revit.Addin.RevitTooltip.UI
             {
                 MinValue = ((int)((MinValue - divXV + tail_reduce) / divXV)) * divXV;
             }
-            if ((MinValue + 10 * divXV) > MaxValue) {
+            if ((MinValue + 10 * divXV) > MaxValue)
+            {
                 MaxValue = MinValue + 10 * divXV;
             }
             float divX = MaxValue - MinValue == 0f ? 0f : (endX - startX) / (MaxValue - MinValue);
@@ -395,8 +215,6 @@ namespace Revit.Addin.RevitTooltip.UI
                         g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY - g.MeasureString(s_X, font).Height / 2);
                     }
                 }
-                //Random radom = new Random();
-                //Color color_b = Color.FromArgb(radom.Next(80, 128), radom.Next(0, 128), radom.Next(0, 128));
 
                 for (int k = 0; k < newDetails.Count; k++)
                 {
@@ -405,20 +223,6 @@ namespace Revit.Addin.RevitTooltip.UI
                     int len = arr.Count();
                     float pre_x = 0;
                     float pre_y = 0;
-                    //int add = radom.Next(32, 128);
-                    //int which = radom.Next(0, 2);
-                    //int c_r = color_b.R;
-                    //int c_g = color_b.G;
-                    //int c_b = color_b.B;
-                    //switch (which)
-                    //{
-                    //    case 0: c_r = (color_b.R + add) % 255; break;
-                    //    case 1: c_g = (color_b.G + add) % 255; break;
-                    //    case 2: c_b = (color_b.B + add) % 255; break;
-                    //}
-
-                    //Color color = Color.FromArgb(c_r, c_g, c_b);
-                    //color_b = color;
                     SolidBrush brush_temp = brush_unselect;
                     Pen pen_temp = pen_unselect;
                     if (k == this.selectedItem)

@@ -143,10 +143,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 Max = Min + 10 * div_y10;
             }
 
-            //div_y10 = Convert.ToInt32((div_y10 + 0.4f) / 0.5f) * 0.5f;
-
-            //Max = Convert.ToInt32((Max + div_y10 - 0.1f) / div_y10) * div_y10;
-            //Min = Convert.ToInt32((Min - div_y10 + 0.1f) / div_y10) * div_y10;
+            
 
 
             float divX = (endX - startX) / length;
