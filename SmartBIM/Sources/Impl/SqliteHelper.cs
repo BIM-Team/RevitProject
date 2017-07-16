@@ -955,7 +955,8 @@ namespace Revit.Addin.RevitTooltip.Impl
                         drawData.MidValue = reader.GetFloat(2);
                         drawData.MinValue = reader.GetFloat(3);
                         drawData.Detail = reader.GetString(4);
-                        drawData.UniId = EntityName +":"+drawData.Date.ToString("yy/MM/dd-HH时");
+                        drawData.EntityName = EntityName;
+                        //drawData.UniId = EntityName +":"+drawData.Date.ToString("yy/MM/dd-HH时");
                         drawEntityData.Data.Add(drawData);
                     }
                     reader.Close();
@@ -1021,7 +1022,7 @@ namespace Revit.Addin.RevitTooltip.Impl
                         drawData.MinValue = reader.GetFloat(2);
                         drawData.Detail = reader.GetString(3);
                         drawData.EntityName = reader.GetString(4);
-                        drawData.UniId = drawData.EntityName + ":" + drawData.Date.ToString("yy/MM/dd-HH时");
+                        //drawData.UniId = drawData.EntityName + ":" + drawData.Date.ToString("yy/MM/dd-HH时");
                         resluts.Add(drawData);
                     }
 

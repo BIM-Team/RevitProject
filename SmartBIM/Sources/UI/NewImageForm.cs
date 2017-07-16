@@ -111,31 +111,37 @@ namespace Revit.Addin.RevitTooltip.UI
             float tail_reduce = 0.1f;
             float _v = div_y10;
             int fix_len = 1;
-            while (_v * 10.0f < 1) {
+            while (_v * 10.0f < 1)
+            {
                 _v *= 10.0f;
                 tail /= 10.0f;
-                tail_add /=10.0f;
+                tail_add /= 10.0f;
                 tail_reduce /= 10.0f;
                 fix_len++;
             }
-            div_y10 = Convert.ToInt32((div_y10 + tail_add) / tail) * tail;
+            div_y10 = ((int)((div_y10 + tail_add) / tail)) * tail;
 
 
             if (Max >= 0)
             {
                 Max = ((int)((Max + div_y10 - tail_reduce) / div_y10)) * div_y10;
             }
-            else {
+            else
+            {
                 Max = ((int)(Max / div_y10)) * div_y10;
             }
             if (Min >= 0)
             {
                 Min = ((int)(Min / div_y10)) * div_y10;
             }
-            else {
-                Min = ((int)((Min-div_y10+tail_reduce) / div_y10)) * div_y10;
+            else
+            {
+                Min = ((int)((Min - div_y10 + tail_reduce) / div_y10)) * div_y10;
             }
-            
+            if ((Min + 10 * div_y10) > Max)
+            {
+                Max = Min + 10 * div_y10;
+            }
 
             //div_y10 = Convert.ToInt32((div_y10 + 0.4f) / 0.5f) * 0.5f;
 
@@ -180,7 +186,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 {
                     float y10 = startY - i * div_height;
                     float x10 = startX + i * div_width;
-                    string str_va = Math.Round((div_value * i + Min), fix_len, MidpointRounding.AwayFromZero).ToString("F"+fix_len);
+                    string str_va = Math.Round((div_value * i + Min), fix_len, MidpointRounding.AwayFromZero).ToString("F" + fix_len);
                     g.DrawLine(dotPen, startX, y10, endX, y10);
                     g.DrawLine(dotPen, x10, startY, x10, endY);
                     g.DrawString(str_va, font, Brushes.Black, startX - g.MeasureString(str_va, font).Width, y10);
