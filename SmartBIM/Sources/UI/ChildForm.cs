@@ -18,11 +18,13 @@ namespace Revit.Addin.RevitTooltip.UI
             InitializeComponent();
             this.dataGridView1.AutoGenerateColumns = false;
             this.dataGridView2.AutoGenerateColumns = false;
-            List<CEntityName> items= App.Instance.Sqlite.SelectAllEntitiesAndErr("CX");
+            this.dataGridView3.AutoGenerateColumns = false;
+            List<CEntityName> items = App.Instance.Sqlite.SelectAllEntitiesAndErr("CX");
             this.comboBox1.DisplayMember = "EntityName";
             this.comboBox1.ValueMember = "EntityName";
             this.comboBox1.DataSource = items;
-            if (items.Count != 0) {
+            if (items.Count != 0)
+            {
                 this.comboBox1.SelectedIndex = 0;
             }
         }
@@ -31,52 +33,164 @@ namespace Revit.Addin.RevitTooltip.UI
         /// </summary>
         public NewImageForm FatherForm { get; set; }
         //private List<CEntityName> all_entity;
-        public List<CEntityName> All_Entities { set {
-                comboBox1.DataSource = value;
-            } }
-
-        private List<DrawData> details = new List<DrawData>();
-        
-
-        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
+        public List<CEntityName> All_Entities
         {
+            set
+            {
+                comboBox1.DataSource = value;
+            }
+        }
+
+        private ISet<DrawData> details = new HashSet<DrawData>();
+
+        private int selectedItem = -1;
+        private int pre_select = -1;
+
+
+
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CEntityName item = comboBox1.SelectedItem as CEntityName;
+            if (item != null)
+            {
+                DrawEntityData drawEntityData = App.Instance.Sqlite.SelectDrawEntityData(item.EntityName, null, null);
+                this.dataGridView1.DataSource = drawEntityData.Data;
+                this.dataGridView2.DataSource = null;
+            }
+        }
+
+
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+            details = new HashSet<DrawData>();
+            this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
+
+        }
+
+        private void ChildForm_VisibleChanged(object sender, EventArgs e)
+        {
+            if (this.Visible && this.FatherForm.Visible)
+            {
+                this.FatherForm.Visible = false;
+            }
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            List<DrawData> dataViewSource = this.dataGridView1.DataSource as List<DrawData>;
+            int index = this.dataGridView1.CurrentRow.Index;
+            if (dataViewSource != null && index < dataViewSource.Count && index >= 0)
+            {
+                this.details.Add(dataViewSource[index]);
+                this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
+                this.dataGridView2.DataSource = App.Instance.Sqlite.SelectDrawData("CX", dataViewSource[this.dataGridView1.CurrentRow.Index].Date);
+            }
+
+        }
+
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            List<DrawData> dataViewSource = this.dataGridView2.DataSource as List<DrawData>;
+            int index = this.dataGridView2.CurrentRow.Index;
+            if (dataViewSource != null && index < dataViewSource.Count && index >= 0)
+            {
+                this.details.Add(dataViewSource[index]);
+                this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
+            }
+        }
+
+        private void splitContainer3_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            float height = this.splitContainer1.Panel2.ClientRectangle.Height;
-            float width = this.splitContainer1.Panel2.ClientRectangle.Width;
+            float height = this.splitContainer3.Panel1.ClientRectangle.Height;
+            float width = this.splitContainer3.Panel1.ClientRectangle.Width;
             float startX = width / 10, endX = width - 15;
             float startY = height - 15, endY = 30;
             Font font = new Font("Arial", 9, System.Drawing.FontStyle.Regular);
             if (details.Count == 0)
             {
                 g.DrawString("没有数据", font, Brushes.Black, (startX + endX - g.MeasureString("没有数据", font).Width) / 2, (startY + endY) / 2);
+                this.dataGridView3.DataSource = null;
                 return;
             }
             StringFormat format = new StringFormat();
             format.FormatFlags = StringFormatFlags.DirectionVertical;
-            float MaxValue = 0L;
+            float MaxValue = 0f;
             float MinValue = float.MaxValue;
             int CountX = 0;
-            foreach (DrawData one in details) {
+            List<DrawData> newDetails = new List<DrawData>(details);
+            //更新模型
+            if (this.selectedItem == -1)
+            {
+                this.dataGridView3.DataSource = null;
+                this.dataGridView3.DataSource = newDetails;
+                this.pre_select = -1;
+            }
+            foreach (DrawData one in newDetails)
+            {
                 String[] arr = one.Detail.Split(';');
                 int len = arr.Count();
                 float v_max = one.MaxValue;
                 float v_min = one.MinValue;
-                if (v_max - MaxValue > 0.01){ MaxValue = v_max; }
-                if (v_min - MinValue < 0.01) { MinValue = v_min; }
+                if (v_max > MaxValue) { MaxValue = v_max; }
+                if (v_min < MinValue) { MinValue = v_min; }
                 if (len > CountX) { CountX = len; }
             }
-            float divX = (endX - startX) /(MaxValue - MinValue) ;
-            float divY =  (startY-endY)/CountX ;
+            float divY = (startY - endY) / CountX;
 
-            float divYY = (startY - endY) / 10;
-            float divYV = (MaxValue - MinValue) / 10;
             float divXX = (endX - startX) / 10;
             float divXV = (MaxValue - MinValue) / 10;
-                Pen mypen = new Pen(System.Drawing.Color.Blue, 1);
-                //画坐标轴使用
-                Pen mypen1 = new Pen(System.Drawing.Color.Blue, 2);
-                Pen dotPen = new Pen(Color.FromArgb(128, Color.Black), 0.3f);
+            //对尾数进行处理，处理成尾数以5结尾
+            float tail = 0.5f;
+            float tail_add = 0.4f;
+            float tail_reduce = 0.1f;
+            float _v = divXV;
+            int fix_len = 1;
+            while (_v * 10.0f < 1)
+            {
+                _v *= 10.0f;
+                tail /= 10.0f;
+                tail_add /= 10.0f;
+                tail_reduce /= 10.0f;
+                fix_len++;
+            }
+            divXV = ((int)((divXV + tail_add) / tail)) * tail;
+
+
+            if (MaxValue >= 0)
+            {
+                MaxValue = ((int)((MaxValue + divXV - tail_reduce) / divXV)) * divXV;
+
+            }
+            else
+            {
+                MaxValue = ((int)(MaxValue / divXV)) * divXV;
+            }
+            if (MinValue >= 0)
+            {
+                MinValue = ((int)(MinValue / divXV)) * divXV;
+            }
+            else
+            {
+                MinValue = ((int)((MinValue - divXV + tail_reduce) / divXV)) * divXV;
+            }
+            if ((MinValue + 10 * divXV) > MaxValue)
+            {
+                MaxValue = MinValue + 10 * divXV;
+            }
+            float divX = MaxValue - MinValue == 0f ? 0f : (endX - startX) / (MaxValue - MinValue);
+            Pen mypen = new Pen(System.Drawing.Color.Blue, 1);
+            //画坐标轴使用
+            Pen mypen1 = new Pen(System.Drawing.Color.Blue, 2);
+            Pen dotPen = new Pen(Color.FromArgb(128, Color.Black), 0.3f);
+            SolidBrush brush_unselect = new SolidBrush(Color.Black);
+            Pen pen_unselect = new Pen(Color.Black, 1);
+            SolidBrush brush_select = new SolidBrush(Color.Red);
+            Pen pen_select = new Pen(Color.Red, 3);
             try
             {
                 g.Clear(System.Drawing.Color.White);
@@ -90,50 +204,43 @@ namespace Revit.Addin.RevitTooltip.UI
                 for (int i = 0; i <= 10; i++)
                 {
                     float newX = startX + i * divXX;
-                    float v_X = (float)Math.Round(MinValue + i * divXV, 2, MidpointRounding.AwayFromZero);
                     g.DrawLine(dotPen, newX, startY, newX, endY);
-                    String s_Y = v_X.ToString();
-                    g.DrawString(s_Y, font, Brushes.Black, newX- g.MeasureString(s_Y, font).Width/2, endY- g.MeasureString(s_Y, font).Height);
+                    String s_Y = Math.Round(MinValue + i * divXV, fix_len, MidpointRounding.AwayFromZero).ToString("F" + fix_len);
+                    g.DrawString(s_Y, font, Brushes.Black, newX - g.MeasureString(s_Y, font).Width / 2, endY - g.MeasureString(s_Y, font).Height);
                 }
                 //画横线
                 for (int j = 0; j <= CountX; j++)
                 {
-                    float newY = endY +j * divY;
+                    float newY = endY + j * divY;
                     g.DrawLine(dotPen, startX, newY, endX, newY);
-                    float v_Y = (float)(j * 0.5);
-                    String s_X = v_Y.ToString();
-                    if (j % 5 == 0&&CountX-j>3) {
-                    g.DrawString(s_X, font, Brushes.Black, startX- g.MeasureString(s_X, font).Width, newY);
+                    String s_X = (j * 0.5).ToString("F1");
+                    if (j % 5 == 0 && CountX - j > 3)
+                    {
+                        g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY);
                     }
-                    if (j == CountX) {
-                    g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY- g.MeasureString(s_X, font).Height/2);
+                    if (j == CountX)
+                    {
+                        g.DrawString(s_X, font, Brushes.Black, startX - g.MeasureString(s_X, font).Width, newY - g.MeasureString(s_X, font).Height / 2);
                     }
                 }
-                Random radom = new Random();
-                Color color_b = Color.FromArgb(radom.Next(80, 128),radom.Next(0,128), radom.Next(0, 128));
-                for(int k=0;k<details.Count;k++)
+
+                for (int k = 0; k < newDetails.Count; k++)
                 {
-                    DrawData one = details[k];
+                    DrawData one = newDetails[k];
                     String[] arr = one.Detail.Split(';');
                     int len = arr.Count();
                     float pre_x = 0;
                     float pre_y = 0;
-                    int add = radom.Next(32, 128);
-                    int which = radom.Next(0,2);
-                    int c_r = color_b.R;
-                    int c_g = color_b.G;
-                    int c_b = color_b.B;
-                    switch (which) {
-                        case 0: c_r=(color_b.R + add ) % 255;break;
-                        case 1: c_g = (color_b.G + add ) % 255;break;
-                        case 2:c_b= (color_b.B + add ) % 255;break;
+                    SolidBrush brush_temp = brush_unselect;
+                    Pen pen_temp = pen_unselect;
+                    if (k == this.selectedItem)
+                    {
+                        brush_temp = brush_select;
+                        pen_temp = pen_select;
+                        this.selectedItem = -1;
+                        this.pre_select = k;
                     }
-                    
-                    Color color = Color.FromArgb(c_r, c_g, c_b);
-                    color_b = color;
-                    SolidBrush brush = new SolidBrush(color);
 
-                    Pen temp_pen = new Pen(color, 1);
                     for (int h = 0; h < len; h++)
                     {
                         String[] s_arr = arr[h].Split(':');
@@ -144,78 +251,46 @@ namespace Revit.Addin.RevitTooltip.UI
 
                         if (h != 0)
                         {
-                            g.DrawLine(temp_pen, pre_x, pre_y, curr_x, curr_y);
-                            if (h == len / 2) {
-                                g.DrawString(one.UniId, font, brush, (pre_x+curr_x-g.MeasureString(one.UniId,font).Width)/2,(pre_y+curr_y- g.MeasureString(one.UniId,font).Width)/2,format);
+                            g.DrawLine(pen_temp, pre_x, pre_y, curr_x, curr_y);
+                            if (h == len / 2)
+                            {
+                                g.DrawString(one.UniId, font, brush_temp, (pre_x + curr_x - g.MeasureString(one.UniId, font).Width) / 2, (pre_y + curr_y - g.MeasureString(one.UniId, font).Width) / 2, format);
                             }
                         }
                         pre_x = curr_x;
                         pre_y = curr_y;
                     }
-                    temp_pen.Dispose();
+
                 }
+                
+                
+                
+                
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-            finally {
+            finally
+            {
                 g.Dispose();
                 mypen.Dispose();
                 mypen1.Dispose();
                 dotPen.Dispose();
-            }
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CEntityName item = comboBox1.SelectedItem as CEntityName;
-            if (item != null) {
-                DrawEntityData drawEntityData= App.Instance.Sqlite.SelectDrawEntityData(item.EntityName,null,null);
-                this.dataGridView1.DataSource = drawEntityData.Data;
-                this.dataGridView2.DataSource = null;
+                pen_unselect.Dispose();
+                pen_select.Dispose();
             }
         }
 
-        
-
-        private void label2_Click(object sender, EventArgs e)
+        private void dataGridView3_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            details = new List<DrawData>();
-            this.splitContainer1.Panel2.Invalidate(this.splitContainer1.Panel2.ClientRectangle);
-
-        }
-
-        private void ChildForm_VisibleChanged(object sender, EventArgs e)
-        {
-            if (this.Visible && this.FatherForm.Visible) {
-                this.FatherForm.Visible = false;
-            }
-        }
-
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            List<DrawData> dataViewSource = this.dataGridView1.DataSource as List<DrawData>;
-            int index = this.dataGridView1.CurrentRow.Index;
-            if (dataViewSource != null && index < dataViewSource.Count && index >= 0)
+            
+            if (this.pre_select != e.RowIndex)
             {
-                this.details.Add(dataViewSource[index]);
-                this.splitContainer1.Panel2.Invalidate(this.splitContainer1.Panel2.ClientRectangle);
-                this.dataGridView2.DataSource = App.Instance.Sqlite.SelectDrawData("CX", dataViewSource[this.dataGridView1.CurrentRow.Index].Date);
+                this.selectedItem = e.RowIndex;
+                this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
             }
 
-        }
-
-        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            List<DrawData> dataViewSource = this.dataGridView2.DataSource as List<DrawData>;
-            int index = this.dataGridView2.CurrentRow.Index;
-            if (dataViewSource != null && index < dataViewSource.Count && index >= 0)
-            {
-                this.details.Add(dataViewSource[index]);
-                this.splitContainer1.Panel2.Invalidate(this.splitContainer1.Panel2.ClientRectangle);
-            }
         }
     }
 }

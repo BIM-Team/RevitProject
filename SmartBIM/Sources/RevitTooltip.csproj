@@ -65,7 +65,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BIMCoder.OfficeHelper">
-      <HintPath>obj\x64\Debug\BIMCoder.OfficeHelper.dll</HintPath>
+      <HintPath>..\ThirdParty\BIMCoder\BIMCoder.OfficeHelper.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\ThirdParty\NPOI\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -81,10 +81,6 @@
     <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ThirdParty\MySql\MySql.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="NPOI, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>obj\x64\Debug\NPOI.dll</HintPath>
     </Reference>
     <Reference Include="NPOI.OOXML">
       <HintPath>..\ThirdParty\NPOI\NPOI.OOXML.dll</HintPath>
