@@ -44,6 +44,7 @@ namespace Revit.Addin.RevitTooltip.UI
         private ISet<DrawData> details = new HashSet<DrawData>();
 
         private int selectedItem = -1;
+        private int pre_select = -1;
 
 
 
@@ -122,6 +123,13 @@ namespace Revit.Addin.RevitTooltip.UI
             float MinValue = float.MaxValue;
             int CountX = 0;
             List<DrawData> newDetails = new List<DrawData>(details);
+            //更新模型
+            if (this.selectedItem == -1)
+            {
+                this.dataGridView3.DataSource = null;
+                this.dataGridView3.DataSource = newDetails;
+                this.pre_select = -1;
+            }
             foreach (DrawData one in newDetails)
             {
                 String[] arr = one.Detail.Split(';');
@@ -230,9 +238,8 @@ namespace Revit.Addin.RevitTooltip.UI
                         brush_temp = brush_select;
                         pen_temp = pen_select;
                         this.selectedItem = -1;
+                        this.pre_select = k;
                     }
-
-
 
                     for (int h = 0; h < len; h++)
                     {
@@ -255,9 +262,10 @@ namespace Revit.Addin.RevitTooltip.UI
                     }
 
                 }
-                //重绘完成
-                this.dataGridView3.DataSource = null;
-                this.dataGridView3.DataSource = newDetails;
+                
+                
+                
+                
             }
             catch (Exception ex)
             {
@@ -276,9 +284,10 @@ namespace Revit.Addin.RevitTooltip.UI
 
         private void dataGridView3_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            this.selectedItem = e.RowIndex;
-            if (this.selectedItem != -1)
+            
+            if (this.pre_select != e.RowIndex)
             {
+                this.selectedItem = e.RowIndex;
                 this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
             }
 
