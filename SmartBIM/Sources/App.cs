@@ -59,6 +59,19 @@ namespace Revit.Addin.RevitTooltip
         //模型联动时使用
         private string _previousselectedNoInfoEntity = null;
         private string selectedNoInfoEntity = null;
+
+        //模型联动时使用，测斜汇总的联动
+        private Dictionary<String, String> elemMaxValueMap = null;
+        public Dictionary<String, String> MaxMap {
+        set {
+                this.elemMaxValueMap = value;
+            }
+        }
+        private String currentElementInfo = null;
+        public String CurrentElementDayInfo {
+        set { this.currentElementInfo = value; }
+        }
+
         /// <summary>
         /// 模型联动
         /// </summary>
@@ -409,8 +422,6 @@ namespace Revit.Addin.RevitTooltip
                         try
                         {
                             uidoc.ShowElements(keyNameToElementMap[selectedNoInfoEntity]);
-                            //currentUIView.ZoomSheetSize();
-                   
                             currentUIView.Zoom(0.1d);
                         }
                         catch (Exception)
@@ -475,6 +486,10 @@ namespace Revit.Addin.RevitTooltip
 
                     }
                 }
+                //初始化最大值
+                if (elemMaxValueMap != null && elemMaxValueMap.Count != 0) {
+
+                }
             }
         }
 
@@ -495,7 +510,6 @@ namespace Revit.Addin.RevitTooltip
         }
         private void DocumentClosingAction(object sender, DocumentClosingEventArgs even)
         {
-            //isColorChanged = false;
             isThresholdChanged = true;
             color_blue = null;
             color_gray = null;
@@ -506,6 +520,9 @@ namespace Revit.Addin.RevitTooltip
             m_uiApp.Idling -= SettingIdlingHandler;
             m_uiApp.Idling -= IdlingHandler;
             m_uiApp.Idling -= ImageControlIdlingHandler;
+            if (even.Document.IsModified) {
+                even.Document.Save();
+            }
         }
         private void DocumentOpenedAction(object sender, DocumentOpenedEventArgs even)
         {
