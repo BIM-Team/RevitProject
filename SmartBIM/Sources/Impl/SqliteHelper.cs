@@ -1678,8 +1678,8 @@ namespace Revit.Addin.RevitTooltip.Impl
                         string DiffOpr = null;
                         if (reader.Read())
                         {
-                            Total_hold = reader.GetFloat(0);
-                            Diff_hold = reader.GetFloat(1);
+                            Total_hold = Convert.ToSingle(reader.GetString(0));
+                            Diff_hold = Convert.ToSingle(reader.GetString(1));
                             TotalOpr = reader.GetString(2);
                             DiffOpr = reader.GetString(3);
 
@@ -1692,11 +1692,11 @@ namespace Revit.Addin.RevitTooltip.Impl
                         string sql_Total = null;
                         if (TotalOpr.Equals(">=") || TotalOpr.Equals(">"))
                         {
-                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Max(DrawTable.EntityMaxValue){3}{0},Max(DrawTable.EntityMaxValue),Min(DrawTable.EntityMaxValue) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal, TotalOpr);
+                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Max(DrawTable.EntityMaxValue){2}{0},Max(DrawTable.EntityMaxValue),Min(DrawTable.EntityMaxValue) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal, TotalOpr);
                         }
                         else
                         {
-                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Min(DrawTable.EntityMaxValue){3}{0},Max(DrawTable.EntityMaxValue),Min(DrawTable.EntityMaxValue) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal, TotalOpr);
+                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Min(DrawTable.EntityMaxValue){2}{0},Max(DrawTable.EntityMaxValue),Min(DrawTable.EntityMaxValue) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal, TotalOpr);
                         }
                         command.CommandText = sql_Total;
                         reader = command.ExecuteReader();

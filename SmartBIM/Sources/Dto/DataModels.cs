@@ -310,8 +310,8 @@ namespace Revit.Addin.RevitTooltip.Dto
         /// </summary>
         public string ErrMsg { get; set; }
         //记录最大值
-        public string maxValue { get; set; }
-        public string minValue { get; set; }
+        public String maxValue { get; set; }
+        public String minValue { get; set; }
 
     }
 }

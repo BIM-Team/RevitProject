@@ -500,7 +500,7 @@ namespace Revit.Addin.RevitTooltip
                 //初始化最大值
                 if (currentMapChanged)
                 {
-                    currentMapChanged = false;
+                    
                     List<CEntityName> all_entity = App.Instance.Sqlite.SelectAllEntitiesAndErrIgnoreSignal();
                     using (Transaction tran = new Transaction(uidoc.Document))
                     {
@@ -518,7 +518,7 @@ namespace Revit.Addin.RevitTooltip
                                     Parameter param_ma = keyNameToElementMap[one.EntityName].get_Parameter(Res.String_Wenzi);
                                     if (null != param_ma)
                                     {
-                                        param_ma.Set(one.maxValue);
+                                        param_ma.Set(""+one.maxValue);
                                     }
                                 }
                                 catch (Exception e)
@@ -530,7 +530,7 @@ namespace Revit.Addin.RevitTooltip
                         }
                         if (tran.Commit() == TransactionStatus.Committed)
                         {
-                            isThresholdChanged = false;
+                            currentMapChanged = false;
                         }
                         else
                         {
