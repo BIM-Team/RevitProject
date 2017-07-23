@@ -463,6 +463,15 @@ namespace Revit.Addin.RevitTooltip.Properties {
         }
         
         /// <summary>
+        ///   查找类似 文字 的本地化字符串。
+        /// </summary>
+        internal static string String_Wenzi {
+            get {
+                return ResourceManager.GetString("String_Wenzi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
         internal static System.Drawing.Bitmap Tooltip_64 {

@@ -86,6 +86,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 this.details.Add(dataViewSource[index]);
                 this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
                 this.dataGridView2.DataSource = App.Instance.Sqlite.SelectDrawData("CX", dataViewSource[this.dataGridView1.CurrentRow.Index].Date);
+                App.Instance.CurrentElementDayInfo= dataViewSource[index];
             }
 
         }
@@ -98,6 +99,7 @@ namespace Revit.Addin.RevitTooltip.UI
             {
                 this.details.Add(dataViewSource[index]);
                 this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
+                App.Instance.CurrentElementDayInfo = dataViewSource[index];
             }
         }
 
