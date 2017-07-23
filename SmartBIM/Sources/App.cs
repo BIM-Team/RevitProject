@@ -30,7 +30,7 @@ namespace Revit.Addin.RevitTooltip
         //保存设置面板
         public NewSettings SettingsForm { get; set; }
         public NewImageForm FatherImageForm { get; set; }
-        
+
 
         private bool ColorMaterialIsReady = false;
         private bool isThresholdChanged = true;
@@ -521,18 +521,18 @@ namespace Revit.Addin.RevitTooltip
                                 try
                                 {
                                     Parameter param_ma = keyNameToElementMap[key].get_Parameter(Res.String_Wenzi);
-                                if (null != param_ma)
-                                {
-                                    if (map.ContainsKey(key))
+                                    if (null != param_ma)
                                     {
-                                        param_ma.Set("" + map[key].maxValue);
-                                    }
-                                    else
-                                    {
-                                        param_ma.Set("" + key);
-                                    }
+                                        if (map.ContainsKey(key))
+                                        {
+                                            param_ma.Set("" + map[key].maxValue);
+                                        }
+                                        else
+                                        {
+                                            param_ma.Set("" + key);
+                                        }
 
-                                }
+                                    }
                                 }
                                 catch (Exception e)
                                 {
@@ -576,15 +576,16 @@ namespace Revit.Addin.RevitTooltip
                             if (tran.Commit() == TransactionStatus.Committed)
                             {
                                 currentElementChanged = false;
+
                             }
                             else
                             {
                                 tran.RollBack();
                             }
-                            if (uidoc.Document.IsModified)
-                            {
-                                uidoc.Document.Save();
-                            }
+                            //if (uidoc.Document.IsModified)
+                            //{
+                            //    uidoc.Document.Save();
+                            //}
 
                         }
 
@@ -625,17 +626,19 @@ namespace Revit.Addin.RevitTooltip
                 even.Document.Save();
             }
             //关闭设置框
-            if (this.SettingsForm != null && !this.SettingsForm.IsDisposed) {
+            if (this.SettingsForm != null && !this.SettingsForm.IsDisposed)
+            {
                 this.SettingsForm.Dispose();
                 this.SettingsForm = null;
             }
-            if (this.FatherImageForm != null && !this.FatherImageForm.IsDisposed) {
+            if (this.FatherImageForm != null && !this.FatherImageForm.IsDisposed)
+            {
                 this.FatherImageForm.Child.Dispose();
                 this.FatherImageForm.Dispose();
                 this.FatherImageForm = null;
             }
-            
-           
+
+
         }
         private void DocumentOpenedAction(object sender, DocumentOpenedEventArgs even)
         {
