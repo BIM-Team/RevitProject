@@ -64,10 +64,10 @@ namespace Revit.Addin.RevitTooltip.UI
                 App.Instance.SelectedNoInfoEntity = selectedItem.EntityName;
             }
         }
-        public void setDataSource(IEnumerable itemsSource)
-        {
-            dataGrid.ItemsSource = itemsSource;
-        }
+        //public void setDataSource(IEnumerable itemsSource)
+        //{
+        //    dataGrid.ItemsSource = itemsSource;
+        //}
 
         private void startBox_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -152,6 +152,9 @@ namespace Revit.Addin.RevitTooltip.UI
         public void setExcelType(System.Collections.IEnumerable itemsSource)
         {
             this.comboBox.ItemsSource = itemsSource;
+            if (itemsSource != null) {
+                this.comboBox.SelectedIndex = 0;
+            }
         }
 
 

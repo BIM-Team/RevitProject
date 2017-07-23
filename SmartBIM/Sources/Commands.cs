@@ -63,9 +63,16 @@ namespace Revit.Addin.RevitTooltip
         {
             try
             {
-                NewSettings settingForm = new NewSettings(App.Instance.settings);
-                settingForm.Show();
-                commandData.Application.Idling += App.Instance.SettingIdlingHandler;
+                if (App.Instance.SettingsForm == null || App.Instance.SettingsForm.IsDisposed) {
+                    NewSettings settingForm = new NewSettings(App.Instance.settings);
+                    commandData.Application.Idling += App.Instance.SettingIdlingHandler;
+                    App.Instance.SettingsForm = settingForm;
+                }
+                if (!App.Instance.SettingsForm.Visible)
+                {
+                    App.Instance.SettingsForm.Show();
+                }
+                
                 return Result.Succeeded;
             }
             catch (Exception ex)

@@ -57,6 +57,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 DrawEntityData drawEntityData = App.Instance.Sqlite.SelectDrawEntityData(item.EntityName, null, null);
                 this.dataGridView1.DataSource = drawEntityData.Data;
                 this.dataGridView2.DataSource = null;
+                App.Instance.SelectedNoInfoEntity = item.EntityName;
             }
         }
 
@@ -87,6 +88,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
                 this.dataGridView2.DataSource = App.Instance.Sqlite.SelectDrawData("CX", dataViewSource[this.dataGridView1.CurrentRow.Index].Date);
                 App.Instance.CurrentElementDayInfo= dataViewSource[index];
+                App.Instance.SelectedNoInfoEntity = dataViewSource[index].EntityName;
             }
 
         }
@@ -100,6 +102,7 @@ namespace Revit.Addin.RevitTooltip.UI
                 this.details.Add(dataViewSource[index]);
                 this.splitContainer3.Panel1.Invalidate(this.splitContainer3.Panel1.ClientRectangle);
                 App.Instance.CurrentElementDayInfo = dataViewSource[index];
+                App.Instance.SelectedNoInfoEntity = dataViewSource[index].EntityName;
             }
         }
 

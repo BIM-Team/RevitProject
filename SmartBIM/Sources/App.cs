@@ -27,6 +27,11 @@ namespace Revit.Addin.RevitTooltip
     /// </summary>
     public class App : IExternalApplication
     {
+        //保存设置面板
+        public NewSettings SettingsForm { get; set; }
+        public NewImageForm FatherImageForm { get; set; }
+        
+
         private bool ColorMaterialIsReady = false;
         private bool isThresholdChanged = true;
         /// <summary>
@@ -500,32 +505,41 @@ namespace Revit.Addin.RevitTooltip
                 //初始化最大值
                 if (currentMapChanged)
                 {
-                    
+
                     List<CEntityName> all_entity = App.Instance.Sqlite.SelectAllEntitiesAndErrIgnoreSignal();
+                    Dictionary<String, CEntityName> map = new Dictionary<string, CEntityName>();
+                    foreach (CEntityName one in all_entity)
+                    {
+                        map.Add(one.EntityName, one);
+                    }
                     using (Transaction tran = new Transaction(uidoc.Document))
                     {
                         if (tran.Start("changeWenzi") == TransactionStatus.Started)
                         {
-
-                            foreach (CEntityName one in all_entity)
+                            foreach (String key in keyNameToElementMap.Keys)
                             {
                                 try
                                 {
-                                    if (!keyNameToElementMap.ContainsKey(one.EntityName))
+                                    Parameter param_ma = keyNameToElementMap[key].get_Parameter(Res.String_Wenzi);
+                                if (null != param_ma)
+                                {
+                                    if (map.ContainsKey(key))
                                     {
-                                        continue;
+                                        param_ma.Set("" + map[key].maxValue);
                                     }
-                                    Parameter param_ma = keyNameToElementMap[one.EntityName].get_Parameter(Res.String_Wenzi);
-                                    if (null != param_ma)
+                                    else
                                     {
-                                        param_ma.Set(""+one.maxValue);
+                                        param_ma.Set("" + key);
                                     }
+
+                                }
                                 }
                                 catch (Exception e)
                                 {
 
                                     throw e;
                                 }
+
                             }
                         }
                         if (tran.Commit() == TransactionStatus.Committed)
@@ -610,6 +624,18 @@ namespace Revit.Addin.RevitTooltip
             {
                 even.Document.Save();
             }
+            //关闭设置框
+            if (this.SettingsForm != null && !this.SettingsForm.IsDisposed) {
+                this.SettingsForm.Dispose();
+                this.SettingsForm = null;
+            }
+            if (this.FatherImageForm != null && !this.FatherImageForm.IsDisposed) {
+                this.FatherImageForm.Child.Dispose();
+                this.FatherImageForm.Dispose();
+                this.FatherImageForm = null;
+            }
+            
+           
         }
         private void DocumentOpenedAction(object sender, DocumentOpenedEventArgs even)
         {

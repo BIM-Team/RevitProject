@@ -15,6 +15,7 @@ namespace Revit.Addin.RevitTooltip.UI
             if (_form == null || _form.IsDisposed)
             {
                 _form = new NewImageForm();
+                App.Instance.FatherImageForm = _form;
             }
             return _form;
         }

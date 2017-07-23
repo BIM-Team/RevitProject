@@ -1706,8 +1706,8 @@ namespace Revit.Addin.RevitTooltip.Impl
                             one.Id = reader.GetInt32(0);
                             one.EntityName = reader.GetString(1);
                             one.ErrMsg = reader.GetBoolean(2) ? "Total" : "No";
-                            one.maxValue = reader.GetString(3);
-                            one.minValue = reader.GetString(4);
+                            one.maxValue = Convert.ToString(reader.GetFloat(3));
+                            one.minValue = Convert.ToString(reader.GetFloat(4));
                             Entities.Add(one);
                             maps.Add(one.EntityName, one);
                         }
