@@ -64,10 +64,10 @@ namespace Revit.Addin.RevitTooltip.UI
                 App.Instance.SelectedNoInfoEntity = selectedItem.EntityName;
             }
         }
-        public void setDataSource(IEnumerable itemsSource)
-        {
-            dataGrid.ItemsSource = itemsSource;
-        }
+        //public void setDataSource(IEnumerable itemsSource)
+        //{
+        //    dataGrid.ItemsSource = itemsSource;
+        //}
 
         private void startBox_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -133,6 +133,15 @@ namespace Revit.Addin.RevitTooltip.UI
                 NewImageForm.Instance().EntityData = null;
                 NewImageForm.Instance().Text = "";
 
+                //添加测斜详情的逻辑
+                if (excel.Signal.Trim().Equals("CX"))
+                {
+                    detail.Visibility = Visibility.Visible;
+                }
+                else {
+                    detail.Visibility = Visibility.Hidden;
+                }
+
             }
             this.dataGrid.ItemsSource = all_entity;
             this.startTime.SelectedDate = null;
@@ -143,15 +152,30 @@ namespace Revit.Addin.RevitTooltip.UI
         public void setExcelType(System.Collections.IEnumerable itemsSource)
         {
             this.comboBox.ItemsSource = itemsSource;
+            if (itemsSource != null) {
+                this.comboBox.SelectedIndex = 0;
+            }
         }
 
-        private void startBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-        }
 
         private void detail_MouseDown(object sender, MouseButtonEventArgs e)
         {
             NewImageForm.Instance().Child.Show();
+        }
+
+        private void endCancel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            
+            endTime.SelectedDate = null;
+            endBox.Text = "";
+        }
+
+        private void startCancel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            
+            startTime.SelectedDate = null;
+            startBox.Text = "";
+
         }
     }
 

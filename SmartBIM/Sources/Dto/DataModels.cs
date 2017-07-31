@@ -309,6 +309,9 @@ namespace Revit.Addin.RevitTooltip.Dto
         /// err1,err2,err3,noErr
         /// </summary>
         public string ErrMsg { get; set; }
+        //记录最大值
+        public String maxValue { get; set; }
+        public String minValue { get; set; }
 
     }
 }

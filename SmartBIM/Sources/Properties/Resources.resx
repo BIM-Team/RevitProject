@@ -265,4 +265,8 @@
     <value>文字</value>
     <comment>Never change this string!</comment>
   </data>
+  <data name="String_Wenzi" xml:space="preserve">
+    <value>文字</value>
+    <comment>never change this string!</comment>
+  </data>
 </root>

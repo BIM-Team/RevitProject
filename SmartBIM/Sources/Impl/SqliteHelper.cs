@@ -991,7 +991,7 @@ namespace Revit.Addin.RevitTooltip.Impl
         /// 查询DrawDataTable
         ///查询Entity某日期的数据
         /// </summary>
-        public List<DrawData> SelectDrawData(String signal,DateTime Date)
+        public List<DrawData> SelectDrawData(String signal, DateTime Date)
         {
             //判断是否创建该查询的表（一定要先打开数据库）
             if (!isExist("DrawTable", "table"))
@@ -1000,7 +1000,7 @@ namespace Revit.Addin.RevitTooltip.Impl
                 return null;
             }
             List<DrawData> resluts = new List<DrawData>();
-           
+
             string datestr = Date.ToString("yyyy-MM-dd HH:mm:ss");
             string sql = String.Format("select EntityMaxValue,EntityMidValue,EntityMinValue,Detail,et.EntityName from DrawTable dt, EntityTable et where dt.Entity_ID = et.ID and et.ExcelSignal = '{0}' and dt.date = '{1}'", signal, datestr);
 
@@ -1076,20 +1076,22 @@ namespace Revit.Addin.RevitTooltip.Impl
                         string Total_hold_str = reader.GetString(0);
                         string[] totalHolds = Total_hold_str.Split(new char[] { ',', '，' });
                         Total_hold1 = Convert.ToSingle(totalHolds[0]);
-                        if (totalHolds.Length > 1) {
+                        if (totalHolds.Length > 1)
+                        {
                             Total_hold2 = Convert.ToSingle(totalHolds[1]);
                         }
                         string Diff_hold_str = reader.GetString(1);
-                        string[] diffs = Diff_hold_str.Split(new char[] { ',','，'});
+                        string[] diffs = Diff_hold_str.Split(new char[] { ',', '，' });
                         Diff_hold1 = Convert.ToSingle(diffs[0]);
-                        if (diffs.Length > 1) {
+                        if (diffs.Length > 1)
+                        {
                             Diff_hold2 = Convert.ToSingle(diffs[1]);
                         }
                         TotalOpr = reader.GetString(2);
                         DiffOpr = reader.GetString(3);
                     }
                     reader.Close();
-                    if (TotalOpr==null||DiffOpr==null)
+                    if (TotalOpr == null || DiffOpr == null)
                     {
                         return Entities;
                     }
@@ -1108,9 +1110,10 @@ namespace Revit.Addin.RevitTooltip.Impl
                         float max = Math.Max(Total_hold1, Total_hold2);
                         if (TotalOpr.Equals("IN"))
                         {
-                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,NOT (Min(DrawTable.EntityMaxValue)>{0} or Max(DrawTable.EntityMaxValue)<{1}) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{2}' ", max,min, ExcelSignal);
+                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,NOT (Min(DrawTable.EntityMaxValue)>{0} or Max(DrawTable.EntityMaxValue)<{1}) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{2}' ", max, min, ExcelSignal);
                         }
-                        else {
+                        else
+                        {
                             sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,NOT (Min(DrawTable.EntityMaxValue)>{0} and Max(DrawTable.EntityMaxValue)<{1}) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{2}' ", min, max, ExcelSignal);
                         }
                     }
@@ -1182,14 +1185,16 @@ namespace Revit.Addin.RevitTooltip.Impl
                             {
                                 result = diff <= Diff_hold1;
                             }
-                            else {
+                            else
+                            {
                                 float diff_min = Math.Min(Diff_hold1, Diff_hold2);
-                                float diff_max = Math.Max(Diff_hold1,Diff_hold2);
+                                float diff_max = Math.Max(Diff_hold1, Diff_hold2);
                                 if (DiffOpr.Equals("IN"))
                                 {
                                     result = diff > diff_min && diff < diff_max;
                                 }
-                                else {
+                                else
+                                {
                                     result = diff > diff_max || diff < diff_min;
                                 }
                             }
@@ -1673,25 +1678,25 @@ namespace Revit.Addin.RevitTooltip.Impl
                         string DiffOpr = null;
                         if (reader.Read())
                         {
-                            Total_hold = reader.GetFloat(0);
-                            Diff_hold = reader.GetFloat(1);
+                            Total_hold = Convert.ToSingle(reader.GetString(0));
+                            Diff_hold = Convert.ToSingle(reader.GetString(1));
                             TotalOpr = reader.GetString(2);
                             DiffOpr = reader.GetString(3);
 
                         }
                         reader.Close();
-                        if (Total_hold == null || Diff_hold == null|| TotalOpr==null|| DiffOpr==null)
+                        if (Total_hold == null || Diff_hold == null || TotalOpr == null || DiffOpr == null)
                         {
                             throw new Exception("无效的阈值或操作符");
                         }
                         string sql_Total = null;
-                        if (TotalOpr.Equals(">=")||TotalOpr.Equals(">"))
+                        if (TotalOpr.Equals(">=") || TotalOpr.Equals(">"))
                         {
-                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Max(DrawTable.EntityMaxValue){3}{0} From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal,TotalOpr);
+                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Max(DrawTable.EntityMaxValue){2}{0},Max(DrawTable.EntityMaxValue),Min(DrawTable.EntityMaxValue) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal, TotalOpr);
                         }
                         else
                         {
-                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Min(DrawTable.EntityMaxValue){3}{0} From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal,TotalOpr);
+                            sql_Total = String.Format("select EntityTable.ID,EntityTable.EntityName,Min(DrawTable.EntityMaxValue){2}{0},Max(DrawTable.EntityMaxValue),Min(DrawTable.EntityMaxValue) From  EntityTable,DrawTable where DrawTable.Entity_ID=EntityTable.ID and EntityTable.ExcelSignal = '{1}' GROUP BY EntityTable.EntityName ORDER BY EntityTable.ID", Total_hold, signal, TotalOpr);
                         }
                         command.CommandText = sql_Total;
                         reader = command.ExecuteReader();
@@ -1701,6 +1706,8 @@ namespace Revit.Addin.RevitTooltip.Impl
                             one.Id = reader.GetInt32(0);
                             one.EntityName = reader.GetString(1);
                             one.ErrMsg = reader.GetBoolean(2) ? "Total" : "No";
+                            one.maxValue = Convert.ToString(reader.GetFloat(3));
+                            one.minValue = Convert.ToString(reader.GetFloat(4));
                             Entities.Add(one);
                             maps.Add(one.EntityName, one);
                         }
@@ -1738,7 +1745,8 @@ namespace Revit.Addin.RevitTooltip.Impl
                                 {
                                     result = diff < Diff_hold;
                                 }
-                                else if (DiffOpr.Equals("<=")) {
+                                else if (DiffOpr.Equals("<="))
+                                {
                                     result = diff <= Diff_hold;
                                 }
                                 if (result)

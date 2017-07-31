@@ -20,13 +20,18 @@ using Autodesk.Revit.DB.Events;
 
 namespace Revit.Addin.RevitTooltip
 {
-    
+
 
     /// <summary>
     /// 插件主程序入口
     /// </summary>
     public class App : IExternalApplication
     {
+        //保存设置面板
+        public NewSettings SettingsForm { get; set; }
+        public NewImageForm FatherImageForm { get; set; }
+
+
         private bool ColorMaterialIsReady = false;
         private bool isThresholdChanged = true;
         /// <summary>
@@ -59,6 +64,29 @@ namespace Revit.Addin.RevitTooltip
         //模型联动时使用
         private string _previousselectedNoInfoEntity = null;
         private string selectedNoInfoEntity = null;
+
+        //模型联动时使用，测斜汇总的联动
+        //标识记录的EnityName
+        private DrawData currentElementInfo = null;
+        public DrawData CurrentElementDayInfo
+        {
+            set
+            {
+
+                this.currentElementInfo = value;
+                this.currentElementChanged = true;
+            }
+        }
+        //标识EntityName是否改变
+        private bool currentElementChanged = false;
+        private bool currentMapChanged = true;
+        public bool mapChange
+        {
+            set
+            {
+                this.currentMapChanged = value;
+            }
+        }
         /// <summary>
         /// 模型联动
         /// </summary>
@@ -340,7 +368,7 @@ namespace Revit.Addin.RevitTooltip
                                 DrawEntityData drawEntityData = App.Instance.Sqlite.SelectDrawEntityData(entity, null, null);
                                 NewImageForm.Instance().EntityData = drawEntityData;
                                 ExcelTable excel = App.Instance.Sqlite.SelectADrawType(entity);
-                                NewImageForm.Instance().Text= excel == null ? "测点" + entity + "的测量数据" : excel.CurrentFile + ": 测点" + entity+ "的测量数据";
+                                NewImageForm.Instance().Text = excel == null ? "测点" + entity + "的测量数据" : excel.CurrentFile + ": 测点" + entity + "的测量数据";
                                 NewImageForm.Instance().Show();
                             }
                         }
@@ -409,8 +437,6 @@ namespace Revit.Addin.RevitTooltip
                         try
                         {
                             uidoc.ShowElements(keyNameToElementMap[selectedNoInfoEntity]);
-                            //currentUIView.ZoomSheetSize();
-                   
                             currentUIView.Zoom(0.1d);
                         }
                         catch (Exception)
@@ -421,7 +447,7 @@ namespace Revit.Addin.RevitTooltip
                 //对于异常点设置成不同的颜色
                 if (isThresholdChanged && ColorMaterialIsReady)
                 {
-                    
+
                     List<CEntityName> all_entity = App.Instance.Sqlite.SelectAllEntitiesAndErrIgnoreSignal();
                     using (Transaction tran = new Transaction(uidoc.Document))
                     {
@@ -469,8 +495,98 @@ namespace Revit.Addin.RevitTooltip
                         {
                             tran.RollBack();
                         }
-                        if (uidoc.Document.IsModified) {
+                        if (uidoc.Document.IsModified)
+                        {
                             uidoc.Document.Save();
+                        }
+
+                    }
+                }
+                //初始化最大值
+                if (currentMapChanged)
+                {
+
+                    List<CEntityName> all_entity = App.Instance.Sqlite.SelectAllEntitiesAndErrIgnoreSignal();
+                    Dictionary<String, CEntityName> map = new Dictionary<string, CEntityName>();
+                    foreach (CEntityName one in all_entity)
+                    {
+                        map.Add(one.EntityName, one);
+                    }
+                    using (Transaction tran = new Transaction(uidoc.Document))
+                    {
+                        if (tran.Start("changeWenzi") == TransactionStatus.Started)
+                        {
+                            foreach (String key in keyNameToElementMap.Keys)
+                            {
+                                try
+                                {
+                                    Parameter param_ma = keyNameToElementMap[key].get_Parameter(Res.String_Wenzi);
+                                    if (null != param_ma)
+                                    {
+                                        if (map.ContainsKey(key))
+                                        {
+                                            param_ma.Set("" + map[key].maxValue);
+                                        }
+                                        else
+                                        {
+                                            param_ma.Set("" + key);
+                                        }
+
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+
+                                    throw e;
+                                }
+
+                            }
+                        }
+                        if (tran.Commit() == TransactionStatus.Committed)
+                        {
+                            currentMapChanged = false;
+                        }
+                        else
+                        {
+                            tran.RollBack();
+                        }
+                        if (uidoc.Document.IsModified)
+                        {
+                            uidoc.Document.Save();
+                        }
+
+                    }
+                }
+                if (currentElementChanged && currentElementInfo != null)
+                {
+                    String key = currentElementInfo.EntityName;
+                    String value = "" + currentElementInfo.MaxValue;
+                    if (keyNameToElementMap.ContainsKey(key))
+                    {
+                        using (Transaction tran = new Transaction(uidoc.Document))
+                        {
+                            if (tran.Start("changeWenziOneElement") == TransactionStatus.Started)
+                            {
+                                Parameter param_ma = keyNameToElementMap[key].get_Parameter(Res.String_Wenzi);
+                                if (null != param_ma)
+                                {
+                                    param_ma.Set(value);
+                                }
+                            }
+                            if (tran.Commit() == TransactionStatus.Committed)
+                            {
+                                currentElementChanged = false;
+
+                            }
+                            else
+                            {
+                                tran.RollBack();
+                            }
+                            //if (uidoc.Document.IsModified)
+                            //{
+                            //    uidoc.Document.Save();
+                            //}
+
                         }
 
                     }
@@ -495,7 +611,6 @@ namespace Revit.Addin.RevitTooltip
         }
         private void DocumentClosingAction(object sender, DocumentClosingEventArgs even)
         {
-            //isColorChanged = false;
             isThresholdChanged = true;
             color_blue = null;
             color_gray = null;
@@ -506,6 +621,24 @@ namespace Revit.Addin.RevitTooltip
             m_uiApp.Idling -= SettingIdlingHandler;
             m_uiApp.Idling -= IdlingHandler;
             m_uiApp.Idling -= ImageControlIdlingHandler;
+            if (even.Document.IsModified)
+            {
+                even.Document.Save();
+            }
+            //关闭设置框
+            if (this.SettingsForm != null && !this.SettingsForm.IsDisposed)
+            {
+                this.SettingsForm.Dispose();
+                this.SettingsForm = null;
+            }
+            if (this.FatherImageForm != null && !this.FatherImageForm.IsDisposed)
+            {
+                this.FatherImageForm.Child.Dispose();
+                this.FatherImageForm.Dispose();
+                this.FatherImageForm = null;
+            }
+
+
         }
         private void DocumentOpenedAction(object sender, DocumentOpenedEventArgs even)
         {
