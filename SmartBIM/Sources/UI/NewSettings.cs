@@ -252,15 +252,16 @@ namespace Revit.Addin.RevitTooltip.UI
             {
                 string Total_hold = this.dataGridView1.CurrentRow.Cells[4].Value.ToString();
                 string TotalOpr=this.dataGridView1.CurrentRow.Cells[3].Value.ToString();
-                if (!System.Text.RegularExpressions.Regex.IsMatch(Total_hold, @"^-?([1-9]\d*|[1-9]\d*\.\d+|0\.\d*[1-9]\d*|0?\.0+|0)$")) {
-                   throw new Exception("阈值不符合规则");
+                if (!System.Text.RegularExpressions.Regex.IsMatch(Total_hold, @"^-?([1-9]\d*|[1-9]\d*\.\d+|0\.\d*[1-9]\d*|0?\.0+|0)([\,\，]-?([1-9]\d*|[1-9]\d*\.\d+|0\.\d*[1-9]\d*|0?\.0+|0))?$"))
+                {
+                    throw new Exception("阈值不符合规则");
                 }
                 if (!TotalOpr.Equals("IN") &&!TotalOpr.Equals("OUT")) {
                     Total_hold = Total_hold.Split(new Char[] {',','，' })[0];
                 }
                 string Diff_hold = this.dataGridView1.CurrentRow.Cells[6].Value.ToString();
                 string DiffOpr = this.dataGridView1.CurrentRow.Cells[5].Value.ToString();
-                if (!System.Text.RegularExpressions.Regex.IsMatch(Diff_hold, @"^[1-9]\d*|[1-9]\d*\.\d+|0\.\d*[1-9]\d*|0?\.0+|0$"))
+                if (!System.Text.RegularExpressions.Regex.IsMatch(Diff_hold, @"^[1-9]\d*|[1-9]\d*\.\d+|0\.\d*[1-9]\d*|0?\.0+|0([\,\，][1-9]\d*|[1-9]\d*\.\d+|0\.\d*[1-9]\d*|0?\.0+|0)?$"))
                 {
                     throw new Exception("阈值不符合规则");
                 }
